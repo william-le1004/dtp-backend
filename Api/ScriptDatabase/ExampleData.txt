@@ -1,0 +1,66 @@
+-- Insert Users
+INSERT INTO Users (ID, Balance, Name, Address, Role) VALUES
+                                                         (UUID(), 5000.00, 'Tran Dang Khoa', 'Quy Nhon, Binh Dinh', 2),
+                                                         (UUID(), 3000.00, 'Truong Dinh Van', 'Tuy Phuoc, Binh Dinh', 2);
+
+-- Insert Wallets
+INSERT INTO Wallet (ID, UserId, Balance) VALUES
+                                             (UUID(), (SELECT ID FROM Users WHERE Name='Tran Dang Khoa'), 5000.00),
+                                             (UUID(), (SELECT ID FROM Users WHERE Name='Truong Dinh Van'), 3000.00);
+
+-- Insert Company (Tour Operator)
+INSERT INTO Company (ID, Name, Email, Phone, UserId, TaxCode, License) VALUES
+    (UUID(), 'Binh Dinh Travel Co.', 'contact@binhdinhtravel.com', '0909123456',
+     (SELECT ID FROM Users WHERE Name='Tran Dang Khoa'), '123456789', '987654321');
+
+-- Insert Destinations in Bình Định
+INSERT INTO Destinations (ID, Name, Image) VALUES
+                                               (UUID(), 'Ky Co Beach, Bình Định', 'kyco.jpg'),
+                                               (UUID(), 'Eo Gio, Bình Định', 'eogio.jpg'),
+                                               (UUID(), 'Quy Nhon City, Bình Định', 'quynhon.jpg');
+
+-- Insert a Tour in Bình Định
+INSERT INTO Tours (ID, Title, CompanyId, Category, Price, Description, CreatedAt, UpdatedAt) VALUES
+    (UUID(), 'Bình Định Coastal Adventure',
+     (SELECT ID FROM Company WHERE Name='Binh Dinh Travel Co.'),
+     '3D 1N', 250.00, 'Explore the stunning beaches and cliffs of Bình Định.', NOW(), NOW());
+
+-- Assign Destinations to the Bình Định Tour
+INSERT INTO TourDestinations (TourID, DestinationID, SortOrder) VALUES
+                                                                    ((SELECT ID FROM Tours WHERE Title='Bình Định Coastal Adventure'),
+                                                                     (SELECT ID FROM Destinations WHERE Name='Ky Co Beach, Bình Định'), 1),
+                                                                    ((SELECT ID FROM Tours WHERE Title='Bình Định Coastal Adventure'),
+                                                                     (SELECT ID FROM Destinations WHERE Name='Eo Gio, Bình Định'), 2),
+                                                                    ((SELECT ID FROM Tours WHERE Title='Bình Định Coastal Adventure'),
+                                                                     (SELECT ID FROM Destinations WHERE Name='Quy Nhon City, Bình Định'), 3);
+
+-- Insert a Tour Schedule in Bình Định
+INSERT INTO TourSchedules (ID, TourID, StartDate, EndDate, MaxParticipants, Status, Remark) VALUES
+    (UUID(), (SELECT ID FROM Tours WHERE Title='Bình Định Coastal Adventure'),
+     '2025-06-10', '2025-06-15', 20, 'upcoming', 'Experience the best of Bình Định.');
+
+-- Insert Bookings for the Bình Định Tour
+INSERT INTO TourBookings (ID, UserId, TourScheduleID, Amount, Status, Remark, CreatedAt) VALUES
+    (UUID(), (SELECT ID FROM Users WHERE Name='Truong Dinh Van'),
+     (SELECT ID FROM TourSchedules WHERE Remark='Experience the best of Bình Định.'),
+     250.00, 'confirmed', 'Excited for the trip!', NOW());
+
+-- Insert Payments for the Bình Định Tour
+INSERT INTO Payments (ID, BookingID, PaymentMethod, TransactionDate) VALUES
+    (UUID(), (SELECT ID FROM TourBookings WHERE Remark='Excited for the trip!'), 'credit_card', NOW());
+
+-- Insert Ratings for the Bình Định Tour
+INSERT INTO Rating (ID, TourID, UserId, Rating) VALUES
+    (UUID(), (SELECT ID FROM Tours WHERE Title='Bình Định Coastal Adventure'),
+     (SELECT ID FROM Users WHERE Name='Truong Dinh Van'), 5);
+
+-- Insert Feedback for the Bình Định Tour
+INSERT INTO Feedback (ID, TourID, UserId, Description, CreateDate) VALUES
+    (UUID(), (SELECT ID FROM Tours WHERE Title='Bình Định Coastal Adventure'),
+     (SELECT ID FROM Users WHERE Name='Truong Dinh Van'),
+     'The scenery was breathtaking, and the tour was well organized!', NOW());
+
+-- Insert Transactions related to Bình Định Tour
+INSERT INTO Transactions (ID, WalletID, BankAccount, BankAccountID, Amount, Date, Type, Status) VALUES
+    (UUID(), (SELECT ID FROM Wallet WHERE UserId=(SELECT ID FROM Users WHERE Name='Truong Dinh Van')),
+     NULL, NULL, 250.00, NOW(), 'tour_payment', 'completed');

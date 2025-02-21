@@ -1,0 +1,111 @@
+CREATE TABLE Users (
+                       ID CHAR(36) PRIMARY KEY,
+                       Balance DECIMAL(15,2) DEFAULT 0.00,
+                       Name VARCHAR(100),
+                       Address VARCHAR(100),
+                       Role TINYINT
+);
+
+CREATE TABLE Wallet (
+                        ID CHAR(36) PRIMARY KEY,
+                        UserId CHAR(36) NOT NULL,
+                        Balance DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+                        FOREIGN KEY (UserId) REFERENCES Users(ID) ON DELETE CASCADE
+);
+
+CREATE TABLE Company (
+                         ID CHAR(36) PRIMARY KEY,
+                         Name VARCHAR(255) NOT NULL,
+                         Email VARCHAR(255) NOT NULL UNIQUE,
+                         Phone VARCHAR(15) NOT NULL UNIQUE,
+                         UserId CHAR(36),
+                         TaxCode VARCHAR(50) NOT NULL UNIQUE,
+                         License VARCHAR(50) NOT NULL UNIQUE,
+                         FOREIGN KEY (UserId) REFERENCES Users(ID) ON DELETE SET NULL
+);
+
+CREATE TABLE Tours (
+                       ID CHAR(36) PRIMARY KEY,
+                       Title VARCHAR(255) NOT NULL,
+                       CompanyId CHAR(36) ,
+                       Category CHAR(36),
+                       Price DECIMAL(10,2) NOT NULL,
+                       Description TEXT,
+                       CreatedAt DATETIME,
+                       UpdatedAt DATETIME,
+                       FOREIGN KEY (CompanyId) REFERENCES Company(ID) ON DELETE SET NULL
+);
+
+CREATE TABLE TourSchedules (
+                               ID CHAR(36) PRIMARY KEY,
+                               TourID CHAR(36) NOT NULL,
+                               StartDate DATETIME NOT NULL,
+                               EndDate DATETIME NOT NULL,
+                               MaxParticipants INT NOT NULL,
+                               Status ENUM('upcoming', 'ongoing', 'completed', 'canceled') DEFAULT 'upcoming',
+                               Remark TEXT,
+                               FOREIGN KEY (TourID) REFERENCES Tours(ID) ON DELETE CASCADE
+);
+
+CREATE TABLE TourBookings (
+                              ID CHAR(36) PRIMARY KEY,
+                              UserId CHAR(36) NOT NULL,
+                              TourScheduleID CHAR(36) NOT NULL,
+                              Amount DECIMAL(10,2) NOT NULL,
+                              Status ENUM('pending', 'confirmed', 'canceled') NOT NULL DEFAULT 'pending',
+                              Remark TEXT,
+                              CreatedAt DATETIME,
+                              FOREIGN KEY (TourScheduleID) REFERENCES TourSchedules(ID) ON DELETE CASCADE
+);
+
+CREATE TABLE Payments (
+                          ID CHAR(36) PRIMARY KEY,
+                          BookingID CHAR(36) NOT NULL,
+                          PaymentMethod ENUM('credit_card', 'paypal', 'bank_transfer') NOT NULL,
+                          TransactionDate DATETIME,
+                          FOREIGN KEY (BookingID) REFERENCES TourBookings(ID) ON DELETE CASCADE
+);
+
+CREATE TABLE Destinations (
+                              ID CHAR(36) PRIMARY KEY,
+                              Name VARCHAR(255) NOT NULL,
+                              Image VARCHAR(255)
+);
+
+CREATE TABLE TourDestinations (
+                                  TourID CHAR(36) NOT NULL,
+                                  DestinationID CHAR(36) NOT NULL,
+                                  SortOrder INT DEFAULT 0,
+                                  PRIMARY KEY (TourID, DestinationID),
+                                  FOREIGN KEY (TourID) REFERENCES Tours(ID) ON DELETE CASCADE,
+                                  FOREIGN KEY (DestinationID) REFERENCES Destinations(ID) ON DELETE CASCADE
+);
+
+CREATE TABLE Rating (
+                        ID CHAR(36) PRIMARY KEY,
+                        TourID CHAR(36) NOT NULL,
+                        UserId CHAR(36) NOT NULL,
+                        Rating INT,
+                        FOREIGN KEY (TourID) REFERENCES Tours(ID) ON DELETE CASCADE
+);
+
+CREATE TABLE Feedback (
+                          ID CHAR(36) PRIMARY KEY,
+                          TourID CHAR(36) NOT NULL,
+                          UserId CHAR(36) NOT NULL,
+                          Description TEXT,
+                          CreateDate DATETIME,
+                          FOREIGN KEY (TourID) REFERENCES Tours(ID) ON DELETE CASCADE
+);
+
+CREATE TABLE Transactions (
+                              ID CHAR(36) PRIMARY KEY,
+                              WalletID CHAR(36) NOT NULL,
+                              BankAccount CHAR(36),
+                              BankAccountID CHAR(36),
+                              Amount DECIMAL(10,2) NOT NULL,
+                              Date DATETIME,
+                              Type CHAR(36),
+                              Status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
+                              FOREIGN KEY (WalletID) REFERENCES Wallet(ID) ON DELETE CASCADE
+);
