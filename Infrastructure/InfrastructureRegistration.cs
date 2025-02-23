@@ -10,9 +10,12 @@ public static class InfrastructureRegistration
     public static IServiceCollection AddInfrastructureService(this IServiceCollection services,
         IConfiguration configuration)
     {
+        
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        
         services.AddDbContext<DtpDbContext>(options =>
         {
-            options.UseMySQL(configuration.GetConnectionString("DefaultConnection"));
+            options.UseMySQL(connectionString);
         });
 
         return services;
