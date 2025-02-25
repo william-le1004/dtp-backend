@@ -1,9 +1,7 @@
 ﻿namespace Domain.Entities;
 
-public partial class Tour
+public partial class Tour : AuditEntity
 {
-    public Guid Id { get; set; }
-
     public string Title { get; set; } = null!;
 
     public Guid? CompanyId { get; set; }

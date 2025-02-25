@@ -1,9 +1,10 @@
-﻿namespace Domain.Entities;
+﻿
+using Microsoft.AspNetCore.Identity;
 
-public partial class User
+namespace Domain.Entities;
+
+public partial class User : IdentityUser
 {
-    public Guid Id { get; set; }
-
     public decimal? Balance { get; set; }
 
     public string? Name { get; set; }
@@ -13,6 +14,10 @@ public partial class User
     public sbyte? Role { get; set; }
 
     public virtual ICollection<Company> Companies { get; set; } = new List<Company>();
+
+    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+
+    public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
 
     public virtual ICollection<Wallet> Wallets { get; set; } = new List<Wallet>();
 }

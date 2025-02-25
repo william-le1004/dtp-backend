@@ -1,9 +1,7 @@
 ﻿namespace Domain.Entities;
 
-public partial class Destination
+public partial class Destination : AuditEntity
 {
-    public Guid Id { get; set; }
-
     public string Name { get; set; } = null!;
 
     public string? Image { get; set; }

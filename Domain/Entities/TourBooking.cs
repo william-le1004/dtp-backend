@@ -1,9 +1,7 @@
 ﻿namespace Domain.Entities;
 
-public partial class TourBooking
+public partial class TourBooking : AuditEntity
 {
-    public Guid Id { get; set; }
-
     public Guid UserId { get; set; }
 
     public Guid TourScheduleId { get; set; }

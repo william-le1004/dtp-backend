@@ -1,9 +1,7 @@
 ﻿namespace Domain.Entities;
 
-public partial class Payment
+public partial class Payment : AuditEntity
 {
-    public Guid Id { get; set; }
-
     public Guid BookingId { get; set; }
 
     public string PaymentMethod { get; set; } = null!;

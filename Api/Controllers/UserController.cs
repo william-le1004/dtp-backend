@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Infrastructure;
 using Infrastructure.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

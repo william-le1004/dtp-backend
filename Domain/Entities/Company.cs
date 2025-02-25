@@ -1,9 +1,7 @@
 ﻿namespace Domain.Entities;
 
-public partial class Company
+public partial class Company : AuditEntity
 {
-    public Guid Id { get; set; }
-
     public string Name { get; set; } = null!;
 
     public string Email { get; set; } = null!;

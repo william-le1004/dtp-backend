@@ -1,9 +1,7 @@
 ﻿namespace Domain.Entities;
 
-public partial class Transaction
+public partial class Transaction : AuditEntity
 {
-    public Guid Id { get; set; }
-
     public Guid WalletId { get; set; }
 
     public Guid? BankAccount { get; set; }

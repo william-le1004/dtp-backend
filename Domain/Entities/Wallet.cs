@@ -1,9 +1,7 @@
 ﻿namespace Domain.Entities;
 
-public partial class Wallet
+public partial class Wallet : AuditEntity
 {
-    public Guid Id { get; set; }
-
     public Guid UserId { get; set; }
 
     public decimal Balance { get; set; }

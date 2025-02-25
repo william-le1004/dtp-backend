@@ -82,20 +82,31 @@ CREATE TABLE TourDestinations (
 );
 
 CREATE TABLE Rating (
-                        ID CHAR(36) PRIMARY KEY,
-                        TourID CHAR(36) NOT NULL,
-                        UserId CHAR(36) NOT NULL,
-                        Rating INT,
-                        FOREIGN KEY (TourID) REFERENCES Tours(ID) ON DELETE CASCADE
+						ID CHAR(36) PRIMARY KEY,
+						TourID CHAR(36) NOT NULL,
+						UserId CHAR(36) NOT NULL,
+						Rating INT CHECK (Rating BETWEEN 1 AND 5),
+						CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+						CreatedBy VARCHAR(255) DEFAULT 'System',
+						LastModified DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+						LastModifiedBy VARCHAR(255) DEFAULT 'System',
+						IsDeleted TINYINT DEFAULT 0,
+						FOREIGN KEY (TourID) REFERENCES Tours(ID) ON DELETE CASCADE,
+						FOREIGN KEY (UserId) REFERENCES Users(ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Feedback (
-                          ID CHAR(36) PRIMARY KEY,
-                          TourID CHAR(36) NOT NULL,
-                          UserId CHAR(36) NOT NULL,
-                          Description TEXT,
-                          CreateDate DATETIME,
-                          FOREIGN KEY (TourID) REFERENCES Tours(ID) ON DELETE CASCADE
+						  ID CHAR(36) PRIMARY KEY,
+						  TourID CHAR(36) NOT NULL,
+						  UserId CHAR(36) NOT NULL,
+						  Description TEXT,
+						  CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+						  CreatedBy VARCHAR(255) DEFAULT 'System',
+						  LastModified DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+						  LastModifiedBy VARCHAR(255) DEFAULT 'System',
+						  IsDeleted TINYINT DEFAULT 0,
+						  FOREIGN KEY (TourID) REFERENCES Tours(ID) ON DELETE CASCADE,
+						  FOREIGN KEY (UserId) REFERENCES Users(ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Transactions (
