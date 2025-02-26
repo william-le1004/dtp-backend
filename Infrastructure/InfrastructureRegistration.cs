@@ -26,15 +26,16 @@ public static class InfrastructureRegistration
         {
             options.UseMySQL(connectionString);
         });
-
-        services.AddDbContext<DtpAuthDbContext>(options =>
-        {
-            options.UseMySQL(connectionString);
-        });
         
-        services.AddIdentity<User, IdentityRole>()
-            .AddEntityFrameworkStores<DtpAuthDbContext>()
-            .AddDefaultTokenProviders();
+        //
+        // services.AddDbContext<DtpAuthDbContext>(options =>
+        // {
+        //     options.UseMySQL(connectionString);
+        // });
+        //
+        // services.AddIdentity<User, IdentityRole>()
+        //     .AddEntityFrameworkStores<DtpAuthDbContext>()
+        //     .AddDefaultTokenProviders();
         
         services.AddAuthentication(item =>
         {

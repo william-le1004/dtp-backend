@@ -1,4 +1,9 @@
+using System.Reflection;
+using Application;
+using Application.Tour.Queries;
 using Infrastructure;
+using Microsoft.AspNetCore.OData;
+using Microsoft.OData.ModelBuilder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +14,16 @@ builder.Services.AddControllers();
 
 builder.Configuration.AddUserSecrets<Program>();
 
-builder.Services.AddInfrastructureService(configuration);
+builder.Services.AddInfrastructureService(configuration).AddApplicationServices();
+
+
+var modelBuilder = new ODataConventionModelBuilder();
+modelBuilder.EntitySet<TourResponse>("Tours");
+
+builder.Services.AddControllers().AddOData(
+    options => options.EnableQueryFeatures(maxTopValue: null).AddRouteComponents(
+        routePrefix: "odata",
+        model: modelBuilder.GetEdmModel()));
 
 var app = builder.Build();
 
