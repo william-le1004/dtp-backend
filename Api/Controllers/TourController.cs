@@ -24,16 +24,13 @@ public class TourController(DtpDbContext context, ILogger<TourController> logger
 
     // GET: api/Tour/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Tour>> GetTour(Guid id)
+    public async Task<ActionResult<TourDetailResponse>> GetTour(Guid id)
     {
-        var tour = await context.Tours.FindAsync(id);
+        var result = await mediator.Send(new GetTourDetail(id));
 
-        if (tour == null)
-        {
-            return NotFound();
-        }
-
-        return tour;
+        return result.Match<ActionResult<TourDetailResponse>>(
+            Some: (value) => Ok(value),
+            None: () => NotFound($"Tour ({id}) not found."));
     }
 
     // PUT: api/Tour/5
