@@ -12,5 +12,5 @@ public class AuditEntity
 
     public string? LastModifiedBy { get; set; } = "System";
 
-    public byte IsDeleted { get; set; } = 0;
+    public bool IsDeleted { get; set; }
 }
