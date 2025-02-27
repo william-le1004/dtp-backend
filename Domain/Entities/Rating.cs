@@ -6,7 +6,9 @@ public partial class Rating : AuditEntity
 
     public Guid UserId { get; set; }
 
-    public int? Rating1 { get; set; }
+    public int Star { get; set; }
+    
+    public string Comment { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

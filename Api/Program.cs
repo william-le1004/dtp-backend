@@ -1,3 +1,5 @@
+using Api;
+using Application;
 using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +11,9 @@ builder.Services.AddControllers();
 
 builder.Configuration.AddUserSecrets<Program>();
 
-builder.Services.AddInfrastructureService(configuration);
+builder.Services.AddInfrastructureService(configuration)
+    .AddApplicationServices()
+    .AddEndpointServices();
 
 var app = builder.Build();
 

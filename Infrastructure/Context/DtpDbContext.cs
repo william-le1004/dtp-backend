@@ -3,19 +3,23 @@ using System.Collections.Generic;
 using Domain.Entities;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace Infrastructure.Context;
 
-public partial class DtpDbContext : DbContext
-{
-    public DtpDbContext()
-    {
-    }
 
-    public DtpDbContext(DbContextOptions<DtpDbContext> options)
-        : base(options)
+public class AppDbContextFactory : IDesignTimeDbContextFactory<DtpDbContext>
+{
+    public DtpDbContext CreateDbContext(string[] args)
     {
+        var optionsBuilder = new DbContextOptionsBuilder<DtpDbContext>();
+        optionsBuilder.UseMySQL("Server=MYSQL1001.site4now.net;Database=db_ab3495_dtp;Uid=ab3495_dtp;Pwd=dtpct123");
+
+        return new DtpDbContext(optionsBuilder.Options);
     }
+}
+public class DtpDbContext(DbContextOptions<DtpDbContext> options) : DbContext(options)
+{
 
     public virtual DbSet<Company> Companies { get; set; }
 
@@ -62,18 +66,13 @@ public partial class DtpDbContext : DbContext
 
             entity.HasIndex(e => e.TaxCode, "TaxCode").IsUnique();
 
-            entity.HasIndex(e => e.UserId, "UserId");
 
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.License).HasMaxLength(50);
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Phone).HasMaxLength(15);
             entity.Property(e => e.TaxCode).HasMaxLength(50);
-
-            entity.HasOne(d => d.User).WithMany(p => p.Companies)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("Company_ibfk_1");
+            
         });
 
         modelBuilder.Entity<Destination>(entity =>
@@ -163,7 +162,7 @@ public partial class DtpDbContext : DbContext
             entity.Property(e => e.LastModifiedBy)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("'System'");
-            entity.Property(e => e.Rating1).HasColumnName("Rating");
+            entity.Property(e => e.Star).HasColumnName("Star");
             entity.Property(e => e.TourId).HasColumnName("TourID");
 
             entity.HasOne(d => d.Tour).WithMany(p => p.Ratings)

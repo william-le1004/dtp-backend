@@ -2,7 +2,7 @@ namespace Domain.Commons;
 
 public class AuditEntity
 {
-    public string Id { get; set; }
+    public Guid Id { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 

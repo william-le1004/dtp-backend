@@ -16,7 +16,7 @@ public partial class Tour : AuditEntity
 
     public DateTime? UpdatedAt { get; set; }
 
-    public virtual Company? Company { get; set; }
+    public virtual Company Company { get; set; } = null!;
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
