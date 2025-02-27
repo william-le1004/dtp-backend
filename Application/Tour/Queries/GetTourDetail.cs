@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Domain.DataModel;
+using Domain.Entities;
 using Functional.Option;
 using Infrastructure.Context;
 using MediatR;
@@ -10,7 +11,7 @@ public record TourDestinationResponse
 {
     public string Name { get; set; } = null!;
 
-    public string? Image { get; set; }
+    public List<ImageUrl> ImageUrls { get; set; } = new();
 
     public int? SortOrder { get; set; }
 }
@@ -47,13 +48,13 @@ public class GetTourDetailHandler(DtpDbContext context) : IRequestHandler<GetTou
                     AvgStar = t.Ratings.Any() ? t.Ratings.Average(rating => rating.Star) : 0,
                     TotalRating = t.Ratings.Count(),
                 },
-                Ratings = t.Ratings.ToList(),  // Assuming Ratings is a collection you want to include
+                Ratings = t.Ratings.ToList(), 
                 TourDestinations = t.TourDestinations
                     .Select(td => new TourDestinationResponse
                     {
                         Name = td.Destination.Name,
-                        Image = td.Destination.Image,
-                        SortOrder = td.SortOrder
+                        SortOrder = td.SortOrder,
+                        ImageUrls = td.ImageUrls
                     })
                     .ToList()
             })

@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Enum;
+
+namespace Domain.Entities;
 
 public partial class TourBooking : AuditEntity
 {
@@ -8,13 +10,9 @@ public partial class TourBooking : AuditEntity
 
     public decimal Amount { get; set; }
 
-    public string Status { get; set; } = null!;
+    public BookingStatus Status { get; set; }
 
     public string? Remark { get; set; }
-
-    public DateTime? CreatedAt { get; set; }
-
-    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
     public virtual TourSchedule TourSchedule { get; set; } = null!;
 }

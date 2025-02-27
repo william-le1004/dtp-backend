@@ -80,7 +80,6 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options) : DbContext(op
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.Image).HasMaxLength(255);
             entity.Property(e => e.Name).HasMaxLength(255);
         });
 
@@ -131,10 +130,6 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options) : DbContext(op
             entity.Property(e => e.BookingId).HasColumnName("BookingID");
             entity.Property(e => e.PaymentMethod).HasColumnType("enum('credit_card','paypal','bank_transfer')");
             entity.Property(e => e.TransactionDate).HasColumnType("datetime");
-
-            entity.HasOne(d => d.Booking).WithMany(p => p.Payments)
-                .HasForeignKey(d => d.BookingId)
-                .HasConstraintName("Payments_ibfk_1");
         });
 
         modelBuilder.Entity<Rating>(entity =>
@@ -183,9 +178,7 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options) : DbContext(op
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Description).HasColumnType("text");
-            entity.Property(e => e.Price).HasPrecision(10);
             entity.Property(e => e.Title).HasMaxLength(255);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Company).WithMany(p => p.Tours)
                 .HasForeignKey(d => d.CompanyId)

@@ -10,6 +10,8 @@ public partial class TourSchedule : AuditEntity
 
     public int MaxParticipants { get; set; }
 
+    public List<Ticket> Tickets { get; set; } = new();
+
     public string? Status { get; set; }
 
     public string? Remark { get; set; }
