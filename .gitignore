@@ -364,3 +364,9 @@ FodyWeavers.xsd
 
 # Idea file
 .idea
+
+# Ignore environment variables
+.env
+
+# Ignore migration folder
+Migrations/
