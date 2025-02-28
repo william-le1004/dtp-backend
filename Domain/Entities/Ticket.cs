@@ -3,17 +3,9 @@
 public class Ticket
 {
     public Guid Id { get; set; }
-    public decimal Price { get; set; }
-    public TicketType Type { get; set; }
-    public Guid TourScheduleId { get; set; }
-}
-
-public enum TicketType
-{
-    Adult,
-    Child,
-    PerGroupOfThree,
-    PerGroupOfFive,
-    PerGroupOfSeven,
-    PerGroupOfTen,
+    public Guid TicketTypeId { get; set; }
+    public int Quantity { get; set; }
+    public decimal GrossCost { get; set; }
+    public Guid TourBookingId { get; set; }
+    public virtual TourBooking TourBooking { get; set; }
 }

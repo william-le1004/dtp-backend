@@ -7,9 +7,9 @@ public partial class Tour : AuditEntity
     public Guid? CompanyId { get; set; }
 
     public Guid? Category { get; set; }
-
     public string? Description { get; set; }
 
+    public List<TicketType> Tickets { get; set; } = new();
     public virtual Company Company { get; set; } = null!;
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();

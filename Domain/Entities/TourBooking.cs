@@ -8,7 +8,9 @@ public partial class TourBooking : AuditEntity
 
     public Guid TourScheduleId { get; set; }
 
-    public decimal Amount { get; set; }
+    public List<Ticket> Tickets { get; set; } = new();
+
+    public decimal GrossCost { get; set; }
 
     public BookingStatus Status { get; set; }
 
