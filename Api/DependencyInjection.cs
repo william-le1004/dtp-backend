@@ -1,4 +1,4 @@
-﻿using Application.Tour.Queries;
+﻿using Application.Features.Tour.Queries;
 using Domain.Entities;
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.ModelBuilder;

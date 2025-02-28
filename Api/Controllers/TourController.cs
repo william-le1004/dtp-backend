@@ -1,4 +1,4 @@
-using Application.Tour.Queries;
+using Application.Features.Tour.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Entities;

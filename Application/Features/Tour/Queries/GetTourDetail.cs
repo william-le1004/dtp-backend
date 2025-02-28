@@ -1,11 +1,11 @@
-﻿using Domain.DataModel;
+﻿using Application.Contracts.Persistence;
+using Domain.DataModel;
 using Domain.Entities;
 using Functional.Option;
-using Infrastructure.Context;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Tour.Queries;
+namespace Application.Features.Tour.Queries;
 
 public record TourDestinationResponse
 {
@@ -25,7 +25,7 @@ public record TourDetailResponse
 
 public record GetTourDetail(Guid TourId) : IRequest<Option<TourDetailResponse>>;
 
-public class GetTourDetailHandler(DtpDbContext context) : IRequestHandler<GetTourDetail, Option<TourDetailResponse>>
+public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTourDetail, Option<TourDetailResponse>>
 {
     public Task<Option<TourDetailResponse>> Handle(GetTourDetail request, CancellationToken cancellationToken)
     {

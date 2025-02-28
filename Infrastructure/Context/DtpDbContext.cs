@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Application.Contracts.Persistence;
 using Domain.Entities;
 using Infrastructure;
 using Infrastructure.DataModelConfig;
@@ -19,7 +20,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<DtpDbContext>
     }
 }
 
-public class DtpDbContext(DbContextOptions<DtpDbContext> options) : DbContext(options)
+public class DtpDbContext(DbContextOptions<DtpDbContext> options) : DbContext(options), IDtpDbContext
 {
     public virtual DbSet<Company> Companies { get; set; }
 

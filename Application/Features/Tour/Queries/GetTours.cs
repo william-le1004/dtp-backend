@@ -1,8 +1,8 @@
-﻿using Infrastructure.Context;
+﻿using Application.Contracts.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Tour.Queries;
+namespace Application.Features.Tour.Queries;
 
 public record TourResponse
 {
@@ -23,7 +23,7 @@ public record TourResponse
 
 public record GetTours() : IRequest<IEnumerable<TourResponse>>;
 
-public class GetToursHandler(DtpDbContext context) : IRequestHandler<GetTours, IEnumerable<TourResponse>>
+public class GetToursHandler(IDtpDbContext context) : IRequestHandler<GetTours, IEnumerable<TourResponse>>
 {
     public async Task<IEnumerable<TourResponse>> Handle(GetTours request, CancellationToken cancellationToken)
     {
