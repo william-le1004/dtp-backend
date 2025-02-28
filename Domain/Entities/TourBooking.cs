@@ -1,4 +1,5 @@
 ﻿using Domain.Enum;
+using Domain.ValueObject;
 
 namespace Domain.Entities;
 
@@ -9,6 +10,10 @@ public partial class TourBooking : AuditEntity
     public Guid TourScheduleId { get; set; }
 
     public List<Ticket> Tickets { get; set; } = new();
+    
+    public string VoucherCode { get; set; } = string.Empty;
+    
+    public Voucher? Voucher { get; set; }
 
     public decimal GrossCost { get; set; }
 
