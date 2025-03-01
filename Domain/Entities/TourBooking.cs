@@ -5,7 +5,7 @@ namespace Domain.Entities;
 
 public partial class TourBooking : AuditEntity
 {
-    public Guid UserId { get; set; }
+    public string UserId { get; set; }
 
     public Guid TourScheduleId { get; set; }
 

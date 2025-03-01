@@ -4,10 +4,11 @@ using Application.Contracts.Persistence;
 using Domain.Entities;
 using Infrastructure;
 using Infrastructure.DataModelConfig;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace Infrastructure.Context;
+namespace Infrastructure.Contexts;
 
 public class AppDbContextFactory : IDesignTimeDbContextFactory<DtpDbContext>
 {
@@ -20,7 +21,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<DtpDbContext>
     }
 }
 
-public class DtpDbContext(DbContextOptions<DtpDbContext> options) : DbContext(options), IDtpDbContext
+public class DtpDbContext(DbContextOptions<DtpDbContext> options) : IdentityDbContext<User>(options), IDtpDbContext
 {
     public virtual DbSet<Company> Companies { get; set; }
 
@@ -42,22 +43,20 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options) : DbContext(op
 
     public virtual DbSet<Transaction> Transactions { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
-
     public virtual DbSet<Wallet> Wallets { get; set; }
 
     public virtual DbSet<Basket> Baskets { get; set; }
+    
     public virtual DbSet<TourBasketItem> TourBasketItems { get; set; }
+    
     public virtual DbSet<Ticket> Tickets { get; set; }
+    
     public virtual DbSet<TicketType> TicketTypes { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        modelBuilder.ApplyConfiguration(new TourDestinationConfiguration());
-        modelBuilder.ApplyConfiguration(new BasketItemConfiguration());
-        modelBuilder.ApplyConfiguration(new VoucherConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DtpDbContext).Assembly);
     }
 }

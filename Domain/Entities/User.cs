@@ -2,7 +2,7 @@
 
 namespace Domain.Entities;
 
-public partial class User : IdentityUser<Guid>
+public partial class User : IdentityUser
 {
     public decimal? Balance { get; set; }
 
@@ -11,6 +11,12 @@ public partial class User : IdentityUser<Guid>
     public string? Address { get; set; }
 
     public sbyte? Role { get; set; }
+    
+    public string RefreshToken { get; set; } = string.Empty;
+    
+    public DateTime TokenCreated { get; set; } = DateTime.Now;
+    
+    public DateTime TokenExpired { get; set; }
 
     public Guid? CompanyId { get; set; }
     public virtual Company? Company { get; set; }
