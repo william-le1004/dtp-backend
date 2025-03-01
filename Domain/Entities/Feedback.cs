@@ -1,10 +1,12 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Common;
+
+namespace Domain.Entities;
 
 public partial class Feedback : AuditEntity
 {
     public Guid TourId { get; set; }
 
-    public Guid UserId { get; set; }
+    public string UserId { get; set; }
 
     public string? Description { get; set; }
 

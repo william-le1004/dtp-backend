@@ -364,3 +364,6 @@ FodyWeavers.xsd
 
 # Idea file
 .idea
+
+# Ignore environment variables
+.env

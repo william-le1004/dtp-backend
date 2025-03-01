@@ -4,6 +4,14 @@ using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load environment variables (for local development)
+DotNetEnv.Env.Load();
+
+// Read values from environment
+var dbUser = Environment.GetEnvironmentVariable("MYSQL_USER");
+var dbPassword = Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
+var dbName = Environment.GetEnvironmentVariable("MYSQL_DATABASE");
+
 var configuration = builder.Configuration;
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -14,6 +22,7 @@ builder.Configuration.AddUserSecrets<Program>();
 builder.Services.AddInfrastructureService(configuration)
     .AddApplicationServices()
     .AddEndpointServices();
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
 
@@ -24,6 +33,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.UseHttpsRedirection();
 

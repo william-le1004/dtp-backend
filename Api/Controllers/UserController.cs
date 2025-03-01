@@ -1,28 +1,22 @@
-using Domain.Entities;
-using Infrastructure;
-using Infrastructure.Context;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
-namespace Api.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
-    {
-        private readonly DtpDbContext _context;
-
-        public UserController(DtpDbContext context)
-        {
-            _context = context;
-        }
-        
-        [HttpGet]
-        public async Task<IEnumerable<User>> Get()
-        {
-            var users = await _context.Users.AsNoTracking().ToListAsync();
-            return users;
-        }
-        
-    }
-}
+// using Domain.Entities;
+// using Infrastructure;
+// using Infrastructure.Contexts;
+// using MediatR;
+// using Microsoft.AspNetCore.Mvc;
+// using Microsoft.EntityFrameworkCore;
+//
+// namespace Api.Controllers
+// {
+//     [Route("api/[controller]")]
+//     [ApiController]
+//     public class UserController(IMediator _mediator) : ControllerBase
+//     {
+//         [HttpGet]
+//         public async Task<IEnumerable<Users>> Get()
+//         {
+//             var users = await _mediator.Send();
+//             return users;
+//         }
+//         
+//     }
+// }
