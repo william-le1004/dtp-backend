@@ -25,13 +25,14 @@ public interface IDtpDbContext
 
     public DbSet<Transaction> Transactions { get; set; }
 
-    public DbSet<User> Users { get; set; }
-
     public DbSet<Wallet> Wallets { get; set; }
 
     public DbSet<Basket> Baskets { get; set; }
+    
     public DbSet<TourBasketItem> TourBasketItems { get; set; }
+    
     public DbSet<Ticket> Tickets { get; set; }
+    
     public DbSet<TicketType> TicketTypes { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
