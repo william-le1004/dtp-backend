@@ -1,6 +1,7 @@
 using System.Text;
 using Application.Contracts.Authentication;
 using Application.Contracts.Caching;
+using Application.Contracts.Persistence;
 using Domain.Entities;
 using Infrastructure.Common.Constants;
 using Infrastructure.Contexts;
@@ -59,6 +60,7 @@ public static class InfrastructureRegistration
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
         services.AddScoped<JwtTokenService>();
+        services.AddScoped<IDtpDbContext, DtpDbContext>();
         
         services.AddAuthentication(item =>
         {
