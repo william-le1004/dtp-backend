@@ -1,5 +1,5 @@
 ﻿using Application.Contracts.Persistence;
-using Domain.Entities;
+using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
