@@ -8,13 +8,3 @@ public class TicketType
     public TicketKind TicketKind { get; set; }
     public Guid TourScheduleId { get; set; }
 }
-
-public enum TicketKind
-{
-    Adult,
-    Child,
-    PerGroupOfThree,
-    PerGroupOfFive,
-    PerGroupOfSeven,
-    PerGroupOfTen,
-}
