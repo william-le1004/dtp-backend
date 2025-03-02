@@ -1,4 +1,4 @@
-namespace Infrastructure.Common.Constants;
+namespace Infrastructure.Common.Settings;
 
 public class JwtSettings
 {

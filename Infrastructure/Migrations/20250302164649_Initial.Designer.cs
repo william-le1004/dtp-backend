@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DtpDbContext))]
-    [Migration("20250301085823_Initial")]
+    [Migration("20250302164649_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -54,9 +54,8 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
@@ -145,7 +144,7 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<DateTime?>("CreatedAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("CreatedBy")
@@ -154,8 +153,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("longtext");
 
-                    b.Property<sbyte?>("IsDeleted")
-                        .HasColumnType("tinyint");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime(6)");
@@ -458,6 +457,9 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<int>("AvailableTicket")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -476,9 +478,6 @@ namespace Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("MaxParticipants")
-                        .HasColumnType("int");
-
                     b.Property<double>("PriceChangeRate")
                         .HasColumnType("double");
 
@@ -487,9 +486,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("longtext");
 
                     b.Property<Guid>("TourId")
                         .HasColumnType("char(36)");
@@ -578,6 +574,9 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("tinyint(1)");
 
@@ -604,21 +603,8 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("RefreshToken")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<sbyte?>("Role")
-                        .HasColumnType("tinyint");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
-
-                    b.Property<DateTime>("TokenCreated")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("TokenExpired")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("tinyint(1)");
@@ -671,7 +657,8 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Wallets");
                 });
@@ -720,25 +707,25 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "dfe16a56-8278-46ac-bba4-8bee9a70fdd1",
+                            Id = "834a85db-2b29-4198-9006-03e514a424cf",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "0bb30f10-e755-4731-9345-41d835f2f57b",
+                            Id = "799a785b-2464-4bf5-bfa2-939be7104e44",
                             Name = "Tourist",
                             NormalizedName = "TOURIST"
                         },
                         new
                         {
-                            Id = "67f5bac7-f2e4-480d-980f-ee21eb56f217",
+                            Id = "50703dee-9387-486b-9618-6e74fb75cc74",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         },
                         new
                         {
-                            Id = "2131bb2d-6233-4015-8c7b-4a3b228246db",
+                            Id = "3e1006c1-3c67-4639-823c-432256bd04bc",
                             Name = "Operator",
                             NormalizedName = "OPERATOR"
                         });
@@ -932,7 +919,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.TourBasketItem", b =>
                 {
                     b.HasOne("Domain.Entities.Basket", "Basket")
-                        .WithMany("BasketItems")
+                        .WithMany("Items")
                         .HasForeignKey("BasketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -943,9 +930,17 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.TourSchedule", "TourSchedule")
+                        .WithMany()
+                        .HasForeignKey("TourScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Basket");
 
                     b.Navigation("TicketType");
+
+                    b.Navigation("TourSchedule");
                 });
 
             modelBuilder.Entity("Domain.Entities.TourBooking", b =>
@@ -1020,8 +1015,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Wallet", b =>
                 {
                     b.HasOne("Domain.Entities.User", "User")
-                        .WithMany("Wallets")
-                        .HasForeignKey("UserId")
+                        .WithOne("Wallet")
+                        .HasForeignKey("Domain.Entities.Wallet", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1081,7 +1076,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Basket", b =>
                 {
-                    b.Navigation("BasketItems");
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("Domain.Entities.Company", b =>
@@ -1130,7 +1125,8 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("Ratings");
 
-                    b.Navigation("Wallets");
+                    b.Navigation("Wallet")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.Wallet", b =>

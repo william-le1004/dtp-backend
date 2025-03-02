@@ -10,6 +10,8 @@ public partial class User : IdentityUser
 
     public string? Address { get; set; }
 
+    public bool IsActive { get; set; } = true;
+
     public Guid? CompanyId { get; set; }
     public virtual Company? Company { get; set; }
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
