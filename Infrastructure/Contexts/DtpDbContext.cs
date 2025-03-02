@@ -1,25 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Application.Contracts.Persistence;
+﻿using Application.Contracts.Persistence;
 using Domain.Entities;
-using Infrastructure;
-using Infrastructure.DataModelConfig;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 
 namespace Infrastructure.Contexts;
-
-public class AppDbContextFactory : IDesignTimeDbContextFactory<DtpDbContext>
-{
-    public DtpDbContext CreateDbContext(string[] args)
-    {
-        var optionsBuilder = new DbContextOptionsBuilder<DtpDbContext>();
-        optionsBuilder.UseMySQL("Server=MYSQL1001.site4now.net;Database=db_ab3495_dtp;Uid=ab3495_dtp;Pwd=dtpct123");
-
-        return new DtpDbContext(optionsBuilder.Options);
-    }
-}
 
 public class DtpDbContext(DbContextOptions<DtpDbContext> options) : IdentityDbContext<User>(options), IDtpDbContext
 {
