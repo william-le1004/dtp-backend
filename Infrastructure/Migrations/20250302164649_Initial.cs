@@ -37,7 +37,7 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    UserId = table.Column<string>(type: "longtext", nullable: false)
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -129,10 +129,7 @@ namespace Infrastructure.Migrations
                     Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Name = table.Column<string>(type: "longtext", nullable: true),
                     Address = table.Column<string>(type: "longtext", nullable: true),
-                    Role = table.Column<sbyte>(type: "tinyint", nullable: true),
-                    RefreshToken = table.Column<string>(type: "longtext", nullable: false),
-                    TokenCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    TokenExpired = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     CompanyId = table.Column<Guid>(type: "char(36)", nullable: true),
                     UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
@@ -308,11 +305,11 @@ namespace Infrastructure.Migrations
                     TourId = table.Column<Guid>(type: "char(36)", nullable: false),
                     UserId = table.Column<string>(type: "varchar(255)", nullable: false),
                     Description = table.Column<string>(type: "longtext", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     LastModifiedBy = table.Column<string>(type: "longtext", nullable: true),
-                    IsDeleted = table.Column<sbyte>(type: "tinyint", nullable: true)
+                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -423,9 +420,8 @@ namespace Infrastructure.Migrations
                     TourId = table.Column<Guid>(type: "char(36)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    MaxParticipants = table.Column<int>(type: "int", nullable: false),
+                    AvailableTicket = table.Column<int>(type: "int", nullable: false),
                     PriceChangeRate = table.Column<double>(type: "double", nullable: false),
-                    Status = table.Column<string>(type: "longtext", nullable: true),
                     Remark = table.Column<string>(type: "longtext", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "longtext", nullable: true),
@@ -476,6 +472,27 @@ namespace Infrastructure.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "ImageUrl",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    RefId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    Url = table.Column<string>(type: "longtext", nullable: false),
+                    TourDestinationDestinationId = table.Column<Guid>(type: "char(36)", nullable: true),
+                    TourDestinationTourId = table.Column<Guid>(type: "char(36)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ImageUrl", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ImageUrl_TourDestinations_TourDestinationTourId_TourDestinat~",
+                        columns: x => new { x.TourDestinationTourId, x.TourDestinationDestinationId },
+                        principalTable: "TourDestinations",
+                        principalColumns: new[] { "TourId", "DestinationId" });
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "TourBasketItems",
                 columns: table => new
                 {
@@ -499,27 +516,12 @@ namespace Infrastructure.Migrations
                         principalTable: "TicketTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "ImageUrl",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    RefId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    Url = table.Column<string>(type: "longtext", nullable: false),
-                    TourDestinationDestinationId = table.Column<Guid>(type: "char(36)", nullable: true),
-                    TourDestinationTourId = table.Column<Guid>(type: "char(36)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ImageUrl", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ImageUrl_TourDestinations_TourDestinationTourId_TourDestinat~",
-                        columns: x => new { x.TourDestinationTourId, x.TourDestinationDestinationId },
-                        principalTable: "TourDestinations",
-                        principalColumns: new[] { "TourId", "DestinationId" });
+                        name: "FK_TourBasketItems_TourSchedules_TourScheduleId",
+                        column: x => x.TourScheduleId,
+                        principalTable: "TourSchedules",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -611,10 +613,10 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "0bb30f10-e755-4731-9345-41d835f2f57b", null, "Tourist", "TOURIST" },
-                    { "2131bb2d-6233-4015-8c7b-4a3b228246db", null, "Operator", "OPERATOR" },
-                    { "67f5bac7-f2e4-480d-980f-ee21eb56f217", null, "Manager", "MANAGER" },
-                    { "dfe16a56-8278-46ac-bba4-8bee9a70fdd1", null, "Admin", "ADMIN" }
+                    { "3e1006c1-3c67-4639-823c-432256bd04bc", null, "Operator", "OPERATOR" },
+                    { "50703dee-9387-486b-9618-6e74fb75cc74", null, "Manager", "MANAGER" },
+                    { "799a785b-2464-4bf5-bfa2-939be7104e44", null, "Tourist", "TOURIST" },
+                    { "834a85db-2b29-4198-9006-03e514a424cf", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -742,7 +744,8 @@ namespace Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Wallets_UserId",
                 table: "Wallets",
-                column: "UserId");
+                column: "UserId",
+                unique: true);
         }
 
         /// <inheritdoc />

@@ -5,6 +5,7 @@ using System.Text;
 using Application.Dtos;
 using Domain.Entities;
 using Infrastructure.Common.Constants;
+using Infrastructure.Common.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -80,7 +81,7 @@ public class JwtTokenService
     public async Task<string> ValidateRefreshToken(string refreshToken)
     {
         var server = _redisDb.Multiplexer.GetServer(_redisDb.Multiplexer.GetEndPoints()[0]);
-        var keys = server.Keys(pattern: "refreshToken:*");
+        var keys = server.Keys(pattern: $"{ApplicationPrefix.REFRESH_TOKEN}_:*");
 
         foreach (var key in keys)
         {

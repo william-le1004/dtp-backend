@@ -4,10 +4,9 @@ using Application.Contracts.Caching;
 using Application.Dtos;
 using Domain.Entities;
 using Infrastructure.Common.Constants;
-using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 
-namespace Infrastructure.Repositories.Authentication;
+namespace Infrastructure.Services;
 
 public class AuthenticationService : IAuthenticationService
 {
@@ -24,7 +23,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<ServiceResult<bool>> RegisterAsync(RegistrationRequestDto request)
     {
-        var user = new User { Name = request.Name, Address = request.Address, Email = request.Email, UserName = request.UserName };
+        var user = new User { Name = request.Name, Address = request.Address, Email = request.Email, UserName = request.UserName, PhoneNumber = request.PhoneNumber };
 
         var identityResult = await _userManager.CreateAsync(user, request.Password);
 
@@ -55,7 +54,7 @@ public class AuthenticationService : IAuthenticationService
         if (string.IsNullOrEmpty(userId))
             return ServiceResult<AccessTokenResponse>.Failure("Invalid refresh token.");
 
-        var storedToken = await _redisCache.GetDataAsync<string>($"refreshToken:{userId}");
+        var storedToken = await _redisCache.GetDataAsync<string>($"{ApplicationPrefix.REFRESH_TOKEN}:{userId}");
         if (storedToken == null || storedToken != refreshToken)
             return ServiceResult<AccessTokenResponse>.Failure("Refresh token expired or invalid.");
         
@@ -68,13 +67,13 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<ServiceResult<bool>> LogoutAsync(string userId)
     {
-        await _redisCache.RemoveDataAsync($"refreshToken:{userId}");
+        await _redisCache.RemoveDataAsync($"{ApplicationPrefix.REFRESH_TOKEN}:{userId}");
         return ServiceResult<bool>.SuccessResult(true); 
     }
 
     private async Task StoreRefreshToken(string userId, string refreshToken)
     {
-        var refreshTokenKey = $"refreshToken:{userId}";
+        var refreshTokenKey = $"{ApplicationPrefix.REFRESH_TOKEN}:{userId}";
         await _redisCache.SetDataAsync(refreshTokenKey, refreshToken, TimeSpan.FromDays(7));
     }
 }

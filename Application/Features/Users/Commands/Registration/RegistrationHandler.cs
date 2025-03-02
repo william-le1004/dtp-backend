@@ -10,7 +10,7 @@ public class RegistrationHandler(IAuthenticationService authenticationService)
     public async Task<RegistrationResponse> Handle(RegistrationCommand request, CancellationToken cancellationToken)
     {
         var registrationRequest = new RegistrationRequestDto
-            (request.Name, request.Address, request.Email, request.UserName, request.Password);
+            (request.Name, request.Address, request.Email, request.UserName, request.PhoneNumber, request.Password);
         var result = await authenticationService.RegisterAsync(registrationRequest);
         return new RegistrationResponse(result.Success, result.Message);
     }
