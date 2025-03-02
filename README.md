@@ -34,21 +34,21 @@ This project is a RESTful API built with ASP.NET Core, following Clean Architect
 - Docker
 
 ### Installation
-1. Clone the repository:
+1. **Clone the repository:**
    ```sh
    git clone https://github.com/william-le1004/dtp-backend.git
    cd dtp-backend
    ```
-2. Set up environment variables for local development (in `secrets.json`).
-   2.1. In Api project, right click.
-   2.2. Choose Tools.
-   2.3. Choose .NET User Secrets.
-3. Create .env file in folder have dtp-backend.sln.
-4. Start the API:
+2. **Set up environment variables for local development:**
+   - In the `API` project, right-click.
+   - Choose **Tools**.
+   - Select **.NET User Secrets**.
+3. **Create a `.env` file** in the same folder as `dtp-backend.sln`.
+4. **Start the API:**
    ```sh
    dotnet run --project API
    ```
-5. Open Swagger at `http://localhost:5000/swagger`.
+5. **Open Swagger** at `http://localhost:5000/swagger`.
 
 ### Docker Setup
 To run the API with Redis and MySQL:
@@ -57,25 +57,45 @@ docker-compose up -d
 ```
 
 ## API Endpoints
+
+### Authentication
 | Method | Endpoint | Description |
 |--------|---------|-------------|
-| POST   | /api/authentication/register | User registration |
-| POST   | /api/authentication/login | User login |
-| POST   | /api/authentication/refresh | Refresh access token |
-| POST   | /api/authentication/logout | User logout |
-| GET    | /api/users/profile | Get user profile |
-| PUT    | /api/users/profile | Update user profile |
+| `POST` | `/api/authentication/register` | User registration |
+| `POST` | `/api/authentication/login` | User login |
+| `POST` | `/api/authentication/refresh` | Refresh access token |
+| `POST` | `/api/authentication/logout` | User logout |
+
+### User Management
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| `GET`  | `/api/users/profile` | Get user profile |
+| `PUT`  | `/api/users/profile` | Update user profile |
 
 ## Contributing
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature-branch`).
-3. Commit your changes (`git commit -m 'Add new feature'`).
-4. Push to the branch (`git push origin feature-branch`).
-5. Open a Pull Request.
+1. **Fork the repository**.
+2. **Create a feature branch**:
+   ```sh
+   git checkout -b feature-branch
+   ```
+3. **Commit your changes**:
+   ```sh
+   git commit -m "Add new feature"
+   ```
+4. **Push to the branch**:
+   ```sh
+   git push origin feature-branch
+   ```
+5. **Open a Pull Request**.
 
 ## License
-This project is licensed under the MIT License.
+This project is licensed under the **MIT License**.
 
 ## Contact
-For questions or support, contact [https://github.com/dokkazy] - [https://github.com/kh0abug] - [https://github.com/wnosphan] - [https://github.com/ya3k] - [https://github.com/william-le1004].
+For questions or support, contact:
+- [dokkazy](https://github.com/dokkazy)
+- [kh0abug](https://github.com/kh0abug)
+- [wnosphan](https://github.com/wnosphan)
+- [ya3k](https://github.com/ya3k)
+- [william-le1004](https://github.com/william-le1004)
 
