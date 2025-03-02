@@ -4,15 +4,34 @@ public class Basket
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
-    public List<TourBasketItem> BasketItems { get; set; }
-}
+    private readonly List<TourBasketItem> items = new();
+    public IReadOnlyCollection<TourBasketItem> Items => items.AsReadOnly();
 
-public class TourBasketItem
-{
-    public Guid BasketId { get; set; }
-    public Guid TourScheduleId { get; set; }
-    public Guid TicketTypeId { get; set; }
-    public virtual TicketType TicketType { get; set; }
-    public int Quantity { get; set; }
-    public virtual Basket Basket { get; set; }
+    public void AddItem(Guid tourScheduleId, Guid ticketTypeId, int units = 1)
+    {
+        var existedItem = items.SingleOrDefault(x => x.TourScheduleId == tourScheduleId
+                                                     && x.TicketTypeId == ticketTypeId);
+        if (existedItem is not null)
+        {
+            existedItem.AddUnits(units);
+        }
+        else
+        {
+            items.Add(new TourBasketItem()
+            {
+                Quantity = units,
+                TourScheduleId = tourScheduleId,
+            });
+        }
+    }
+
+    public void DeleteItem(Guid tourScheduleId)
+    {
+        items.RemoveAll(x => x.TourScheduleId == tourScheduleId);
+    }
+
+    public void EmptyBasket()
+    {
+        items.Clear();
+    }
 }
