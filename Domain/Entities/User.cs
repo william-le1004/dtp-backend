@@ -10,19 +10,11 @@ public partial class User : IdentityUser
 
     public string? Address { get; set; }
 
-    public sbyte? Role { get; set; }
-    
-    public string RefreshToken { get; set; } = string.Empty;
-    
-    public DateTime TokenCreated { get; set; } = DateTime.Now;
-    
-    public DateTime TokenExpired { get; set; }
-
     public Guid? CompanyId { get; set; }
     public virtual Company? Company { get; set; }
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
     public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
 
-    public virtual ICollection<Wallet> Wallets { get; set; } = new List<Wallet>();
+    public virtual Wallet Wallet { get; set; }
 }
