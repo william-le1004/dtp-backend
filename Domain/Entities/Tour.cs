@@ -21,4 +21,11 @@ public partial class Tour : AuditEntity
     public virtual ICollection<TourDestination> TourDestinations { get; private set; } = new List<TourDestination>();
 
     public virtual ICollection<TourSchedule> TourSchedules { get; private set; } = new List<TourSchedule>();
+    public Tour(string title, Guid? companyId, Guid? category, string? description)
+    {
+        Title = title;
+        CompanyId = companyId;
+        Category = category;
+        Description = description;
+    }
 }
