@@ -1,33 +1,33 @@
-﻿using Domain.Common;
+﻿namespace Domain.Entities;
 
-namespace Domain.Entities;
-
-public partial class TourSchedule : AuditEntity
+public class TourSchedule : AuditEntity
 {
-    public Guid TourId { get; set; }
+    public Guid TourId { get; private set; }
+    public DateTime StartDate { get; private set; }
 
-    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; private set; }
 
-    public DateTime EndDate { get; set; }
+    public double PriceChangeRate { get; private set; } = 1.0;
 
-    public int AvailableTicket { get; set; }
+    public string? Remark { get; private set; }
 
-    public double PriceChangeRate { get; set; } = 1.0;
+    public virtual Tour Tour { get; private set; } = null!;
 
-    public string? Remark { get; set; }
+    private readonly List<TourScheduleTicket> tourScheduleTickets = new();
+    public IReadOnlyCollection<TourScheduleTicket> TourScheduleTickets => tourScheduleTickets.AsReadOnly();
 
-    public virtual Tour Tour { get; set; } = null!;
-
-    public virtual ICollection<TourBooking> TourBookings { get; set; } = new List<TourBooking>();
+    public virtual ICollection<TourBooking> TourBookings { get; private set; } = new List<TourBooking>();
 
     public bool IsAvailable()
     {
-        return AvailableTicket > 0 && !IsStarted();
+        return tourScheduleTickets.Sum(x => x.AvailableTicket) > 0 && !IsStarted();
     }
 
-    public bool HasAvailableTicket(int quantity)
+    public bool HasAvailableTicket(int quantity, Guid tourScheduleTicketId)
     {
-        return AvailableTicket > quantity;
+        var tourScheduleTicket = tourScheduleTickets.Single(x => x.Id == tourScheduleTicketId);
+
+        return tourScheduleTicket.HasAvailableTicket(quantity);
     }
 
     public bool IsStarted()

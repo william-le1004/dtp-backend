@@ -48,8 +48,8 @@ public class BasketHandler(IDtpDbContext context) : IRequestHandler<GetBaskets, 
                 {
                     TicketTypeId = y.TicketTypeId,
                     Quantity = y.Quantity,
-                    NetCost = y.TicketType.NetCost,
-                    Tax = y.TicketType.Tax,
+                    // NetCost = y.TicketType.NetCost,
+                    // Tax = y.TicketType.Tax,
                     TicketKind = y.TicketType.TicketKind
                 }).ToList(),
             });
