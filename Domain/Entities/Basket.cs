@@ -7,17 +7,17 @@ public class Basket
     private readonly List<TourBasketItem> items = new();
     public IReadOnlyCollection<TourBasketItem> Items => items.AsReadOnly();
 
-    public void AddItem(Guid tourScheduleId, Guid ticketTypeId, int units = 1)
+    public void AddItem(Guid tourScheduleId, Guid tourScheduleTicketId, int units = 1)
     {
         var existedItem = items.SingleOrDefault(x => x.TourScheduleId == tourScheduleId
-                                                     && x.TicketTypeId == ticketTypeId);
+                                                     && x.TourScheduleTicketId == tourScheduleTicketId);
         if (existedItem is not null)
         {
-            existedItem.AddUnits(units, ticketTypeId);
+            existedItem.AddUnits(units, tourScheduleTicketId);
         }
         else
         {
-            items.Add(new TourBasketItem(tourScheduleId, ticketTypeId, units));
+            items.Add(new TourBasketItem(tourScheduleId, tourScheduleTicketId, units));
         }
     }
 

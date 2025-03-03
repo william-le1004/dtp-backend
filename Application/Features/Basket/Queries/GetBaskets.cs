@@ -8,16 +8,19 @@ namespace Application.Features.Basket.Queries;
 public record BasketTourItemResponse
 {
     public Guid TourScheduleId { get; set; }
-    public bool IsAvailable { get; set; }
+    public bool IsTourScheduleAvailable { get; set; }
     public List<TicketResponse> Tickets { get; set; } = new();
 }
 
 public record TicketResponse
 {
-    public Guid TicketTypeId { get; set; }
+    public Guid TourScheduleTicketId { get; set; }
+    public int AvailableTicket { get; set; }
+    public bool HasAvailableTicket { get; set; }
     public int Quantity { get; set; }
     public decimal NetCost { get; set; }
     public double Tax { get; set; }
+    public bool IsAvailable { get; set; }
     public TicketKind TicketKind { get; set; }
 }
 
@@ -32,9 +35,10 @@ public class BasketHandler(IDtpDbContext context) : IRequestHandler<GetBaskets, 
         // Update later when we have done the identity
 
         var basket = await context.Baskets.Include(x => x.Items)
-            .ThenInclude(x => x.TicketType)
             .Include(x => x.Items)
             .ThenInclude(x => x.TourSchedule)
+            .ThenInclude(x => x.TourScheduleTickets)
+            .ThenInclude(x => x.TicketType)
             .AsSplitQuery()
             .AsNoTracking()
             .SingleOrDefaultAsync(x => x.UserId == userId, cancellationToken: cancellationToken);
@@ -43,14 +47,23 @@ public class BasketHandler(IDtpDbContext context) : IRequestHandler<GetBaskets, 
             .Select(x => new BasketTourItemResponse()
             {
                 TourScheduleId = x.Key,
-                IsAvailable = x.First().TourSchedule.IsAvailable(),
-                Tickets = x.Select(y => new TicketResponse()
+                IsTourScheduleAvailable = x.First().TourSchedule.IsAvailable(),
+                Tickets = x.Select(y =>
                 {
-                    TicketTypeId = y.TicketTypeId,
-                    Quantity = y.Quantity,
-                    // NetCost = y.TicketType.NetCost,
-                    // Tax = y.TicketType.Tax,
-                    TicketKind = y.TicketType.TicketKind
+                    var tourScheduleTicket =
+                        y.TourSchedule.TourScheduleTickets.Single(t => t.Id == y.TourScheduleTicketId);
+                    return new TicketResponse()
+                    {
+                        TourScheduleTicketId = y.TourScheduleTicketId,
+                        Quantity = y.Quantity,
+                        HasAvailableTicket = tourScheduleTicket.HasAvailableTicket(y.Quantity),
+                        NetCost = tourScheduleTicket.NetCost,
+                        Tax = tourScheduleTicket.Tax,
+                        TicketKind = tourScheduleTicket
+                            .TicketType.TicketKind,
+                        IsAvailable = tourScheduleTicket.IsAvailable(),
+                        AvailableTicket = tourScheduleTicket.AvailableTicket
+                    };
                 }).ToList(),
             });
     }
