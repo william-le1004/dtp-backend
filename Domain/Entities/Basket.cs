@@ -2,8 +2,8 @@
 
 public class Basket
 {
-    public Guid Id { get; set; }
-    public Guid UserId { get; set; }
+    public Guid Id { get; private set; }
+    public Guid UserId { get; private set; }
     private readonly List<TourBasketItem> items = new();
     public IReadOnlyCollection<TourBasketItem> Items => items.AsReadOnly();
 
@@ -13,15 +13,11 @@ public class Basket
                                                      && x.TicketTypeId == ticketTypeId);
         if (existedItem is not null)
         {
-            existedItem.AddUnits(units);
+            existedItem.AddUnits(units, ticketTypeId);
         }
         else
         {
-            items.Add(new TourBasketItem()
-            {
-                Quantity = units,
-                TourScheduleId = tourScheduleId,
-            });
+            items.Add(new TourBasketItem(tourScheduleId, ticketTypeId, units));
         }
     }
 
