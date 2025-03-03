@@ -1,25 +1,28 @@
+using Application.Common;
 using Application.Contracts.Authentication;
 using Application.Dtos;
 using MediatR;
 
 namespace Application.Features.Users.Commands.RefreshToken;
 
-public class RefreshTokenCommandHandler (IAuthenticationService authenticationService)
-    : IRequestHandler<RefreshTokenCommand, AccessTokenResponse>
+public class RefreshTokenCommandHandler
+    : IRequestHandler<RefreshTokenCommand, ApiResponse<AccessTokenResponse>>
 {
-    public async Task<AccessTokenResponse> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+    private IAuthenticationService _authenticationService;
+
+    public RefreshTokenCommandHandler(IAuthenticationService authenticationService)
     {
-        var newToken = await authenticationService.RefreshTokenAsync(request.RefreshToken);
-        if(newToken == null)
+        _authenticationService = authenticationService;
+    }
+
+    public async Task<ApiResponse<AccessTokenResponse>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+    {
+        var newToken = await _authenticationService.RefreshTokenAsync(request.RefreshToken);
+        if(!newToken.Success)
         {
-            return null;
+            return ApiResponse<AccessTokenResponse>.Failure(newToken.Message, 400);
         }
-        var tokenResponse = new AccessTokenResponse
-        {
-            AccessToken = newToken.Data.AccessToken,
-            RefreshToken = newToken.Data.RefreshToken,
-            ExpiresIn = newToken.Data.ExpiresIn
-        }; 
-        return tokenResponse;
+        
+        return ApiResponse<AccessTokenResponse>.SuccessResult(newToken.Data, "Refresh Token successfully");
     }
 }
