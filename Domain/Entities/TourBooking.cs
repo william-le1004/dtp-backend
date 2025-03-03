@@ -27,14 +27,12 @@ public partial class TourBooking : AuditEntity
 
     public virtual TourSchedule TourSchedule { get; private set; } = null!;
 
-    public TourBooking(string userId, Guid tourScheduleId, Voucher? voucher, BookingStatus status,
-        string? remark, TourSchedule tourSchedule)
+    public TourBooking(string userId, Guid tourScheduleId, string voucherCode)
     {
         UserId = userId;
         TourScheduleId = tourScheduleId;
-        Voucher = voucher;
         Status = BookingStatus.Pending;
-        TourSchedule = tourSchedule;
+        VoucherCode = voucherCode;
     }
 
     public void AddTicket(Ticket ticket, int quantity, Guid tourScheduleTicketId, decimal grossCost)

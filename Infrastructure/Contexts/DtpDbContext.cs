@@ -1,4 +1,5 @@
 ﻿using Application.Contracts.Persistence;
+using Domain.DataModel;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +37,8 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options) : IdentityDbCo
     public virtual DbSet<Ticket> Tickets { get; set; }
     
     public virtual DbSet<TicketType> TicketTypes { get; set; }
-
+    
+    public virtual DbSet<ImageUrl> ImageUrls { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Domain.DataModel;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Contracts.Persistence;
@@ -28,12 +29,14 @@ public interface IDtpDbContext
     public DbSet<Wallet> Wallets { get; set; }
 
     public DbSet<Basket> Baskets { get; set; }
-    
+
     public DbSet<TourBasketItem> TourBasketItems { get; set; }
-    
+
     public DbSet<Ticket> Tickets { get; set; }
-    
+
     public DbSet<TicketType> TicketTypes { get; set; }
+
+    public DbSet<ImageUrl> ImageUrls { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
