@@ -14,8 +14,6 @@ public partial class TourDestination
 
     public int? SortOrder { get; private set; }
 
-    public List<ImageUrl> ImageUrls { get; private set; } = new();
-
     public virtual Destination Destination { get; private set; } = null!;
 
     public virtual Tour Tour { get; private set; } = null!;
