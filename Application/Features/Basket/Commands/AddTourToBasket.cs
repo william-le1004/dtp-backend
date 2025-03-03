@@ -1,10 +1,11 @@
 ﻿using Application.Contracts.Persistence;
+using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Basket.Commands;
 
-public record BasketItemRequest(Guid TourScheduleId, Guid TicketTypeId, int Units = 1);
+public record BasketItemRequest(Guid TourScheduleId, Guid TourScheduleTicketId, int Units = 1);
 
 public record AddTourToBasket(List<BasketItemRequest> Items) : IRequest;
 
@@ -16,7 +17,6 @@ public class AddTourToBasketHandler(IDtpDbContext context) : IRequestHandler<Add
         // Update later when we have done the identity
 
         var basket = await context.Baskets.Include(x => x.Items)
-            .ThenInclude(x => x.TicketType)
             .Include(x => x.Items)
             .ThenInclude(x => x.TourSchedule)
             .AsSplitQuery()
@@ -28,7 +28,7 @@ public class AddTourToBasketHandler(IDtpDbContext context) : IRequestHandler<Add
         {
             foreach (var item in request.Items)
             {
-                basket.AddItem(item.TourScheduleId, item.TicketTypeId, item.Units);
+                basket.AddItem(item.TourScheduleId, item.TourScheduleTicketId, item.Units);
             }
 
             context.Baskets.Update(basket);

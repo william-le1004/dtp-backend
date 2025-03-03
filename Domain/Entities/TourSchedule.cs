@@ -22,6 +22,11 @@ public class TourSchedule : AuditEntity
     {
         return tourScheduleTickets.Sum(x => x.AvailableTicket) > 0 && !IsStarted();
     }
+    
+    public bool IsAvailableTicket(Guid tourScheduleTicketId)
+    {
+        return tourScheduleTickets.Single(x => x.Id == tourScheduleTicketId).IsAvailable();
+    }
 
     public bool HasAvailableTicket(int quantity, Guid tourScheduleTicketId)
     {
