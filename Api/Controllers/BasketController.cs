@@ -8,7 +8,7 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class BasketController(IMediator mediator) : ControllerBase
+public class BasketController(IMediator mediator) : BaseController
 {
     // GET: api/Basket
     [HttpGet]

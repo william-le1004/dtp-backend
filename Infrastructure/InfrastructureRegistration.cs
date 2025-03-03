@@ -40,9 +40,9 @@ public static class InfrastructureRegistration
             options.ConfigurationOptions = new ConfigurationOptions
             {
                 EndPoints = { redisConnection["Endpoint"] },
-                Password = redisConnection["Password"], // Add this line if your Redis server requires a password
-                ConnectTimeout = 10000, // Increase the timeout to 10 seconds
-                SyncTimeout = 10000 // Increase the sync timeout to 10 seconds
+                Password = redisConnection["Password"],
+                ConnectTimeout = 10000,
+                SyncTimeout = 10000
             };
         });
         

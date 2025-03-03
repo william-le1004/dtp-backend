@@ -9,7 +9,7 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class DestinationController(DtpDbContext context) : ODataController
+public class DestinationController(DtpDbContext context) : BaseController
 {
     // GET: api/Destination
     [HttpGet]

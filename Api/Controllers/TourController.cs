@@ -12,7 +12,7 @@
 // [Route("api/[controller]")]
 // [ApiController]
 // public class TourController(DtpDbContext context, ILogger<TourController> logger, IMediator mediator)
-//     : ODataController
+//     : BaseController
 // {
 //     // GET: api/odata/Tours
 //     [HttpGet]

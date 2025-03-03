@@ -9,7 +9,7 @@
 // {
 //     [Route("api/[controller]")]
 //     [ApiController]
-//     public class UserController(IMediator _mediator) : ControllerBase
+//     public class UserController(IMediator _mediator) : BaseController
 //     {
 //         [HttpGet]
 //         public async Task<IEnumerable<Users>> Get()

@@ -21,7 +21,7 @@ public class AuthenticationService : IAuthenticationService
         _redisCache = redisCache;
     }
 
-    public async Task<ServiceResult<bool>> RegisterAsync(RegistrationRequestDto request)
+    public async Task<ApiResponse<bool>> RegisterAsync(RegistrationRequestDto request)
     {
         var user = new User { Name = request.Name, Address = request.Address, Email = request.Email, UserName = request.UserName, PhoneNumber = request.PhoneNumber };
 
@@ -29,46 +29,46 @@ public class AuthenticationService : IAuthenticationService
 
         if (!identityResult.Succeeded)
         {
-            return ServiceResult<bool>.Failure(string.Join(", ",
+            return ApiResponse<bool>.Failure(string.Join(", ",
                 identityResult.Errors.Select(e => e.Description)));
         }
 
         await _userManager.AddToRoleAsync(user, ApplicationRole.TOURIST);
-        return ServiceResult<bool>.SuccessResult(true);
+        return ApiResponse<bool>.SuccessResult(true);
     }
 
-    public async Task<ServiceResult<AccessTokenResponse>> LoginAsync(LoginRequestDto request)
+    public async Task<ApiResponse<AccessTokenResponse>> LoginAsync(LoginRequestDto request)
     {
         var user = await _userManager.FindByNameAsync(request.Email);
         if (user == null || !(await _userManager.CheckPasswordAsync(user, request.Password)))
-            return ServiceResult<AccessTokenResponse>.Failure("Invalid username or password.");
+            return ApiResponse<AccessTokenResponse>.Failure("Invalid username or password.");
 
         var tokens = await _jwtTokenService.GenerateTokens(user);
         await StoreRefreshToken(user.Id.ToString(), tokens.RefreshToken);
-        return ServiceResult<AccessTokenResponse>.SuccessResult(tokens);
+        return ApiResponse<AccessTokenResponse>.SuccessResult(tokens);
     }
 
-    public async Task<ServiceResult<AccessTokenResponse>> RefreshTokenAsync(string refreshToken)
+    public async Task<ApiResponse<AccessTokenResponse>> RefreshTokenAsync(string refreshToken)
     {
         var userId = await _jwtTokenService.ValidateRefreshToken(refreshToken);
         if (string.IsNullOrEmpty(userId))
-            return ServiceResult<AccessTokenResponse>.Failure("Invalid refresh token.");
+            return ApiResponse<AccessTokenResponse>.Failure("Invalid refresh token.");
 
         var storedToken = await _redisCache.GetDataAsync<string>($"{ApplicationPrefix.REFRESH_TOKEN}:{userId}");
         if (storedToken == null || storedToken != refreshToken)
-            return ServiceResult<AccessTokenResponse>.Failure("Refresh token expired or invalid.");
+            return ApiResponse<AccessTokenResponse>.Failure("Refresh token expired or invalid.");
         
         var user = await _userManager.FindByIdAsync(userId);
         var accessTokenResponse = await _jwtTokenService.GenerateTokens(user);
 
         await StoreRefreshToken(user.Id.ToString(), accessTokenResponse.AccessToken);
-        return ServiceResult<AccessTokenResponse>.SuccessResult(accessTokenResponse);
+        return ApiResponse<AccessTokenResponse>.SuccessResult(accessTokenResponse);
     }
 
-    public async Task<ServiceResult<bool>> LogoutAsync(string userId)
+    public async Task<ApiResponse<bool>> LogoutAsync(string userId)
     {
         await _redisCache.RemoveDataAsync($"{ApplicationPrefix.REFRESH_TOKEN}:{userId}");
-        return ServiceResult<bool>.SuccessResult(true); 
+        return ApiResponse<bool>.SuccessResult(true); 
     }
 
     private async Task StoreRefreshToken(string userId, string refreshToken)
