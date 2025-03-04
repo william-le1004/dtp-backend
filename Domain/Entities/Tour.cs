@@ -35,4 +35,9 @@ public partial class Tour : AuditEntity
         Category = category;
         Description = description;
     }
+
+    public decimal OnlyFromCost()
+    {
+        return Tickets.Select(x => x.DefaultNetCost).Min();
+    }
 }
