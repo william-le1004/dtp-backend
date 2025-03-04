@@ -11,6 +11,14 @@ public class TourScheduleTicket
     public Guid TourScheduleId { get; private set; }
     public TourSchedule TourSchedule { get; private set; } = null!;
 
+    public decimal GrossCost
+    {
+        get
+        {
+            return NetCost + ((decimal)Tax * NetCost);
+        }
+    }
+
     public bool IsAvailable() => AvailableTicket > 0;
     public bool HasAvailableTicket(int quantity) => AvailableTicket > quantity;
 }
