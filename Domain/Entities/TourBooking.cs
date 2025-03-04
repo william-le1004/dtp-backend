@@ -1,4 +1,5 @@
 ﻿using Domain.Enum;
+using Domain.Extensions;
 using Domain.ValueObject;
 
 namespace Domain.Entities;
@@ -6,46 +7,70 @@ namespace Domain.Entities;
 public partial class TourBooking : AuditEntity
 {
     public string UserId { get; private set; }
+    public string Code { get; private set; }
 
     public Guid TourScheduleId { get; private set; }
 
-    private readonly List<Ticket> tickets = new();
-    public IReadOnlyCollection<Ticket> Tickets => tickets.AsReadOnly();
+    private readonly List<Ticket> _tickets = new();
+    public IReadOnlyCollection<Ticket> Tickets => _tickets.AsReadOnly();
 
-    public string VoucherCode { get; private set; } = string.Empty;
+    public string? VoucherCode { get; private set; }
+
+    public decimal DiscountAmount { get; private set; }
 
     public Voucher? Voucher { get; private set; }
 
     public decimal GrossCost
     {
-        get { return tickets.Sum(x => x.GrossCost * x.Quantity); }
+        get { return _tickets.Sum(x => x.GrossCost * x.Quantity); }
+    }
+
+    public decimal FinalAmount()
+    {
+        return GrossCost - DiscountAmount;
     }
 
     public BookingStatus Status { get; private set; }
 
     public string? Remark { get; private set; }
 
-    public virtual TourSchedule TourSchedule { get; private set; } = null!;
+    public virtual TourSchedule? TourSchedule { get; private set; } = null!;
 
-    public TourBooking(string userId, Guid tourScheduleId, Voucher? voucher, BookingStatus status,
-        string? remark, TourSchedule tourSchedule)
+    public TourBooking(string userId, Guid tourScheduleId, TourSchedule? tourSchedule)
     {
+        Code = (userId.Substring(0, 4)
+                + tourScheduleId.ToString("N").Substring(0, 4)).Random();
         UserId = userId;
         TourScheduleId = tourScheduleId;
-        Voucher = voucher;
         Status = BookingStatus.Pending;
         TourSchedule = tourSchedule;
     }
 
-    public void AddTicket(Ticket ticket, int quantity, Guid tourScheduleTicketId, decimal grossCost)
+    public void ApplyVoucher(Voucher? voucher)
+    {
+        if (voucher == null)
+        {
+            return;
+        }
+
+        if (!voucher.IsValid())
+        {
+            throw new ArgumentException("Invalid voucher");
+        }
+
+        VoucherCode = voucher.Code;
+        DiscountAmount = voucher.ApplyVoucherDiscount(GrossCost);
+    }
+
+    public void AddTicket(int quantity, Guid tourScheduleTicketId)
     {
         if (!TourSchedule.HasAvailableTicket(quantity, tourScheduleTicketId))
         {
             return;
         }
 
-        var existedTicket = tickets.SingleOrDefault(x => x.TourBookingId == Id
-                                                         && x.TourScheduleTicketId == tourScheduleTicketId);
+        var existedTicket = _tickets.SingleOrDefault(x => x.TourBookingId == Id
+                                                          && x.TourScheduleTicketId == tourScheduleTicketId);
 
         if (existedTicket is not null)
         {
@@ -53,7 +78,7 @@ public partial class TourBooking : AuditEntity
         }
         else
         {
-            tickets.Add(new(tourScheduleTicketId, quantity, grossCost));
+            _tickets.Add(new(tourScheduleTicketId, quantity, TourSchedule.GetGrossCost(tourScheduleTicketId)));
         }
     }
 
@@ -78,7 +103,7 @@ public partial class TourBooking : AuditEntity
         Status = BookingStatus.Completed;
         Remark = remark;
     }
-    
+
     public void PurchaseBooking(string remark)
     {
         if (Status != BookingStatus.Pending)

@@ -30,6 +30,11 @@ public class TourSchedule : AuditEntity
         return tourScheduleTicket.HasAvailableTicket(quantity);
     }
 
+    public decimal GetGrossCost(Guid tourScheduleTicketId)
+    {
+        return tourScheduleTickets.Single(x => x.Id == tourScheduleTicketId).GrossCost;
+    }
+
     public bool IsStarted()
     {
         return StartDate > DateTime.Now;
