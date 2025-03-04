@@ -10,13 +10,4 @@ public class TicketType
     public int MinimumPurchaseQuantity { get; private set; }
     public TicketKind TicketKind { get; private set; }
     public Guid TourId { get; private set; }
-
-    public TicketType(decimal defaultNetCost, double defaultTax, int minimumPurchaseQuantity, TicketKind ticketKind, Guid tourId)
-    {
-        DefaultNetCost = defaultNetCost;
-        DefaultTax = defaultTax;
-        MinimumPurchaseQuantity = minimumPurchaseQuantity;
-        TicketKind = ticketKind;
-        TourId = tourId;
-    }
 }

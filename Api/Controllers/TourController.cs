@@ -93,13 +93,12 @@ public class TourController(DtpDbContext context, ILogger<TourController> logger
     //     return context.Tours.Any(e => e.Id == id);
     // }
 
-    [HttpPost("createtour")]
-    public async Task<IActionResult> CreateTour([FromBody] CreateTourCommand command)
+    [HttpPost("create")]
+    public async Task<IActionResult> CreateTour([FromBody] CreateToursCommand command)
     {
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
     }
-
 
     [HttpGet("get")]
     public async Task<IActionResult> GetListTour()
@@ -109,11 +108,16 @@ public class TourController(DtpDbContext context, ILogger<TourController> logger
     }
 
     [HttpPut("update")]
-    public async Task<IActionResult> PutTour([FromBody] PutTourCommand command)
+    public async Task<IActionResult> PutTour([FromBody] UpdateTourCommand command)
     {
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
     }
 
-    
+    [HttpPost("create-destination")]
+    public async Task<IActionResult> AddDestinationsToTour([FromBody] CreateDestinationsCommand command)
+    {
+        var response = await mediator.Send(command);
+        return HandleServiceResult(response);
+    }
 }

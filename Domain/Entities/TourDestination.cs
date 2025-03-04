@@ -6,9 +6,9 @@ public partial class TourDestination
 
     public Guid DestinationId { get; private set; }
 
-    public TimeOnly StartTime { get; private set; }
+    public DateTime StartTime { get; private set; }
 
-    public TimeOnly EndTime { get; private set; }
+    public DateTime EndTime { get; private set; }
 
     public int? SortOrder { get; private set; }
 
@@ -16,7 +16,7 @@ public partial class TourDestination
 
     public virtual Tour Tour { get; private set; } = null!;
 
-    public TourDestination(Guid tourId, Guid destinationId, TimeOnly startTime, TimeOnly endTime, int? sortOrder = null)
+    public TourDestination(Guid tourId, Guid destinationId, DateTime startTime, DateTime endTime, int? sortOrder = null)
     {
         TourId = tourId;
         DestinationId = destinationId;
