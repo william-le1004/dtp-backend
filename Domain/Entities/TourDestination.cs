@@ -2,6 +2,7 @@
 
 public partial class TourDestination
 {
+    public Guid Id { get; set; }
     public Guid TourId { get; private set; }
 
     public Guid DestinationId { get; private set; }
