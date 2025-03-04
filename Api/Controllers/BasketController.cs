@@ -1,8 +1,8 @@
 using Application.Features.Basket.Commands;
 using Application.Features.Basket.Queries;
-using Microsoft.AspNetCore.Mvc;
 using Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 

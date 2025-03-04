@@ -3,7 +3,6 @@ using Application.Contracts.Authentication;
 using Application.Contracts.Caching;
 using Application.Contracts.Persistence;
 using Domain.Entities;
-using Infrastructure.Common.Constants;
 using Infrastructure.Common.Settings;
 using Infrastructure.Contexts;
 using Infrastructure.Services;
