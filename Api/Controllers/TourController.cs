@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Application.Features.Tour.Commands;
+using Application.Features.Tour.Queries;
 
 namespace Api.Controllers;
 
@@ -67,14 +68,14 @@ public class TourController(DtpDbContext context, ILogger<TourController> logger
 
     // POST: api/Tour
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPost]
-    public async Task<ActionResult<Tour>> PostTour(Tour tour)
-    {
-        context.Tours.Add(tour);
-        await context.SaveChangesAsync();
+    //[HttpPost]
+    //public async Task<ActionResult<Tour>> PostTour(Tour tour)
+    //{
+    //    context.Tours.Add(tour);
+    //    await context.SaveChangesAsync();
 
-        return CreatedAtAction("GetTour", new { id = tour.Id }, tour);
-    }
+    //    return CreatedAtAction("GetTour", new { id = tour.Id }, tour);
+    //}
 
     // DELETE: api/Tour/5
     [HttpDelete("{id}")]
@@ -102,5 +103,39 @@ public class TourController(DtpDbContext context, ILogger<TourController> logger
     {
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
+    }
+    [HttpGet("getlisttour")]
+    public async Task<IActionResult> GetListTour()
+    {
+        var response = await mediator.Send(new GetListTour());
+        return HandleServiceResult(response);
+    }
+    // Endpoint PUT /api/tour/puttour để cập nhật Tour
+    [HttpPut("puttour")]
+    public async Task<IActionResult> PutTour([FromBody] PutTourCommand command)
+    {
+        var response = await mediator.Send(command);
+        return HandleServiceResult(response);
+    }
+    // Endpoint POST: /api/tour/adddestinations để thêm danh sách Destination vào Tour
+    [HttpPost("adddestinations")]
+    public async Task<IActionResult> AddDestinationsToTour([FromBody] AddDestinationsToTourCommand command)
+    {
+        var response = await mediator.Send(command);
+        return HandleServiceResult(response);
+    }
+
+
+
+
+
+
+    private IActionResult HandleServiceResult<T>(Application.Common.ApiResponse<T> response)
+    {
+        if (response.Success)
+        {
+            return Ok(response);
+        }
+        return BadRequest(response);
     }
 }

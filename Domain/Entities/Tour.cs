@@ -28,4 +28,11 @@ public partial class Tour : AuditEntity
         Category = category;
         Description = description;
     }
+    public void Update(string title, Guid? companyId, Guid? category, string? description)
+    {
+        Title = title;
+        CompanyId = companyId;
+        Category = category;
+        Description = description;
+    }
 }
