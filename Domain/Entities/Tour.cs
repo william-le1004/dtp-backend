@@ -1,6 +1,4 @@
-﻿using Domain.Common;
-
-namespace Domain.Entities;
+﻿namespace Domain.Entities;
 
 public partial class Tour : AuditEntity
 {
@@ -21,4 +19,20 @@ public partial class Tour : AuditEntity
     public virtual ICollection<TourDestination> TourDestinations { get; private set; } = new List<TourDestination>();
 
     public virtual ICollection<TourSchedule> TourSchedules { get; private set; } = new List<TourSchedule>();
+
+    public Tour(string title, Guid? companyId, Guid? category, string? description)
+    {
+        Title = title;
+        CompanyId = companyId;
+        Category = category;
+        Description = description;
+    }
+
+    public void Update(string title, Guid? companyId, Guid? category, string? description)
+    {
+        Title = title;
+        CompanyId = companyId;
+        Category = category;
+        Description = description;
+    }
 }
