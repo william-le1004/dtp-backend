@@ -12,17 +12,18 @@ public partial class TourDestination
     public TimeOnly EndTime { get; private set; }
 
     public int? SortOrder { get; private set; }
-
+    public int? SortOrderByDate { get; private set; }
     public virtual Destination Destination { get; private set; } = null!;
 
     public virtual Tour Tour { get; private set; } = null!;
 
-    public TourDestination(Guid tourId, Guid destinationId, TimeOnly startTime, TimeOnly endTime, int? sortOrder = null)
+    public TourDestination(Guid tourId, Guid destinationId, TimeOnly startTime, TimeOnly endTime, int? sortOrder = null, int? sortOrderByDate = null)
     {
         TourId = tourId;
         DestinationId = destinationId;
         StartTime = startTime;
         EndTime = endTime;
         SortOrder = sortOrder;
+        SortOrderByDate = sortOrderByDate;
     }
 }
