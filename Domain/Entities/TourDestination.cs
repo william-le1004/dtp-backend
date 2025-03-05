@@ -19,7 +19,7 @@ public partial class TourDestination
 
     public virtual Tour Tour { get; private set; } = null!;
 
-    public TourDestination(Guid tourId, Guid destinationId, TimeOnly startTime, TimeOnly endTime, int? sortOrder = null, int? sortOrderByDate = null)
+    public TourDestination(Guid tourId, Guid destinationId, TimeSpan startTime, TimeSpan endTime, int? sortOrder = null, int? sortOrderByDate = null)
     {
         TourId = tourId;
         DestinationId = destinationId;

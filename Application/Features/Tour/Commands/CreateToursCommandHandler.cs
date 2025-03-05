@@ -12,8 +12,8 @@ namespace Application.Features.Tour.Commands;
 
 public record DestinationToAdd(
     Guid DestinationId,
-    TimeOnly StartTime,
-    TimeOnly EndTime,
+    TimeSpan StartTime,
+    TimeSpan EndTime,
     int? SortOrder = null,
     int? SortOrderByDate = null
 );
