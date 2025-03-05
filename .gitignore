@@ -370,3 +370,10 @@ FodyWeavers.xsd
 
 # Ignore Properties folder
 Properties
+
+# Ignore Properties folder
+Properties
+
+# Ignore appsettings.json and its variants
+appsettings.json
+appsettings.*.json
