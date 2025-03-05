@@ -33,7 +33,7 @@ public class TourController(ILogger<TourController> logger, IMediator mediator)
   
    
     [HttpPost]
-    public async Task<IActionResult> CreateTour([FromBody] CreateToursCommand command)
+    public async Task<IActionResult> CreateTour([FromBody] CreateTourCommand command)
     {
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
