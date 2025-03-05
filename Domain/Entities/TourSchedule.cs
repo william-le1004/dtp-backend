@@ -18,6 +18,15 @@ public class TourSchedule : AuditEntity
 
     public virtual ICollection<TourBooking> TourBookings { get; private set; } = new List<TourBooking>();
 
+    public TourSchedule()
+    {
+    }
+
+    public void AddTicket(TourScheduleTicket ticket)
+    {
+        // Giả sử backing field tourScheduleTickets là List<TourScheduleTicket>
+        tourScheduleTickets.Add(ticket);
+    }
     public bool IsAvailable()
     {
         return tourScheduleTickets.Sum(x => x.AvailableTicket) > 0 && !IsStarted();
