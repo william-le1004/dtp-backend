@@ -367,3 +367,6 @@ FodyWeavers.xsd
 
 # Ignore environment variables
 .env
+
+# Ignore Properties folder
+Properties
