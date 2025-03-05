@@ -30,70 +30,9 @@ public class TourController(DtpDbContext context, ILogger<TourController> logger
     //        None: () => NotFound($"Tour ({id}) not found."));
     //}
 
-    // PUT: api/Tour/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    // [HttpPut("{id}")]
-    // public async Task<IActionResult> PutTour(Guid id, Tour tour)
-    // {
-    //     if (id != tour.Id)
-    //     {
-    //         return BadRequest();
-    //     }
-    //
-    //     context.Entry(tour).State = EntityState.Modified;
-    //
-    //     try
-    //     {
-    //         await context.SaveChangesAsync();
-    //     }
-    //     catch (DbUpdateConcurrencyException)
-    //     {
-    //         if (!TourExists(id))
-    //         {
-    //             return NotFound();
-    //         }
-    //         else
-    //         {
-    //             throw;
-    //         }
-    //     }
-    //
-    //     return NoContent();
-    // }
-    //
-    // // POST: api/Tour
-    // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    // //[HttpPost]
-    // //public async Task<ActionResult<Tour>> PostTour(Tour tour)
-    // //{
-    // //    context.Tours.Add(tour);
-    // //    await context.SaveChangesAsync();
-    //
-    // //    return CreatedAtAction("GetTour", new { id = tour.Id }, tour);
-    // //}
-    //
-    // // DELETE: api/Tour/5
-    // [HttpDelete("{id}")]
-    // public async Task<IActionResult> DeleteTour(Guid id)
-    // {
-    //     var tour = await context.Tours.FindAsync(id);
-    //     if (tour == null)
-    //     {
-    //         return NotFound();
-    //     }
-    //
-    //     context.Tours.Remove(tour);
-    //     await context.SaveChangesAsync();
-    //
-    //     return NoContent();
-    // }
-    //
-    // private bool TourExists(Guid id)
-    // {
-    //     return context.Tours.Any(e => e.Id == id);
-    // }
-
-    [HttpPost("create")]
+  
+   
+    [HttpPost]
     public async Task<IActionResult> CreateTour([FromBody] CreateToursCommand command)
     {
         var response = await mediator.Send(command);
@@ -107,17 +46,11 @@ public class TourController(DtpDbContext context, ILogger<TourController> logger
         return HandleServiceResult(response);
     }
 
-    [HttpPut("update")]
-    public async Task<IActionResult> PutTour([FromBody] UpdateTourCommand command)
+    [HttpPut]
+    public async Task<IActionResult> PutTour([FromBody] PutTourCommand command)
     {
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
     }
 
-    [HttpPost("create-destination")]
-    public async Task<IActionResult> AddDestinationsToTour([FromBody] CreateDestinationsCommand command)
-    {
-        var response = await mediator.Send(command);
-        return HandleServiceResult(response);
-    }
 }
