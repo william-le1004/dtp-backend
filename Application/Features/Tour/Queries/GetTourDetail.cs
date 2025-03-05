@@ -37,10 +37,19 @@ public record TourTemplateDetailsResponse
     public List<TicketType> TicketTypes { get; set; } = new();
 }
 
+public record RatingResponse
+{
+    public int Star { get; set; }
+
+    public string Comment { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+}
+
 public record TourDetailResponse
 {
     public TourTemplateDetailsResponse Tour { get; init; }
-    public List<Rating> Ratings { get; init; } = new();
+    public List<RatingResponse> Ratings { get; init; } = new();
     public List<TourDestinationResponse> TourDestinations { get; init; } = new();
 };
 
@@ -72,7 +81,12 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
                     OnlyFromCost = t.OnlyFromCost(),
                     TicketTypes = t.Tickets
                 },
-                Ratings = t.Ratings.ToList(),
+                Ratings = t.Ratings.Select(r => new RatingResponse()
+                {
+                    Star = r.Star,
+                    Comment = r.Comment,
+                    CreatedAt = r.CreatedAt,
+                }).OrderByDescending(x => x.CreatedAt).ToList(),
                 TourDestinations = t.TourDestinations
                     .Select(td => new TourDestinationResponse
                     {

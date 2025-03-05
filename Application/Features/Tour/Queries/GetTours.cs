@@ -8,6 +8,7 @@ public record TourTemplateResponse
 {
     public Guid Id { get; init; }
 
+    public string ThumbnailUrl { get; set; }
     public string Title { get; set; } = null!;
 
     public string CompanyName { get; set; }
@@ -33,12 +34,14 @@ public class GetToursHandler(IDtpDbContext context) : IRequestHandler<GetTours, 
             .Select(tour => new TourTemplateResponse()
             {
                 Id = tour.Id,
+                ThumbnailUrl = context.ImageUrls.Any(image => image.RefId == tour.Id)
+                    ? context.ImageUrls.FirstOrDefault(image => image.RefId == tour.Id).Url : null,
                 Title = tour.Title,
                 CompanyName = tour.Company.Name,
                 Description = tour.Description,
                 AvgStar = tour.Ratings.Any() ? tour.Ratings.Average(rating => rating.Star) : 0,
                 TotalRating = tour.Ratings.Count(),
-                OnlyFromCost = tour.OnlyFromCost(),
+                OnlyFromCost = tour.OnlyFromCost()
             });
 
         return await tours.ToListAsync(cancellationToken);
