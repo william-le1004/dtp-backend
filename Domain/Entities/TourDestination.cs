@@ -7,9 +7,9 @@ public partial class TourDestination
 
     public Guid DestinationId { get; private set; }
 
-    public TimeOnly StartTime { get; private set; }
+    public TimeSpan StartTime { get; private set; }
 
-    public TimeOnly EndTime { get; private set; }
+    public TimeSpan EndTime { get; private set; }
 
     public int? SortOrder { get; private set; }
 
@@ -26,6 +26,5 @@ public partial class TourDestination
         StartTime = startTime;
         EndTime = endTime;
         SortOrder = sortOrder;
-        SortOrderByDate = sortOrderByDate;
     }
 }

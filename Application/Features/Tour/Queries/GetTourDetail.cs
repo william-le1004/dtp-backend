@@ -12,12 +12,34 @@ public record TourDestinationResponse
 
     public List<string> ImageUrls { get; set; } = new();
 
+    public TimeSpan StartTime { get; set; }
+    public TimeSpan EndTime { get; set; }
+
     public int? SortOrder { get; set; }
+}
+
+public record TourTemplateDetailsResponse
+{
+    public Guid Id { get; init; }
+
+    public string Title { get; set; } = null!;
+
+    public string CompanyName { get; set; }
+
+    public string? Description { get; set; }
+
+    public double AvgStar { get; set; }
+
+    public int TotalRating { get; set; }
+
+    public decimal OnlyFromCost { get; set; }
+
+    public List<TicketType> TicketTypes { get; set; } = new();
 }
 
 public record TourDetailResponse
 {
-    public TourTemplateResponse Tour { get; init; }
+    public TourTemplateDetailsResponse Tour { get; init; }
     public List<Rating> Ratings { get; init; } = new();
     public List<TourDestinationResponse> TourDestinations { get; init; } = new();
 };
@@ -31,6 +53,7 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
         var tourDetailResponse = context.Tours
             .Include(t => t.Ratings)
             .Include(t => t.Company)
+            .Include(t => t.Tickets)
             .Include(t => t.TourDestinations)
             .ThenInclude(td => td.Destination)
             .AsSplitQuery()
@@ -38,7 +61,7 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
             .Where(t => t.Id == request.TourId)
             .Select(t => new TourDetailResponse
             {
-                Tour = new TourTemplateResponse()
+                Tour = new TourTemplateDetailsResponse()
                 {
                     Id = t.Id,
                     Title = t.Title,
@@ -46,6 +69,8 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
                     Description = t.Description,
                     AvgStar = t.Ratings.Any() ? t.Ratings.Average(rating => rating.Star) : 0,
                     TotalRating = t.Ratings.Count(),
+                    OnlyFromCost = t.OnlyFromCost(),
+                    TicketTypes = t.Tickets
                 },
                 Ratings = t.Ratings.ToList(),
                 TourDestinations = t.TourDestinations
@@ -53,8 +78,10 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
                     {
                         Name = td.Destination.Name,
                         SortOrder = td.SortOrder,
+                        StartTime = td.StartTime,
+                        EndTime = td.EndTime,
                         ImageUrls = context.ImageUrls
-                            .Where(img => img.RefId == td.Id) 
+                            .Where(img => img.RefId == td.Id)
                             .Select(img => img.Url)
                             .ToList()
                     })
@@ -67,4 +94,3 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
             : Option.Some(tourDetailResponse));
     }
 }
-
