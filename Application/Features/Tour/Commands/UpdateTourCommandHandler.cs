@@ -65,7 +65,7 @@ public class PutTourHandler : IRequestHandler<PutTourCommand, ApiResponse<TourRe
                 var ticketKind = (TicketKind)ticket.TicketKind;
                 // Giả sử TicketType có constructor:
                 // TicketType(decimal defaultNetCost, double defaultTax, int minimumPurchaseQuantity, TicketKind ticketKind, Guid tourId)
-                var ticketType = new TicketType(ticket.DefaultNetCost, ticket.DefaultTax, ticket.MinimumPurchaseQuantity, ticketKind, tour.Id);
+                var ticketType = new TicketType(ticket.DefaultNetCost, ticket.MinimumPurchaseQuantity, ticketKind, tour.Id);
                 tour.Tickets.Add(ticketType);
             }
         }
