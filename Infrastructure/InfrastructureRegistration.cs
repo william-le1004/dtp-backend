@@ -30,7 +30,7 @@ public static class InfrastructureRegistration
         var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
         
         services.Configure<JwtSettings>(jwtSettings);
-
+        services.AddScoped<ApplicationDbContextInitialiser>();
         services.AddDbContext<DtpDbContext>(options => { options.UseMySQL(connectionString); });
 
         services.AddStackExchangeRedisCache(options =>

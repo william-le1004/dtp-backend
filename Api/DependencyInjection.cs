@@ -1,6 +1,3 @@
-// using Application.Features.Tour.Queries;
-
-using Application.Features.Tour.Queries;
 using Domain.Entities;
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.ModelBuilder;
@@ -13,7 +10,7 @@ public static class DependencyInjection
     public static IServiceCollection AddEndpointServices(this IServiceCollection services)
     {
         var modelBuilder = new ODataConventionModelBuilder();
-        modelBuilder.EntitySet<TourTemplateResponse>("Tour");
+        // modelBuilder.EntitySet<TourTemplateResponse>("Tour");
         modelBuilder.EntitySet<Destination>("Destination");
 
         services.AddControllers().AddOData(
