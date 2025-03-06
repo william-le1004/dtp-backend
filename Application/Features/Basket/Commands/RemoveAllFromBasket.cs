@@ -10,7 +10,7 @@ public class RemoveAllFromBasketHandler(IDtpDbContext context) : IRequestHandler
 {
     public async Task Handle(RemoveAllFromBasket request, CancellationToken cancellationToken)
     {
-        var userId = Guid.Empty;
+        var userId = "7bd74dd8-e86a-40b8-837c-34929235d424";
         // Update later when we have done the identity
 
         var basket = await context.Baskets.Include(x => x.Items)

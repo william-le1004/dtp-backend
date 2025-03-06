@@ -32,25 +32,25 @@ public class TourSchedule : AuditEntity
         return tourScheduleTickets.Sum(x => x.AvailableTicket) > 0 && !IsStarted();
     }
     
-    public bool IsAvailableTicket(Guid tourScheduleTicketId)
+    public bool IsAvailableTicket(Guid ticketTypeId)
     {
-        return tourScheduleTickets.Single(x => x.Id == tourScheduleTicketId).IsAvailable();
+        return tourScheduleTickets.Single(x => x.TicketTypeId == ticketTypeId).IsAvailable();
     }
 
-    public bool HasAvailableTicket(int quantity, Guid tourScheduleTicketId)
+    public bool HasAvailableTicket(int quantity, Guid ticketTypeId)
     {
-        var tourScheduleTicket = tourScheduleTickets.Single(x => x.Id == tourScheduleTicketId);
+        var tourScheduleTicket = tourScheduleTickets.Single(x => x.TicketTypeId == ticketTypeId);
 
         return tourScheduleTicket.HasAvailableTicket(quantity);
     }
 
-    public decimal GetGrossCost(Guid tourScheduleTicketId)
+    public decimal GetGrossCost(Guid ticketTypeId)
     {
-        return tourScheduleTickets.Single(x => x.Id == tourScheduleTicketId).GrossCost;
+        return tourScheduleTickets.Single(x => x.TicketTypeId == ticketTypeId).GrossCost;
     }
 
     public bool IsStarted()
     {
-        return StartDate > DateTime.Now;
+        return StartDate < DateTime.Now;
     }
 }

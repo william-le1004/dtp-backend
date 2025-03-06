@@ -14,7 +14,6 @@ public record BasketTourItemResponse
 
 public record TicketResponse
 {
-    public Guid TourScheduleTicketId { get; set; }
     public int AvailableTicket { get; set; }
     public bool HasAvailableTicket { get; set; }
     public int Quantity { get; set; }
@@ -31,7 +30,7 @@ public class BasketHandler(IDtpDbContext context) : IRequestHandler<GetBaskets, 
     public async Task<IEnumerable<BasketTourItemResponse>> Handle(GetBaskets request,
         CancellationToken cancellationToken)
     {
-        var userId = Guid.Empty;
+        var userId = "7bd74dd8-e86a-40b8-837c-34929235d424";
         // Update later when we have done the identity
 
         var basket = await context.Baskets.Include(x => x.Items)
@@ -51,10 +50,9 @@ public class BasketHandler(IDtpDbContext context) : IRequestHandler<GetBaskets, 
                 Tickets = x.Select(y =>
                 {
                     var tourScheduleTicket =
-                        y.TourSchedule.TourScheduleTickets.Single(t => t.Id == y.TourScheduleTicketId);
+                        y.TourSchedule.TourScheduleTickets.Single(t => t.TicketTypeId == y.TicketTypeId);
                     return new TicketResponse()
                     {
-                        TourScheduleTicketId = y.TourScheduleTicketId,
                         Quantity = y.Quantity,
                         HasAvailableTicket = tourScheduleTicket.HasAvailableTicket(y.Quantity),
                         NetCost = tourScheduleTicket.NetCost,

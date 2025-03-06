@@ -2,7 +2,6 @@
 
 public class TourScheduleTicket
 {
-    public Guid Id { get; private set; }
     public decimal NetCost { get; private set; }
     public double Tax { get; private set; } = 0.1;
     public int AvailableTicket { get; private set; }

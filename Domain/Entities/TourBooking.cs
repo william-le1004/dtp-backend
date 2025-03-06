@@ -63,15 +63,15 @@ public partial class TourBooking : AuditEntity
         DiscountAmount = voucher.ApplyVoucherDiscount(GrossCost);
     }
 
-    public void AddTicket(int quantity, Guid tourScheduleTicketId)
+    public void AddTicket(int quantity, Guid ticketTypeId)
     {
-        if (!TourSchedule.HasAvailableTicket(quantity, tourScheduleTicketId))
+        if (!TourSchedule.HasAvailableTicket(quantity, ticketTypeId))
         {
             return;
         }
 
         var existedTicket = _tickets.SingleOrDefault(x => x.TourBookingId == Id
-                                                          && x.TourScheduleTicketId == tourScheduleTicketId);
+                                                          && x.TicketTypeId == ticketTypeId);
 
         if (existedTicket is not null)
         {
@@ -79,7 +79,7 @@ public partial class TourBooking : AuditEntity
         }
         else
         {
-            _tickets.Add(new(tourScheduleTicketId, quantity, TourSchedule.GetGrossCost(tourScheduleTicketId)));
+            _tickets.Add(new(ticketTypeId, quantity, TourSchedule.GetGrossCost(ticketTypeId)));
         }
     }
 
