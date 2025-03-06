@@ -5,8 +5,6 @@ using Domain.Entities;
 using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-
-
 namespace Application.Features.Tour.Commands
 {
     public record DestinationToAdd(
@@ -19,7 +17,6 @@ namespace Application.Features.Tour.Commands
 
     public record TicketToAdd(
         decimal DefaultNetCost,
-        double DefaultTax,
         int MinimumPurchaseQuantity,
         int TicketKind
     );
@@ -68,19 +65,19 @@ namespace Application.Features.Tour.Commands
                 }
             }
 
-            DateTime currentDay = request.OpenDay.Date;
-            Func<DateTime, DateTime> stepFunc = request.ScheduleFrequency.ToLower() switch
-            {
-                "weekly" => (DateTime d) => d.AddDays(7),
-                "monthly" => (DateTime d) => d.AddMonths(1),
-                _ => (DateTime d) => d.AddDays(1)
-            };
-
             var dbContext = _context as DbContext;
             if (dbContext == null)
             {
                 throw new Exception("The IDtpDbContext instance is not a DbContext. Ensure your context implements Microsoft.EntityFrameworkCore.DbContext.");
             }
+
+            DateTime currentDay = request.OpenDay.Date;
+            Func<DateTime, DateTime> stepFunc = request.ScheduleFrequency.ToLower() switch
+            {
+                "weekly" => d => d.AddDays(7),
+                "monthly" => d => d.AddMonths(1),
+                _ => d => d.AddDays(1)
+            };
 
             while (currentDay <= request.CloseDay.Date)
             {
@@ -90,13 +87,7 @@ namespace Application.Features.Tour.Commands
                 dbContext.Entry(schedule).Property("EndDate").CurrentValue = currentDay;
                 foreach (var ticketType in tour.Tickets)
                 {
-                    var scheduleTicket = new TourScheduleTicket(
-                        ticketType.DefaultNetCost,
-                        100,
-                        ticketType.Id,
-                        schedule.Id
-                    );
-
+                    var scheduleTicket = new TourScheduleTicket(ticketType.DefaultNetCost, 100, ticketType.Id, schedule.Id);
                     schedule.AddTicket(scheduleTicket);
                 }
 
