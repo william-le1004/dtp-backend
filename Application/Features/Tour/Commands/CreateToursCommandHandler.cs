@@ -92,7 +92,6 @@ namespace Application.Features.Tour.Commands
                 {
                     var scheduleTicket = new TourScheduleTicket(
                         ticketType.DefaultNetCost,
-                        ticketType.DefaultTax,
                         100,
                         ticketType.Id,
                         schedule.Id

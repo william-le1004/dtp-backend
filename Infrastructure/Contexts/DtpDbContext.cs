@@ -39,6 +39,7 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options) : IdentityDbCo
     public virtual DbSet<TicketType> TicketTypes { get; set; }
     
     public virtual DbSet<ImageUrl> ImageUrls { get; set; }
+    public virtual DbSet<Category> Categories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -13,8 +13,8 @@ public class TourSchedule : AuditEntity
 
     public virtual Tour Tour { get; private set; } = null!;
 
-    private readonly List<TourScheduleTicket> tourScheduleTickets = new();
-    public IReadOnlyCollection<TourScheduleTicket> TourScheduleTickets => tourScheduleTickets.AsReadOnly();
+    private readonly List<TourScheduleTicket> _tourScheduleTickets = new();
+    public IReadOnlyCollection<TourScheduleTicket> TourScheduleTickets => _tourScheduleTickets.AsReadOnly();
 
     public virtual ICollection<TourBooking> TourBookings { get; private set; } = new List<TourBooking>();
 
@@ -25,28 +25,28 @@ public class TourSchedule : AuditEntity
     public void AddTicket(TourScheduleTicket ticket)
     {
         // Giả sử backing field tourScheduleTickets là List<TourScheduleTicket>
-        tourScheduleTickets.Add(ticket);
+        _tourScheduleTickets.Add(ticket);
     }
     public bool IsAvailable()
     {
-        return tourScheduleTickets.Sum(x => x.AvailableTicket) > 0 && !IsStarted();
+        return _tourScheduleTickets.Sum(x => x.AvailableTicket) > 0 && !IsStarted();
     }
     
     public bool IsAvailableTicket(Guid ticketTypeId)
     {
-        return tourScheduleTickets.Single(x => x.TicketTypeId == ticketTypeId).IsAvailable();
+        return _tourScheduleTickets.Single(x => x.TicketTypeId == ticketTypeId).IsAvailable();
     }
 
     public bool HasAvailableTicket(int quantity, Guid ticketTypeId)
     {
-        var tourScheduleTicket = tourScheduleTickets.Single(x => x.TicketTypeId == ticketTypeId);
+        var tourScheduleTicket = _tourScheduleTickets.Single(x => x.TicketTypeId == ticketTypeId);
 
         return tourScheduleTicket.HasAvailableTicket(quantity);
     }
 
     public decimal GetGrossCost(Guid ticketTypeId)
     {
-        return tourScheduleTickets.Single(x => x.TicketTypeId == ticketTypeId).GrossCost;
+        return _tourScheduleTickets.Single(x => x.TicketTypeId == ticketTypeId).NetCost;
     }
 
     public bool IsStarted()

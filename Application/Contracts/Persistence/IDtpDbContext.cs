@@ -36,6 +36,9 @@ public interface IDtpDbContext
 
     public DbSet<TicketType> TicketTypes { get; set; }
 
+    public DbSet<Category> Categories { get; set; }
+
+
     public DbSet<ImageUrl> ImageUrls { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);

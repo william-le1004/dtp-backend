@@ -56,7 +56,6 @@ public class BasketHandler(IDtpDbContext context) : IRequestHandler<GetBaskets, 
                         Quantity = y.Quantity,
                         HasAvailableTicket = tourScheduleTicket.HasAvailableTicket(y.Quantity),
                         NetCost = tourScheduleTicket.NetCost,
-                        Tax = tourScheduleTicket.Tax,
                         TicketKind = tourScheduleTicket
                             .TicketType.TicketKind,
                         IsAvailable = tourScheduleTicket.IsAvailable(),

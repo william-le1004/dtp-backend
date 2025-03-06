@@ -6,6 +6,7 @@ namespace Domain.Entities;
 
 public partial class TourBooking : AuditEntity
 {
+    private static double Tax { get; } = 0.1;
     public string UserId { get; private set; }
     public string Code { get; private set; }
 
@@ -22,7 +23,7 @@ public partial class TourBooking : AuditEntity
 
     public decimal GrossCost
     {
-        get { return _tickets.Sum(x => x.GrossCost * x.Quantity); }
+        get { return _tickets.Sum(x => x.GrossCost * x.Quantity) * (decimal)Tax; }
     }
 
     public decimal FinalAmount()
