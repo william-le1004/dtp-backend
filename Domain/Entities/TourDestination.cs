@@ -3,28 +3,21 @@
 public partial class TourDestination
 {
     public Guid Id { get; set; }
-    public Guid TourId { get; private set; }
+    public Guid TourId { get; set; }
 
-    public Guid DestinationId { get; private set; }
+    public Guid DestinationId { get; set; }
 
-    public TimeSpan StartTime { get; private set; }
+    public TimeSpan StartTime { get; set; }
 
-    public TimeSpan EndTime { get; private set; }
+    public TimeSpan EndTime { get; set; }
 
-    public int? SortOrder { get; private set; }
-    
-    public int? SortOrderByDate { get; private set; }
+    public int? SortOrder { get; set; }
 
-    public virtual Destination Destination { get; private set; } = null!;
+    public int? SortOrderByDate { get; set; }
 
-    public virtual Tour Tour { get; private set; } = null!;
+    public virtual Destination Destination { get; set; } = null!;
 
-    public TourDestination(Guid tourId, Guid destinationId, TimeSpan startTime, TimeSpan endTime, int? sortOrder = null, int? sortOrderByDate = null)
-    {
-        TourId = tourId;
-        DestinationId = destinationId;
-        StartTime = startTime;
-        EndTime = endTime;
-        SortOrder = sortOrder;
-    }
+    public virtual Tour Tour { get; set; } = null!;
+
+ 
 }

@@ -38,13 +38,10 @@ public partial class TourBooking : AuditEntity
 
     public string? Remark { get; private set; }
 
-    public virtual TourSchedule TourSchedule { get; private set; } = null!;
+    public virtual TourSchedule? TourSchedule { get; private set; } = null!;
 
-    public TourBooking()
-    {
-    }
-
-    public TourBooking(string userId, Guid tourScheduleId, TourSchedule tourSchedule, string name, string phoneNumber, string email)
+    public TourBooking() { }
+    public TourBooking(string userId, Guid tourScheduleId, TourSchedule? tourSchedule)
     {
         Code = (userId.Substring(0, 4)
                 + tourScheduleId.ToString("N").Substring(0, 4)).Random();
@@ -52,9 +49,6 @@ public partial class TourBooking : AuditEntity
         TourScheduleId = tourScheduleId;
         Status = BookingStatus.Pending;
         TourSchedule = tourSchedule;
-        Name = name;
-        PhoneNumber = phoneNumber;
-        Email = email;
     }
 
     public void ApplyVoucher(Voucher? voucher)
@@ -77,7 +71,7 @@ public partial class TourBooking : AuditEntity
     {
         if (!TourSchedule.HasAvailableTicket(quantity, ticketTypeId))
         {
-            throw new AggregateException("Ticket quantity is out of range");
+            return;
         }
 
         var existedTicket = _tickets.SingleOrDefault(x => x.TourBookingId == Id
