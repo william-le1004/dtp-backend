@@ -20,9 +20,8 @@ public class TourScheduleTicket
 
     public bool IsAvailable() => AvailableTicket > 0;
     public bool HasAvailableTicket(int quantity) => AvailableTicket > quantity;
-    public TourScheduleTicket(Guid id, decimal netCost, double tax, int availableTicket, Guid ticketTypeId, Guid tourScheduleId)
+    public TourScheduleTicket(decimal netCost, double tax, int availableTicket, Guid ticketTypeId, Guid tourScheduleId)
     {
-        Id = id;
         NetCost = netCost;
         Tax = tax;
         AvailableTicket = availableTicket;

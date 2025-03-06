@@ -84,7 +84,6 @@ namespace Application.Features.Tour.Commands
                 foreach (var ticketType in tour.Tickets)
                 {
                     var scheduleTicket = new TourScheduleTicket(
-                        Guid.NewGuid(),
                         ticketType.DefaultNetCost,
                         ticketType.DefaultTax,
                         100,
