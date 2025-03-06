@@ -5,11 +5,7 @@ using Domain.Entities;
 using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+
 
 namespace Application.Features.Tour.Commands
 {
@@ -23,6 +19,7 @@ namespace Application.Features.Tour.Commands
 
     public record TicketToAdd(
         decimal DefaultNetCost,
+        double DefaultTax,
         int MinimumPurchaseQuantity,
         int TicketKind
     );
@@ -35,7 +32,8 @@ namespace Application.Features.Tour.Commands
         List<DestinationToAdd>? Destinations,
         List<TicketToAdd>? Tickets,
         DateTime OpenDay,
-        DateTime CloseDay
+        DateTime CloseDay,
+        string ScheduleFrequency
     ) : IRequest<ApiResponse<TourResponse>>;
 
     public class CreateTourHandler : IRequestHandler<CreateTourCommand, ApiResponse<TourResponse>>
@@ -70,17 +68,26 @@ namespace Application.Features.Tour.Commands
                 }
             }
 
-            for (DateTime day = request.OpenDay.Date; day <= request.CloseDay.Date; day = day.AddDays(1))
+            DateTime currentDay = request.OpenDay.Date;
+            Func<DateTime, DateTime> stepFunc = request.ScheduleFrequency.ToLower() switch
+            {
+                "weekly" => (DateTime d) => d.AddDays(7),
+                "monthly" => (DateTime d) => d.AddMonths(1),
+                _ => (DateTime d) => d.AddDays(1)
+            };
+
+            var dbContext = _context as DbContext;
+            if (dbContext == null)
+            {
+                throw new Exception("The IDtpDbContext instance is not a DbContext. Ensure your context implements Microsoft.EntityFrameworkCore.DbContext.");
+            }
+
+            while (currentDay <= request.CloseDay.Date)
             {
                 var schedule = new TourSchedule();
-                var dbContext = _context as DbContext;
-                if (dbContext == null)
-                {
-                    throw new Exception("The IDtpDbContext instance is not a DbContext. Ensure your context implements Microsoft.EntityFrameworkCore.DbContext.");
-                }
                 dbContext.Entry(schedule).Property("TourId").CurrentValue = tour.Id;
-                dbContext.Entry(schedule).Property("StartDate").CurrentValue = day;
-                dbContext.Entry(schedule).Property("EndDate").CurrentValue = day;
+                dbContext.Entry(schedule).Property("StartDate").CurrentValue = currentDay;
+                dbContext.Entry(schedule).Property("EndDate").CurrentValue = currentDay;
                 foreach (var ticketType in tour.Tickets)
                 {
                     var scheduleTicket = new TourScheduleTicket(
@@ -91,16 +98,19 @@ namespace Application.Features.Tour.Commands
                         ticketType.Id,
                         schedule.Id
                     );
+
                     schedule.AddTicket(scheduleTicket);
                 }
+
                 tour.TourSchedules.Add(schedule);
+                currentDay = stepFunc(currentDay);
             }
 
             _context.Tours.Add(tour);
             await _context.SaveChangesAsync(cancellationToken);
 
             var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.Category, tour.Description);
-            return ApiResponse<TourResponse>.SuccessResult(tourResponse, "Tour created successfully with destinations, tickets, and daily schedules");
+            return ApiResponse<TourResponse>.SuccessResult(tourResponse, "Tour created successfully with destinations, tickets, and schedules");
         }
     }
 }
