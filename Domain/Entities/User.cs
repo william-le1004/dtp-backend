@@ -7,6 +7,10 @@ public sealed class User : IdentityUser
     private readonly List<Feedback> _feedbacks = new();
     private readonly List<Rating> _ratings = new();
 
+    public User()
+    {
+        
+    }
     public User(string userName, string email, string name, string address, string phoneNumber)
     {
         UserName = userName;
@@ -23,9 +27,9 @@ public sealed class User : IdentityUser
     public string? CreatedBy { get; set; } = "System";
     public DateTime? LastModified { get; set; }
     public string? LastModifiedBy { get; set; }
-    
-    public string Name { get; private set; }
-    public string Address { get; private set; }
+
+    public string Name { get; set; }
+    public string Address { get; set; }
     public bool IsActive { get; set; }
     public Guid? CompanyId { get; private set; }
     public Company? Company { get; private set; }
