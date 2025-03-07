@@ -21,15 +21,10 @@ public class TourSchedule : AuditEntity
     public TourSchedule()
     {
     }
-    public TourSchedule(Guid tourId, DateTime startDate, DateTime endDate)
-    {
-        Id = Guid.NewGuid();
-        TourId = tourId;
-        StartDate = startDate;
-        EndDate = endDate;
-    }
+
     public void AddTicket(TourScheduleTicket ticket)
     {
+        // Giả sử backing field tourScheduleTickets là List<TourScheduleTicket>
         _tourScheduleTickets.Add(ticket);
     }
     public bool IsAvailable()

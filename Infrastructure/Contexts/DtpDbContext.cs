@@ -39,7 +39,7 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options, IUserContextSe
     public virtual DbSet<Ticket> Tickets { get; set; }
     
     public virtual DbSet<TicketType> TicketTypes { get; set; }
-    public virtual DbSet<TourScheduleTicket> TourScheduleTicket { get; set; }
+    
     public virtual DbSet<ImageUrl> ImageUrls { get; set; }
     public virtual DbSet<Category> Categories { get; set; }
 
