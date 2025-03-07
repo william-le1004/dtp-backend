@@ -40,6 +40,8 @@ public interface IDtpDbContext
 
 
     public DbSet<ImageUrl> ImageUrls { get; set; }
+    
+    public DbSet<TourScheduleTicket> TourScheduleTickets { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

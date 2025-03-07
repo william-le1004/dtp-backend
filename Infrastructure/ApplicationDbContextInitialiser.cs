@@ -68,17 +68,17 @@ public class ApplicationDbContextInitialiser(
         // }
 
         // Default users
-        var administrator = new User { UserName = "khoalol", Email = "administrator@localhost" };
-
-        if (userManager.Users.All(u => u.UserName != administrator.UserName))
-        {
-            administrator.IsActive = true;
-            await userManager.CreateAsync(administrator, "Abc123!");
-            if (!string.IsNullOrWhiteSpace(ApplicationRole.OPERATOR))
-            {
-                await userManager.AddToRolesAsync(administrator, [ApplicationRole.OPERATOR]);
-            }
-        }
+        // var administrator = new User { UserName = "khoalol", Email = "administrator@localhost" };
+        //
+        // if (userManager.Users.All(u => u.UserName != administrator.UserName))
+        // {
+        //     administrator.IsActive = true;
+        //     await userManager.CreateAsync(administrator, "Abc123!");
+        //     if (!string.IsNullOrWhiteSpace(ApplicationRole.OPERATOR))
+        //     {
+        //         await userManager.AddToRolesAsync(administrator, [ApplicationRole.OPERATOR]);
+        //     }
+        // }
 
         var decription =
             $"Nếu bạn là người đam mê thể thao và muốn khám phá thiên nhiên thành phố biển Quy Nhơn, nhất định đừng bỏ qua trải nghiệm chèo SUP trên Hòn Khô hay tại Cồn Chim - hai trong số địa điểm thiên nhiên tuyệt đẹp tại Quy Nhơn.\n\nĐược mệnh danh là Maldives của Việt Nam, Hòn Khô (hay còn được gọi là Cù Lao Hòn Khô) chắc chắn là một điểm đến tuyệt đẹp mà bạn không thể bỏ lỡ khi du lịch đến Quy Nhơn, Bình Định.\n\nNằm trong quần thể 32 hòn đảo xinh đẹp gần bờ của tỉnh Bình Định và cách thành phố Quy Nhơn 19km, Hòn Khô có vẻ không \"khô khan\" như cái tên của nó. Đây là một địa điểm khá mới và thu hút khách du lịch với vẻ đẹp hoang sơ, yên bình.\n\nTrong hành trình khám phá Hòn Khô bằng SUP của Klook, bạn sẽ có cơ hội khám phá một hòn đảo xinh đẹp, nước trong xanh, cát trắng xóa trên những chiếc ván chèo rất chill và mới lạ vô cùng. Hành trình bắt đầu với cung đường biển thơ mộng, vượt Cầu Thị Nại - chiếc cầu vượt biển dài nhất Miền Trung, là niềm tự hào của người dân Bình Định và đi cano xé gió đến Hòn Khô.\n\nTiếp đến, bạn sẽ vùng vẫy trong làn nước mát lạnh và khám phá thế giới động vật dưới nước đầy sắc màu trong trải nghiệm lặn ngắm san hô. Chèo SUP quanh khu vực Hòn Khô và chụp ảnh với những chiếc ván SUP là hoạt động thú vị tiếp theo trong tour, đừng quên mang theo phụ kiện để có được những bức ảnh \"chất như nước cất\" nha #teamKlook!\n\nBên cạnh đó, tour chèo SUP khám phá Cồn Chim cũng thu hút không kém với hành trình khám phá khu bảo tồn chim, cò và các loài động, thực vật biển, du khách sẽ ngắm những đàn chim về tổ sau một ngày tìm thức ăn, và đặc biệt là ngắm nhìn hoàng hôn thơ mộng ngay trên chiếc SUP\n\nBữa ăn hải sản bao gồm trong tour được người dân địa phương đánh bắt và chế biến ngay trong ngày! Vì đây là tour riêng nên đảm bảo tuyệt đối sự riêng tư cũng như chất lượng tour, nên cả nhà đừng chần chừ mà hãy đặt tour ngay trên Klook nhé!";
@@ -229,44 +229,42 @@ public class ApplicationDbContextInitialiser(
             {
                 Id = schedule1Id, TourId = tour1Id, StartDate = DateTime.UtcNow, EndDate = DateTime.UtcNow.AddDays(5),
                 PriceChangeRate = 1.2, Remark = "No special remarks", CreatedAt = DateTime.UtcNow, CreatedBy = "admin",
-                IsDeleted = false, TourScheduleTickets =
-                [
-                    new TourScheduleTicket
-                    {
-                        TicketTypeId = ticket1Id, TourScheduleId = schedule1Id, NetCost = 75.00m, AvailableTicket = 20
-                    },
-
-                    new TourScheduleTicket
-                    {
-                        TicketTypeId = ticket2Id, TourScheduleId = schedule1Id, NetCost = 30.00m, AvailableTicket = 20
-                    },
-
-                    new TourScheduleTicket
-                    {
-                        TicketTypeId = ticket3Id, TourScheduleId = schedule1Id, NetCost = 100.00m, AvailableTicket = 20
-                    },
-
-                    new TourScheduleTicket
-                    {
-                        TicketTypeId = ticket4Id, TourScheduleId = schedule1Id, NetCost = 150.00m, AvailableTicket = 30
-                    }
-                ]
+                IsDeleted = false, 
             },
             new TourSchedule
             {
                 Id = schedule2Id, TourId = tour1Id, StartDate = DateTime.UtcNow.AddDays(10),
                 EndDate = DateTime.UtcNow.AddDays(15), PriceChangeRate = 1.5, Remark = "Special offer",
-                CreatedAt = DateTime.UtcNow, CreatedBy = "admin", IsDeleted = false, TourScheduleTickets =
-                {
-                    new TourScheduleTicket
-                    {
-                        TicketTypeId = ticket1Id, TourScheduleId = schedule2Id, NetCost = 65.00m, AvailableTicket = 20
-                    },
-                    new TourScheduleTicket
-                    {
-                        TicketTypeId = ticket2Id, TourScheduleId = schedule2Id, NetCost = 30.00m, AvailableTicket = 20
-                    }
-                }
+                CreatedAt = DateTime.UtcNow, CreatedBy = "admin", IsDeleted = false,
+            }
+        );
+        context.TourScheduleTickets.AddRange(
+            new TourScheduleTicket
+            {
+                TicketTypeId = ticket1Id, TourScheduleId = schedule2Id, NetCost = 65.00m, AvailableTicket = 20
+            },
+            new TourScheduleTicket
+            {
+                TicketTypeId = ticket2Id, TourScheduleId = schedule2Id, NetCost = 30.00m, AvailableTicket = 20
+            },
+            new TourScheduleTicket
+            {
+                TicketTypeId = ticket1Id, TourScheduleId = schedule1Id, NetCost = 75.00m, AvailableTicket = 20
+            },
+
+            new TourScheduleTicket
+            {
+                TicketTypeId = ticket2Id, TourScheduleId = schedule1Id, NetCost = 30.00m, AvailableTicket = 20
+            },
+
+            new TourScheduleTicket
+            {
+                TicketTypeId = ticket3Id, TourScheduleId = schedule1Id, NetCost = 100.00m, AvailableTicket = 20
+            },
+
+            new TourScheduleTicket
+            {
+                TicketTypeId = ticket4Id, TourScheduleId = schedule1Id, NetCost = 150.00m, AvailableTicket = 30
             }
         );
         AddImageFor(tour1Id);

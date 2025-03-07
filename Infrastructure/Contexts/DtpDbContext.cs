@@ -41,6 +41,8 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options) : IdentityDbCo
 
     public virtual DbSet<ImageUrl> ImageUrls { get; set; }
     public virtual DbSet<Category> Categories { get; set; }
+    
+    public virtual DbSet<TourScheduleTicket> TourScheduleTickets { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
