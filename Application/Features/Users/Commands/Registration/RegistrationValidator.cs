@@ -2,9 +2,9 @@ using FluentValidation;
 
 namespace Application.Features.Users.Commands.Registration;
 
-public class RegistrationCommandValidator : AbstractValidator<RegistrationCommand>
+public class RegistrationValidator : AbstractValidator<RegistrationCommand>
 {
-    public RegistrationCommandValidator()
+    public RegistrationValidator()
     {
         RuleFor(x => x.Email).EmailAddress().NotEmpty()
             .WithMessage("Email is required and must be a valid email address");

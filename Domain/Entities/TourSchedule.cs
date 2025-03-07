@@ -3,9 +3,9 @@
 public class TourSchedule : AuditEntity
 {
     public Guid TourId { get; private set; }
-    public DateTime StartDate { get; private set; }
+    public DateTime OpenDate { get; private set; }
 
-    public DateTime EndDate { get; private set; }
+    public DateTime CloseDate { get; private set; }
 
     public double PriceChangeRate { get; private set; } = 1.0;
 
@@ -51,6 +51,6 @@ public class TourSchedule : AuditEntity
 
     public bool IsStarted()
     {
-        return StartDate < DateTime.Now;
+        return OpenDate < DateTime.Now;
     }
 }

@@ -1,4 +1,6 @@
-﻿using Application.Contracts.Persistence;
+﻿using Application.Contracts;
+using Application.Contracts.Persistence;
+using Domain.Common;
 using Domain.DataModel;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -6,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Contexts;
 
-public class DtpDbContext(DbContextOptions<DtpDbContext> options) : IdentityDbContext<User>(options), IDtpDbContext
+public class DtpDbContext(DbContextOptions<DtpDbContext> options, IUserContextService userContext) : IdentityDbContext<User>(options), IDtpDbContext
 {
     public virtual DbSet<Company> Companies { get; set; }
 

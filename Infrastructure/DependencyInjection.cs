@@ -1,10 +1,12 @@
 using System.Text;
+using Application.Contracts;
 using Application.Contracts.Authentication;
 using Application.Contracts.Caching;
 using Application.Contracts.Persistence;
 using Domain.Entities;
 using Infrastructure.Common.Settings;
 using Infrastructure.Contexts;
+using Infrastructure.Repositories.Persistence;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -16,7 +18,7 @@ using StackExchange.Redis;
 
 namespace Infrastructure;
 
-public static class InfrastructureRegistration
+public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructureService(this IServiceCollection services,
         IConfiguration configuration)
@@ -31,7 +33,11 @@ public static class InfrastructureRegistration
         
         services.Configure<JwtSettings>(jwtSettings);
 
-        services.AddDbContext<DtpDbContext>(options => { options.UseMySQL(connectionString); });
+        services.AddDbContext<DtpDbContext>((sp, options) =>
+        {
+            options.UseMySQL(connectionString)
+                .AddInterceptors(sp.GetService<AuditableEntityInterceptor>()); 
+        });
 
         services.AddStackExchangeRedisCache(options =>
         {
@@ -58,8 +64,11 @@ public static class InfrastructureRegistration
         
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<JwtTokenService>();
         services.AddScoped<IDtpDbContext, DtpDbContext>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUserContextService, UserContextService>();
         
         services.AddAuthentication(item =>
         {
@@ -80,6 +89,16 @@ public static class InfrastructureRegistration
                 IssuerSigningKey = new SymmetricSecurityKey(key)
             };
         });
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AuthUsers", policy => policy.RequireAuthenticatedUser());
+            options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+            options.AddPolicy("AdminAndOperator", policy
+                => policy.RequireRole("Admin")
+                    .RequireRole("Operator"));
+        });
+        
         return services;
     }
 }
