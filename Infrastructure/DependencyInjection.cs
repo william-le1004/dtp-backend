@@ -94,6 +94,7 @@ public static class DependencyInjection
         {
             options.AddPolicy("AuthUsers", policy => policy.RequireAuthenticatedUser());
             options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+            options.AddPolicy("OperatorOnly", policy => policy.RequireRole("Operator"));
             options.AddPolicy("AdminAndOperator", policy
                 => policy.RequireRole("Admin")
                     .RequireRole("Operator"));
