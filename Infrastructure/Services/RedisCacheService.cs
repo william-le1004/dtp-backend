@@ -25,14 +25,15 @@ public class RedisCacheService : IRedisCacheService
     {
         var options = new DistributedCacheEntryOptions
         {
-            AbsoluteExpirationRelativeToNow = expiration ?? TimeSpan.FromMinutes(10)
+            AbsoluteExpirationRelativeToNow = expiration ?? TimeSpan.FromMinutes(1)
         };
         
         await _redisCache.SetStringAsync(key, JsonSerializer.Serialize(data), options);
     }
     
-    public async Task RemoveDataAsync(string key)
+    public async Task<bool> RemoveDataAsync(string key)
     {
         await _redisCache.RemoveAsync(key);
+        return true;
     }
 }

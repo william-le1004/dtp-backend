@@ -12,7 +12,7 @@ public partial class TourDestination
     public TimeSpan EndTime { get; private set; }
 
     public int? SortOrder { get; private set; }
-
+    
     public int? SortOrderByDate { get; private set; }
 
     public virtual Destination Destination { get; private set; } = null!;

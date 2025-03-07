@@ -48,5 +48,6 @@ namespace Application.Features.Tour.Commands
             var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.Category, tour.Description);
             return ApiResponse<TourResponse>.SuccessResult(tourResponse, "Tour updated successfully");
         }
+
     }
 }

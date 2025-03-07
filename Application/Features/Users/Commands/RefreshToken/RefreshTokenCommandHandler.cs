@@ -17,12 +17,14 @@ public class RefreshTokenCommandHandler
 
     public async Task<ApiResponse<AccessTokenResponse>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        var newToken = await _authenticationService.RefreshTokenAsync(request.RefreshToken);
-        if(!newToken.Success)
+        try
         {
-            return ApiResponse<AccessTokenResponse>.Failure(newToken.Message, 400);
+            var newToken = await _authenticationService.RefreshTokenAsync(request.RefreshToken);
+            return ApiResponse<AccessTokenResponse>.SuccessResult(newToken, "Refresh Token successfully");
         }
-        
-        return ApiResponse<AccessTokenResponse>.SuccessResult(newToken.Data, "Refresh Token successfully");
+        catch (Exception ex)
+        {
+            return ApiResponse<AccessTokenResponse>.Failure(ex.Message, 400);
+        }
     }
 }
