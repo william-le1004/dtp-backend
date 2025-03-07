@@ -3,6 +3,7 @@ using Application.Features.Tour.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using System.Security.Claims;
 
 namespace Api.Controllers;
 
@@ -46,8 +47,42 @@ public class TourController(ILogger<TourController> logger, IMediator mediator)
         return HandleServiceResult(response);
     }
 
-    [HttpPut]
-    public async Task<IActionResult> PutTour([FromBody] PutTourCommand command)
+    [HttpPut("updatetourinfor")]
+    public async Task<IActionResult> PutTour([FromBody] UpdateTourInforCommand command)
+    {
+        var response = await mediator.Send(command);
+        return HandleServiceResult(response);
+    }
+    // Endpoint GET: /api/tour/getlisttourbycompany?companyId={companyId}
+    [HttpGet("getlisttourbycompany")]
+    public async Task<IActionResult> GetListTourByCompany([FromQuery] Guid companyId)
+    {
+        var response = await mediator.Send(new GetListTourByCompanyQuery(companyId));
+        return HandleServiceResult(response);
+    }
+
+    // Endpoint PUT: /api/tour/updatetourdestination
+    [HttpPut("updatetourdestination")]
+    public async Task<IActionResult> UpdateTourDestination([FromBody] UpdateTourDestinationCommand command)
+    {
+        var response = await mediator.Send(command);
+        return HandleServiceResult(response);
+    }
+    [HttpDelete("deletetourschedule")]
+    public async Task<IActionResult> DeleteTourSchedule([FromBody] DeleteTourScheduleCommand command)
+    {
+        var response = await mediator.Send(command);
+        return HandleServiceResult(response);
+    }
+    [HttpPost("addschedule")]
+    public async Task<IActionResult> AddSchedule([FromBody] AddScheduleCommand command)
+    {
+        var response = await mediator.Send(command);
+        return HandleServiceResult(response);
+    }
+    // Endpoint PUT: /api/tour/updateticketschedule
+    [HttpPut("updateticketschedule")]
+    public async Task<IActionResult> UpdateTicketSchedule([FromBody] UpdateTicketScheduleCommand command)
     {
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
