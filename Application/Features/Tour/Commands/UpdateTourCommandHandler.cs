@@ -74,7 +74,7 @@ public class PutTourHandler : IRequestHandler<PutTourCommand, ApiResponse<TourRe
         await _context.SaveChangesAsync(cancellationToken);
 
         // Tạo DTO response
-        var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.Category, tour.Description);
+        var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.CategoryId, tour.Description);
         return ApiResponse<TourResponse>.SuccessResult(tourResponse, "Tour updated successfully with all destinations and tickets");
     }
 }

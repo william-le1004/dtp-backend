@@ -98,7 +98,7 @@ namespace Application.Features.Tour.Commands
             _context.Tours.Add(tour);
             await _context.SaveChangesAsync(cancellationToken);
 
-            var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.Category, tour.Description);
+            var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.CategoryId, tour.Description);
             return ApiResponse<TourResponse>.SuccessResult(tourResponse, "Tour created successfully with destinations, tickets, and schedules");
         }
     }

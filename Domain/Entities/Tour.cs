@@ -6,7 +6,8 @@ public partial class Tour : AuditEntity
 
     public Guid? CompanyId { get; private set; }
 
-    public Guid? Category { get; private set; }
+    public Guid? CategoryId { get; private set; }
+    public Category Category { get; private set; }
     public string? Description { get; private set; }
 
     public List<TicketType> Tickets { get; private set; } = new();
@@ -20,11 +21,15 @@ public partial class Tour : AuditEntity
 
     public virtual ICollection<TourSchedule> TourSchedules { get; private set; } = new List<TourSchedule>();
 
+    public Tour()
+    {
+    }
+
     public Tour(string title, Guid? companyId, Guid? category, string? description)
     {
         Title = title;
         CompanyId = companyId;
-        Category = category;
+        CategoryId = category;
         Description = description;
     }
 
@@ -32,7 +37,7 @@ public partial class Tour : AuditEntity
     {
         Title = title;
         CompanyId = companyId;
-        Category = category;
+        CategoryId = category;
         Description = description;
     }
 
