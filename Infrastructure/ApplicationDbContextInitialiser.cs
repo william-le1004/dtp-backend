@@ -114,7 +114,7 @@ public class ApplicationDbContextInitialiser(
                 Email = "contact@techinnovators.com",
                 Phone = "123-456-7890",
                 TaxCode = "ABC123456",
-                License = "LICENSE1234",
+                Licensed = true,
                 CreatedBy = "admin",
             }
         );
@@ -123,7 +123,7 @@ public class ApplicationDbContextInitialiser(
             new Destination
             {
                 Id = destination1Id, Name = "Hòn Khô", CreatedAt = DateTime.UtcNow, CreatedBy = "admin",
-                IsDeleted = false
+                IsDeleted = false , Latitude = "concec", Longitude = "cailol"
             }
             // ,
             // new Destination
@@ -227,14 +227,14 @@ public class ApplicationDbContextInitialiser(
         context.TourSchedules.AddRange(
             new TourSchedule
             {
-                Id = schedule1Id, TourId = tour1Id, StartDate = DateTime.UtcNow, EndDate = DateTime.UtcNow.AddDays(5),
+                Id = schedule1Id, TourId = tour1Id, OpenDate = DateTime.UtcNow, CloseDate = DateTime.UtcNow.AddDays(5),
                 PriceChangeRate = 1.2, Remark = "No special remarks", CreatedAt = DateTime.UtcNow, CreatedBy = "admin",
                 IsDeleted = false, 
             },
             new TourSchedule
             {
-                Id = schedule2Id, TourId = tour1Id, StartDate = DateTime.UtcNow.AddDays(10),
-                EndDate = DateTime.UtcNow.AddDays(15), PriceChangeRate = 1.5, Remark = "Special offer",
+                Id = schedule2Id, TourId = tour1Id, OpenDate = DateTime.UtcNow.AddDays(10),
+                CloseDate = DateTime.UtcNow.AddDays(15), PriceChangeRate = 1.5, Remark = "Special offer",
                 CreatedAt = DateTime.UtcNow, CreatedBy = "admin", IsDeleted = false,
             }
         );
