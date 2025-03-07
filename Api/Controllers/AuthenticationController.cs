@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Application.Common;
+using Application.Contracts;
 using Application.Features.Users.Commands.Login;
 using Application.Features.Users.Commands.Logout;
 using Application.Features.Users.Commands.RefreshToken;
@@ -15,10 +16,12 @@ namespace Api.Controllers;
 public class AuthenticationController : BaseController
 {
     private readonly IMediator _mediator;
+    private readonly IUserContextService _userContextService;
 
-    public AuthenticationController(IMediator mediator)
+    public AuthenticationController(IMediator mediator, IUserContextService userContextService)
     {
         _mediator = mediator;
+        _userContextService = userContextService;
     }
 
     [HttpPost("login")]
@@ -39,7 +42,7 @@ public class AuthenticationController : BaseController
     [Authorize]
     public async Task<IActionResult> Logout()
     {
-        var userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+        var userId = _userContextService.GetCurrentUserId();
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized(ApiResponse<bool>.Failure("User not authenticated", 401));

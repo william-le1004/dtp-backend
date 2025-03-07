@@ -17,22 +17,24 @@ public class RegistrationHandler
 
     public async Task<ApiResponse<bool>> Handle(RegistrationCommand request, CancellationToken cancellationToken)
     {
-        var validator = new RegistrationCommandValidator();
+        var validator = new RegistrationValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
             return ApiResponse<bool>.Failure("Validation failed", 400, errors);
         }
-        
-        var registrationRequest = new RegistrationRequestDto
-            (request.Name, request.Address, request.Email, request.UserName, request.PhoneNumber, request.Password);
-        var result = await _authenticationService.RegisterAsync(registrationRequest);
-        if (!result.Success)
-        {
-            return ApiResponse<bool>.Failure(result.Message, 400);
-        }
 
-        return ApiResponse<bool>.SuccessResult(true, "User registered successfully", 201);
+        try
+        {
+            var registrationRequest = new RegistrationRequestDto(
+                request.Name, request.Address, request.Email, request.UserName, request.PhoneNumber, request.Password);
+            await _authenticationService.RegisterAsync(registrationRequest);
+            return ApiResponse<bool>.SuccessResult(true, "User registered successfully", 201);
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse<bool>.Failure(ex.Message, 400);
+        }
     }
 }
