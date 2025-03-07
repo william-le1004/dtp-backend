@@ -10,7 +10,7 @@ public partial class Company : AuditEntity
 
     public string TaxCode { get; set; } = null!;
 
-    public string License { get; set; } = null!;
+    public bool Licensed { get; set; }
 
     public virtual ICollection<Tour> Tours { get; set; } = new List<Tour>();
     public virtual ICollection<User> Staffs { get; set; } = new List<User>();
