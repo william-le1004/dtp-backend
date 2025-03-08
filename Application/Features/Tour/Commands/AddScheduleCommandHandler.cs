@@ -61,8 +61,8 @@ namespace Application.Features.Tour.Commands
                 // Tạo mới TourSchedule
                 var schedule = new TourSchedule();
                 dbContext.Entry(schedule).Property("TourId").CurrentValue = tour.Id;
-                dbContext.Entry(schedule).Property("StartDate").CurrentValue = currentDay;
-                dbContext.Entry(schedule).Property("EndDate").CurrentValue = currentDay;
+                dbContext.Entry(schedule).Property("OpenDate").CurrentValue = currentDay;
+                dbContext.Entry(schedule).Property("CloseDate").CurrentValue = currentDay;
                 // Không cần cập nhật PriceChangeRate hay Remark theo yêu cầu
 
                 // Với mỗi TicketType của Tour, tạo vé lịch trình (TourScheduleTicket) với giá mặc định của TicketType
