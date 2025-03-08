@@ -1,4 +1,5 @@
 using Api;
+using Api.Middlewares;
 using Application;
 using Infrastructure;
 using Infrastructure.Common.Extensions;
@@ -26,6 +27,8 @@ builder.Services.AddInfrastructureService(configuration)
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
+
+app.UseMiddleware<JwtBlacklistMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

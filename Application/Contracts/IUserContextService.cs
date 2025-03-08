@@ -6,4 +6,5 @@ public interface IUserContextService
     List<string> GetCurrentUserRoles();
     bool IsAdminRole();
     bool IsOperatorRole();
+    string? GetAccessToken();
 }

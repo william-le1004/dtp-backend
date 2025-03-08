@@ -47,4 +47,10 @@ public class UserContextService : IUserContextService
 
         return user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Operator");
     }
+    
+    public string? GetAccessToken()
+    {
+        var authHeader = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+        return authHeader?.StartsWith("Bearer ") == true ? authHeader.Substring(7) : null;
+    }
 }

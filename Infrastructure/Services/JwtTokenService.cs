@@ -46,10 +46,12 @@ public class JwtTokenService
         var userRoles = await _userManager.GetRolesAsync(user);
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email)
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim("uid", user.Id),
+            new Claim("company_id", user.CompanyId.ToString() ?? "None")
         };
 
         claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
@@ -76,6 +78,20 @@ public class JwtTokenService
             rng.GetBytes(randomNumber);
         }
         return Convert.ToBase64String(randomNumber);
+    }
+    
+    public string GetJtiFromToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+        return jwtToken.Claims.First(c => c.Type == JwtRegisteredClaimNames.Jti).Value;
+    }
+
+    public DateTime GetTokenExpiry(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+        return jwtToken.ValidTo;
     }
     
     public async Task<string> ValidateRefreshToken(string refreshToken)

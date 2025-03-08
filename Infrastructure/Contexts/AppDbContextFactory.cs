@@ -33,4 +33,9 @@ public class DummyUserContextService : IUserContextService
     {
         throw new NotImplementedException();
     }
+
+    public string? GetAccessToken()
+    {
+        throw new NotImplementedException();
+    }
 }

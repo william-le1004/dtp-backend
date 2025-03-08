@@ -3,14 +3,24 @@
 public partial class Wallet : AuditEntity
 {
     public string UserId { get; private set; }
-    public decimal Balance { get; private set; } = 0;
+    public decimal Balance { get; private set; }
 
     private readonly List<Transaction> _transactions = new();
     public IReadOnlyCollection<Transaction> Transactions => _transactions.AsReadOnly();
 
     public virtual User User { get; set; } = null!;
 
-    public Wallet(string userId) => UserId = userId;
+    public Wallet(string userId)
+    {
+        UserId = userId;
+        Balance = 0;
+    }
+    
+    public Wallet(string userId, decimal balance)
+    {
+        UserId = userId;
+        Balance = balance;
+    }
 
     public void AddFunds(decimal amount)
     {

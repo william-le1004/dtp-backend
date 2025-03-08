@@ -21,7 +21,7 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, ApiResponse<Lis
             user.Id,
             user.UserName,
             user.Email,
-            user.Company?.Name ?? "No Role"
+            user.Company?.Name ?? "N/A"
         )).ToList();
         
         return ApiResponse<List<UserDto>>.SuccessResult(userDtos);

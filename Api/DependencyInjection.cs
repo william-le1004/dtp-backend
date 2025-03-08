@@ -1,6 +1,5 @@
-// using Application.Features.Tour.Queries;
-
 using Application.Features.Tour.Queries;
+using Application.Features.Users.Queries.Get;
 using Domain.Entities;
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.ModelBuilder;
@@ -15,6 +14,7 @@ public static class DependencyInjection
         var modelBuilder = new ODataConventionModelBuilder();
         modelBuilder.EntitySet<TourTemplateResponse>("Tour");
         modelBuilder.EntitySet<Destination>("Destination");
+        modelBuilder.EntitySet<UserDto>("User");
 
         services.AddControllers().AddOData(
             options => options.EnableQueryFeatures(maxTopValue: null).AddRouteComponents(

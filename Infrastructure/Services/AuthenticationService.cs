@@ -1,3 +1,4 @@
+using Application.Contracts;
 using Application.Contracts.Authentication;
 using Application.Contracts.Caching;
 using Application.Dtos;
@@ -12,12 +13,14 @@ public class AuthenticationService : IAuthenticationService
     private readonly UserManager<User> _userManager;
     private readonly JwtTokenService _jwtTokenService;
     private readonly IRedisCacheService _redisCache;
+    private readonly IUserContextService _userContext;
 
-    public AuthenticationService(UserManager<User> userManager, JwtTokenService jwtTokenService, IRedisCacheService redisCache)
+    public AuthenticationService(UserManager<User> userManager, JwtTokenService jwtTokenService, IRedisCacheService redisCache, IUserContextService userContext)
     {
         _userManager = userManager;
         _jwtTokenService = jwtTokenService;
         _redisCache = redisCache;
+        _userContext = userContext;
     }
 
     public async Task<bool> RegisterAsync(RegistrationRequestDto request)
@@ -41,8 +44,7 @@ public class AuthenticationService : IAuthenticationService
         var user = await _userManager.FindByNameAsync(request.UserName);
         if (user == null || !(await _userManager.CheckPasswordAsync(user, request.Password)))
             throw new UnauthorizedAccessException("Invalid username or password.");
-        
-        user.InitializeWallet();
+
         var tokens = await _jwtTokenService.GenerateTokens(user);
         await StoreRefreshToken(user.Id, tokens.RefreshToken);
         return tokens;
@@ -57,20 +59,31 @@ public class AuthenticationService : IAuthenticationService
         var storedToken = await _redisCache.GetDataAsync<string>($"{ApplicationConst.REFRESH_TOKEN}:{userId}");
         if (storedToken == null || storedToken != refreshToken)
             throw new UnauthorizedAccessException("Refresh token expired or invalid.");
-        
-        var user = await _userManager.FindByIdAsync(userId) 
+
+        var user = await _userManager.FindByIdAsync(userId)
                    ?? throw new UnauthorizedAccessException("User not found.");
-        
+
         var accessTokenResponse = await _jwtTokenService.GenerateTokens(user);
         await StoreRefreshToken(user.Id, accessTokenResponse.AccessToken);
-        
+
         return accessTokenResponse;
     }
 
     public async Task<bool> LogoutAsync(string userId)
     {
         await _redisCache.RemoveDataAsync($"{ApplicationConst.REFRESH_TOKEN}:{userId}");
-        return true; 
+
+        var accessToken = _userContext.GetAccessToken();
+        var tokenJti = _jwtTokenService.GetJtiFromToken(accessToken);
+        var tokenExpiry = _jwtTokenService.GetTokenExpiry(accessToken);
+        var expiryTime = tokenExpiry - DateTime.UtcNow;
+
+        if (expiryTime > TimeSpan.Zero)
+        {
+            await _redisCache.SetDataAsync($"{ApplicationConst.BLACKLIST}:{tokenJti}", "revoked", expiryTime);
+        }
+
+        return true;
     }
 
     private async Task StoreRefreshToken(string userId, string refreshToken)
