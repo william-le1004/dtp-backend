@@ -20,11 +20,12 @@ public sealed class User : IdentityUser
         Address = address;
         PhoneNumber = phoneNumber;
         Basket = new Basket();
+        Wallet = new Wallet(Id);
         CreatedAt = DateTime.UtcNow;
     }
     
-    public DateTime CreatedAt { get; set; }
-    public string? CreatedBy { get; set; } = "System";
+    public DateTime CreatedAt { get; init; }
+    public string? CreatedBy { get; set; }
     public DateTime? LastModified { get; set; }
     public string? LastModifiedBy { get; set; }
 
@@ -67,9 +68,4 @@ public sealed class User : IdentityUser
 
     public void Deactivate() => IsActive = false;
     public void Activate() => IsActive = true;
-    
-    public void InitializeWallet()
-    {
-        Wallet = new Wallet(Id);
-    }
 }

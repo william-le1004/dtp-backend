@@ -25,10 +25,12 @@ public class CreateUserCommandHandler
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
             return ApiResponse<bool>.Failure("Validation failed", 400, errors);
         }
-        
-        var newUser = new User(request.UserName, request.Email, request.Name, request.Address, request.PhoneNumber);
 
+        var newUser = new User(request.UserName, request.Email, request.Name, request.Address, request.PhoneNumber);
+        
         var result = await _userRepository.CreateUser(newUser, request.RoleName);
-        return result ? ApiResponse<bool>.SuccessResult(true, "User created successfully") : ApiResponse<bool>.Failure("User creation failed");
+        return result
+            ? ApiResponse<bool>.SuccessResult(true, "User created successfully")
+            : ApiResponse<bool>.Failure("User creation failed");
     }
 }

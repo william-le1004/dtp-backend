@@ -9,6 +9,7 @@ using Application.Features.Users.Queries.GetDetail;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace Api.Controllers;
 
@@ -41,6 +42,7 @@ public class UserController: BaseController
     
     [HttpGet("get-all")]
     [Authorize(Policy = "AdminOnly")]
+    [EnableQuery]
     public async Task<IActionResult> GetAll()
     {
         var response = await _mediator.Send(new GetUserQuery());
