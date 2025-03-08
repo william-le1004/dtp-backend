@@ -371,6 +371,9 @@ FodyWeavers.xsd
 # Ignore Properties folder
 Properties
 
-# Ignore appsettings.json and its variants
+# Ignore all appsettings.json files
 appsettings.json
 appsettings.*.json
+
+# But allow tracking for the specific one in the Api folder
+!Api/appsettings.json
