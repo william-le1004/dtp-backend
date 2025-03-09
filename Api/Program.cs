@@ -25,6 +25,13 @@ builder.Services.AddInfrastructureService(configuration)
     .AddApplicationServices()
     .AddEndpointServices();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("all", corsPolicyBuilder => corsPolicyBuilder
+        .AllowAnyHeader()
+        .AllowAnyOrigin()
+        .AllowAnyMethod());
+});
 
 var app = builder.Build();
 
@@ -38,6 +45,7 @@ if (app.Environment.IsDevelopment())
     app.ApplyMigrations();
 }
 
+app.UseCors("all");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
