@@ -81,11 +81,12 @@ publish/
 *.ldf
 *.ndf
 
-# Ignore environment and configuration files
+# Ignore config and environment files
 .env
+secrets.json
 appsettings.json
 appsettings.*.json
-Properties/
+!Api/appsettings.json # Keep this one tracked
 
 # Ignore Docker & Kubernetes files (if applicable)
 docker-compose.override.yml
