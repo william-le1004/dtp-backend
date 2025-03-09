@@ -30,6 +30,7 @@ namespace Application.Features.Tour.Commands
         List<TicketToAdd>? Tickets,
         DateTime OpenDay,
         DateTime CloseDay,
+        int Duration,
         string ScheduleFrequency
     ) : IRequest<ApiResponse<TourResponse>>;
 
@@ -84,7 +85,7 @@ namespace Application.Features.Tour.Commands
                 var schedule = new TourSchedule();
                 dbContext.Entry(schedule).Property("TourId").CurrentValue = tour.Id;
                 dbContext.Entry(schedule).Property("OpenDate").CurrentValue = currentDay;
-                dbContext.Entry(schedule).Property("CloseDate").CurrentValue = currentDay;
+                dbContext.Entry(schedule).Property("CloseDate").CurrentValue = currentDay.AddDays(request.Duration);
                 foreach (var ticketType in tour.Tickets)
                 {
                     var scheduleTicket = new TourScheduleTicket(ticketType.DefaultNetCost, 100, ticketType.Id, schedule.Id);
