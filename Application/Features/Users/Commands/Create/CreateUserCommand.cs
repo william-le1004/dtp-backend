@@ -9,5 +9,6 @@ public record CreateUserCommand(
     string Email,
     string Address,
     string RoleName,
-    string PhoneNumber)
+    string PhoneNumber,
+    Guid CompanyId)
     : IRequest<ApiResponse<bool>>;
