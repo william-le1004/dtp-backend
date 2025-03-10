@@ -8,7 +8,7 @@ namespace Application.Features.Users.Commands.Login;
 public class LoginHandler
     : IRequestHandler<LoginCommand, ApiResponse<AccessTokenResponse>>
 {
-    private IAuthenticationService _authenticationService;
+    private readonly IAuthenticationService _authenticationService;
 
     public LoginHandler(IAuthenticationService authenticationService)
     {

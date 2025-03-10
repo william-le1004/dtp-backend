@@ -10,5 +10,5 @@ public interface IUserRepository
     Task<bool> UpdateProfile(User user, string role = "");
     Task<bool> InactiveUser(User user);
     Task<IEnumerable<User>> GetAll();
-    Task<User?> GetUserIdAsync(string userId);
+    Task<User?> GetUserDetailAsync(string userId);
 }

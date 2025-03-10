@@ -31,12 +31,14 @@ public class JwtTokenService
     {
         var accessToken = await GenerateJwtToken(user);
         var refreshToken = GenerateRefreshToken();
+        var userRole = await _userManager.GetRolesAsync(user);
         
         var response = new AccessTokenResponse
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken,
-            ExpiresIn = _jwtSettings.AccessTokenExpirationMinutes * 60
+            ExpiresIn = _jwtSettings.AccessTokenExpirationMinutes * 60,
+            Role = userRole.FirstOrDefault() ?? "No role"
         };
         return response;
     }

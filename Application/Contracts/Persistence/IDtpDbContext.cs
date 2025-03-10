@@ -33,6 +33,8 @@ public interface IDtpDbContext
     public DbSet<TourBasketItem> TourBasketItems { get; set; }
 
     public DbSet<Ticket> Tickets { get; set; }
+    
+    public DbSet<User> Users { get; set; }
 
     public DbSet<TicketType> TicketTypes { get; set; }
 

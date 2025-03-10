@@ -8,7 +8,7 @@ namespace Application.Features.Users.Commands.Registration;
 public class RegistrationHandler
     : IRequestHandler<RegistrationCommand, ApiResponse<bool>>
 {
-    private IAuthenticationService _authenticationService;
+    private readonly IAuthenticationService _authenticationService;
 
     public RegistrationHandler(IAuthenticationService authenticationService)
     {

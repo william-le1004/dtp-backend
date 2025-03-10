@@ -8,7 +8,7 @@ namespace Application.Features.Users.Commands.RefreshToken;
 public class RefreshTokenCommandHandler
     : IRequestHandler<RefreshTokenCommand, ApiResponse<AccessTokenResponse>>
 {
-    private IAuthenticationService _authenticationService;
+    private readonly IAuthenticationService _authenticationService;
 
     public RefreshTokenCommandHandler(IAuthenticationService authenticationService)
     {

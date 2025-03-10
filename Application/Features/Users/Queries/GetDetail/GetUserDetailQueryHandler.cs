@@ -6,7 +6,7 @@ namespace Application.Features.Users.Queries.GetDetail;
 
 public class GetUserDetailQueryHandler : IRequestHandler<GetUserDetailQuery, ApiResponse<UserDetailDto>>
 {
-    IUserRepository _userRepository;
+    private readonly IUserRepository _userRepository;
 
     public GetUserDetailQueryHandler(IUserRepository userRepository)
     {
@@ -16,7 +16,7 @@ public class GetUserDetailQueryHandler : IRequestHandler<GetUserDetailQuery, Api
     public async Task<ApiResponse<UserDetailDto>> Handle(GetUserDetailQuery request,
         CancellationToken cancellationToken)
     {
-        var result = await _userRepository.GetUserIdAsync(request.Id);
+        var result = await _userRepository.GetUserDetailAsync(request.Id);
         
         if(result == null)
             return ApiResponse<UserDetailDto>.Failure("User not found");

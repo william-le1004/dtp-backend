@@ -6,7 +6,7 @@ namespace Application.Features.Users.Queries.Get;
 
 public class GetUserQueryHandler : IRequestHandler<GetUserQuery, ApiResponse<List<UserDto>>>
 {
-    IUserRepository _userRepository;
+    private readonly IUserRepository _userRepository;
 
     public GetUserQueryHandler(IUserRepository userRepository)
     {

@@ -7,7 +7,7 @@ namespace Application.Features.Users.Commands.Logout;
 public class LogoutCommandHandler
     : IRequestHandler<LogoutCommand, ApiResponse<bool>>
 {
-    private IAuthenticationService _authenticationService;
+    private readonly IAuthenticationService _authenticationService;
 
     public LogoutCommandHandler(IAuthenticationService authenticationService)
     {
