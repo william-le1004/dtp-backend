@@ -10,5 +10,4 @@ public class TicketType
     public TicketKind TicketKind { get;  set; }
     public Guid TourId { get;  set; }
 
- 
 }

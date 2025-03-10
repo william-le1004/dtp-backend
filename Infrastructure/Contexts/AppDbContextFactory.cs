@@ -14,7 +14,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<DtpDbContext>
 
         var dummyUserContext = new DummyUserContextService();
 
-        return new DtpDbContext(optionsBuilder.Options, dummyUserContext);
+        return new DtpDbContext(optionsBuilder.Options);
     }
 }
 

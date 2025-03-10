@@ -8,6 +8,5 @@ public partial class Destination : AuditEntity
     
     public string Longitude  { get; set; } = null!;
 
-
     public virtual ICollection<TourDestination> TourDestinations { get; set; } = new List<TourDestination>();
 }

@@ -1,5 +1,4 @@
 using Application.Dtos;
-using Application.Features.Users.Queries.Get;
 using Domain.Entities;
 
 namespace Application.Contracts.Persistence;

@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities;
 
-public partial class TourDestination
+public class TourDestination
 {
     public Guid Id { get; set; }
     public Guid TourId { get; set; }

@@ -33,32 +33,30 @@ public static class InfrastructureRegistration
         services.AddScoped<ApplicationDbContextInitialiser>();
         services.AddDbContext<DtpDbContext>(options => { options.UseMySQL(connectionString); });
 
-        services.AddStackExchangeRedisCache(options =>
-        {
-            options.Configuration = redisConnection["Endpoint"];
-            options.ConfigurationOptions = new ConfigurationOptions
-            {
-                EndPoints = { redisConnection["Endpoint"] },
-                Password = redisConnection["Password"],
-                ConnectTimeout = 10000,
-                SyncTimeout = 10000
-            };
-        });
-        
-        services.AddSingleton<IConnectionMultiplexer>(sp =>
-        {
-            var configuration = ConfigurationOptions.Parse(redisConnection["Endpoint"], true);
-            configuration.Password = redisConnection["Password"];
-            return ConnectionMultiplexer.Connect(configuration);
-        });
-        
+        // services.AddStackExchangeRedisCache(options =>
+        // {
+        //     options.Configuration = redisConnection["Endpoint"];
+        //     options.ConfigurationOptions = new ConfigurationOptions
+        //     {
+        //         EndPoints = { redisConnection["Endpoint"] },
+        //         Password = redisConnection["Password"],
+        //         ConnectTimeout = 10000,
+        //         SyncTimeout = 10000
+        //     };
+        // });
+        //
+        // services.AddSingleton<IConnectionMultiplexer>(sp =>
+        // {
+        //     var configuration = ConfigurationOptions.Parse(redisConnection["Endpoint"], true);
+        //     configuration.Password = redisConnection["Password"];
+        //     return ConnectionMultiplexer.Connect(configuration);
+        // });
+        //
         services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<DtpDbContext>()
             .AddDefaultTokenProviders();
         
-        services.AddScoped<IAuthenticationService, AuthenticationService>();
-        services.AddScoped<IRedisCacheService, RedisCacheService>();
-        services.AddScoped<JwtTokenService>();
+        // services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IDtpDbContext, DtpDbContext>();
         
         services.AddAuthentication(item =>

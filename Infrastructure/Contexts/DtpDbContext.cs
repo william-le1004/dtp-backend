@@ -38,7 +38,8 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options) : IdentityDbCo
     public virtual DbSet<Ticket> Tickets { get; set; }
 
     public virtual DbSet<TicketType> TicketTypes { get; set; }
-    public virtual DbSet<TourScheduleTicket> TourScheduleTicket { get; set; }
+
+    public DbSet<TourScheduleTicket> TourScheduleTicket { get; set; }
     public virtual DbSet<ImageUrl> ImageUrls { get; set; }
     public virtual DbSet<Category> Categories { get; set; }
     
@@ -80,7 +81,7 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options) : IdentityDbCo
                 Email = "contact@techinnovators.com",
                 Phone = "123-456-7890",
                 TaxCode = "ABC123456",
-                License = "LICENSE1234",
+                Licensed = true,
                 CreatedBy = "admin",
             }
         );
@@ -166,14 +167,14 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options) : IdentityDbCo
         modelBuilder.Entity<TourSchedule>().HasData(
             new TourSchedule
             {
-                Id = schedule1Id, TourId = tour1Id, StartDate = DateTime.UtcNow, EndDate = DateTime.UtcNow.AddDays(5),
+                Id = schedule1Id, TourId = tour1Id, OpenDate = DateTime.UtcNow, CloseDate = DateTime.UtcNow.AddDays(5),
                 PriceChangeRate = 1.2, Remark = "No special remarks", CreatedAt = DateTime.UtcNow, CreatedBy = "admin",
                 IsDeleted = false
             },
             new TourSchedule
             {
-                Id = schedule2Id, TourId = tour2Id, StartDate = DateTime.UtcNow.AddDays(10),
-                EndDate = DateTime.UtcNow.AddDays(15), PriceChangeRate = 1.5, Remark = "Special offer",
+                Id = schedule2Id, TourId = tour2Id, OpenDate = DateTime.UtcNow.AddDays(10),
+                CloseDate = DateTime.UtcNow.AddDays(15), PriceChangeRate = 1.5, Remark = "Special offer",
                 CreatedAt = DateTime.UtcNow, CreatedBy = "admin", IsDeleted = false
             }
         );
