@@ -9,7 +9,10 @@ public partial class TourBooking : AuditEntity
     private static double Tax { get; } = 0.1;
     public string UserId { get; private set; }
     public string Code { get; private set; }
+    public string Name { get; private set; }
 
+    public string PhoneNumber { get; private set; }
+    public string Email { get; private set; }
     public Guid TourScheduleId { get; private set; }
 
     private readonly List<Ticket> _tickets = new();
@@ -35,13 +38,13 @@ public partial class TourBooking : AuditEntity
 
     public string? Remark { get; private set; }
 
-    public virtual TourSchedule? TourSchedule { get; private set; } = null!;
+    public virtual TourSchedule TourSchedule { get; private set; } = null!;
 
     public TourBooking()
     {
     }
 
-    public TourBooking(string userId, Guid tourScheduleId, TourSchedule? tourSchedule)
+    public TourBooking(string userId, Guid tourScheduleId, TourSchedule tourSchedule, string name, string phoneNumber, string email)
     {
         Code = (userId.Substring(0, 4)
                 + tourScheduleId.ToString("N").Substring(0, 4)).Random();
@@ -49,6 +52,9 @@ public partial class TourBooking : AuditEntity
         TourScheduleId = tourScheduleId;
         Status = BookingStatus.Pending;
         TourSchedule = tourSchedule;
+        Name = name;
+        PhoneNumber = phoneNumber;
+        Email = email;
     }
 
     public void ApplyVoucher(Voucher? voucher)
@@ -71,7 +77,7 @@ public partial class TourBooking : AuditEntity
     {
         if (!TourSchedule.HasAvailableTicket(quantity, ticketTypeId))
         {
-            return;
+            throw new AggregateException("Ticket quantity is out of range");
         }
 
         var existedTicket = _tickets.SingleOrDefault(x => x.TourBookingId == Id

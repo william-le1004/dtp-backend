@@ -1,4 +1,6 @@
-﻿using Application.Contracts.Persistence;
+﻿using System.ComponentModel.DataAnnotations;
+using Application.Contracts;
+using Application.Contracts.Persistence;
 using Application.Features.Order.Event;
 using Domain.Entities;
 using MediatR;
@@ -8,34 +10,40 @@ namespace Application.Features.Order.Commands;
 
 public record PlaceOrderCommand : IRequest<TourBooking>
 {
-    public Guid TourScheduleId { get; set; }
-    public List<TicketRequest> Tickets { get; set; } = new();
+    [Required] public Guid TourScheduleId { get; set; }
+    [Required] public required string Name { get; set; }
+
+    [Required] [Phone] public required string PhoneNumber { get; set; }
+    [Required] [EmailAddress] public required string Email { get; set; }
+    // ReSharper disable once CollectionNeverUpdated.Global
+    [Required] public List<TicketRequest> Tickets { get; set; } = new();
 }
 
-public record TicketRequest
+public abstract record TicketRequest
 {
-    public Guid TourScheduleTicketId { get; set; }
-    public int Quantity { get; set; }
+    [Required] public Guid TicketTypeId { get; set; }
+    [Required] public int Quantity { get; set; }
 }
 
-public class PlaceOrderCommandHandler(IDtpDbContext context, IPublisher publisher)
+public class PlaceOrderCommandHandler(IDtpDbContext context, IPublisher publisher, IUserContextService userService)
     : IRequestHandler<PlaceOrderCommand, TourBooking>
 {
     public async Task<TourBooking> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
     {
-        var userId = string.Empty;
-        // Update later when we have done the identity
+        var userId = userService.GetCurrentUserId()!;
+        
         var removeBasketEvent = new OrderSubmittedEvent(userId, request.TourScheduleId);
         var touSchedule = context.TourSchedules.Include(x => x.TourScheduleTickets)
             .AsSplitQuery()
             .AsNoTracking()
-            .SingleOrDefault(t => t.Id == request.TourScheduleId);
+            .Single(t => t.Id == request.TourScheduleId);
 
-        var booking = new TourBooking(userId, request.TourScheduleId, touSchedule);
+        var booking = new TourBooking(userId, request.TourScheduleId, touSchedule,
+            request.Name, request.PhoneNumber, request.Email);
 
         foreach (var ticket in request.Tickets)
         {
-            booking.AddTicket(ticket.Quantity, ticket.TourScheduleTicketId);
+            booking.AddTicket(ticket.Quantity, ticket.TicketTypeId);
         }
 
         context.TourBookings.Add(booking);
