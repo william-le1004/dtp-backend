@@ -65,22 +65,13 @@ public class UserRepository : IUserRepository
         return await query.OrderBy(x => x.CreatedAt).ToListAsync();
     }
 
-    public async Task<User?> GetUserIdAsync(string userId)
+    public async Task<User?> GetUserDetailAsync(string userId)
     {
-        IQueryable<User> query = _dtpDbContext.Users
+        IQueryable<User> query = _dtpDbContext.Users.Where(x => x.Id == userId)
             .Include(x => x.Company)
             .Include(x => x.Wallet);
 
-        if (!_userContextService.IsAdminRole())
-        {
-            var managerCompanyIds = (await _userManager.GetUsersInRoleAsync(ApplicationRole.MANAGER))
-                .Select(m => m.CompanyId)
-                .ToList();
-
-            query = query.Where(x => managerCompanyIds.Contains(x.CompanyId));
-        }
-
-        return await query.FirstOrDefaultAsync(x => x.Id == userId);
+        return await query.FirstOrDefaultAsync();
     }
 
     public async Task<bool> CreateUser(User user, string role)
@@ -124,7 +115,7 @@ public class UserRepository : IUserRepository
 
     private async Task<bool> SaveChangesIfNeededAsync()
     {
-        var changes = await _dtpDbContext.SaveChangesAsync();
+        await _dtpDbContext.SaveChangesAsync();
         return true;
     }
 }

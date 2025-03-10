@@ -4,6 +4,7 @@ using Application.Contracts.Authentication;
 using Application.Contracts.Caching;
 using Application.Contracts.Persistence;
 using Domain.Entities;
+using Infrastructure.Common.Constants;
 using Infrastructure.Common.Settings;
 using Infrastructure.Contexts;
 using Infrastructure.Repositories.Persistence;
@@ -92,12 +93,20 @@ public static class DependencyInjection
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("AuthUsers", policy => policy.RequireAuthenticatedUser());
-            options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-            options.AddPolicy("OperatorOnly", policy => policy.RequireRole("Operator"));
-            options.AddPolicy("AdminAndOperator", policy
-                => policy.RequireRole("Admin")
-                    .RequireRole("Operator"));
+            options.AddPolicy(ApplicationConst.AUTH_POLICY, policy => policy.RequireAuthenticatedUser());
+            options.AddPolicy(ApplicationConst.ADMIN_POLICY, policy => policy.RequireRole(ApplicationRole.ADMIN));
+            options.AddPolicy(ApplicationConst.OPERATOR_POLICY,
+                policy => policy.RequireRole(ApplicationRole.OPERATOR));
+            options.AddPolicy(ApplicationConst.AD_OR_OP_POLICY,
+                policy => policy.RequireRole(ApplicationRole.ADMIN, ApplicationRole.OPERATOR));
+        });
+
+        services.AddCors(options =>
+        {
+            options.AddPolicy("all", corsPolicyBuilder => corsPolicyBuilder
+                .AllowAnyHeader()
+                .AllowAnyOrigin()
+                .AllowAnyMethod());
         });
         
         return services;

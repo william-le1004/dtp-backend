@@ -9,4 +9,6 @@ public class AccessTokenResponse
     public long ExpiresIn { get; init; }
     
     public string RefreshToken { get; init; }
+    
+    public string Role { get; init; }
 }
