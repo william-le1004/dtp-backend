@@ -16,7 +16,7 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(Policy = ApplicationConst.AUTH_POLICY)]
-public class UserController: BaseController
+public class UserController : BaseController
 {
     private readonly IMediator _mediator;
     private readonly IUserContextService _userContextService;
@@ -26,7 +26,7 @@ public class UserController: BaseController
         _mediator = mediator;
         _userContextService = userContextService;
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> Get()
     {
@@ -35,11 +35,12 @@ public class UserController: BaseController
         {
             return Unauthorized(ApiResponse<bool>.Failure("User not authenticated", 401));
         }
+
         var response = await _mediator.Send(new GetUserDetailQuery(userId));
 
         return HandleServiceResult(response);
     }
-    
+
     [HttpGet("all")]
     [Authorize(Policy = ApplicationConst.AD_OR_OP_POLICY)]
     [EnableQuery]
@@ -48,7 +49,7 @@ public class UserController: BaseController
         var response = await _mediator.Send(new GetUserQuery());
         return HandleServiceResult(response);
     }
-    
+
     [HttpPost]
     [Authorize(Policy = ApplicationConst.AD_OR_OP_POLICY)]
     public async Task<IActionResult> Create([FromBody] CreateUserCommand createUserCommand)
@@ -56,10 +57,10 @@ public class UserController: BaseController
         var response = await _mediator.Send(createUserCommand);
         return HandleServiceResult(response);
     }
-    
+
     [HttpDelete("{id}")]
     [Authorize(Policy = ApplicationConst.AD_OR_OP_POLICY)]
-    public async Task<IActionResult> Delete([FromQuery] string userId)
+    public async Task<IActionResult> Delete([FromRoute] string userId)
     {
         var response = await _mediator.Send(new DeleteUserCommand(userId));
         return HandleServiceResult(response);

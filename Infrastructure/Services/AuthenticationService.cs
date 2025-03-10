@@ -15,7 +15,8 @@ public class AuthenticationService : IAuthenticationService
     private readonly IRedisCacheService _redisCache;
     private readonly IUserContextService _userContext;
 
-    public AuthenticationService(UserManager<User> userManager, JwtTokenService jwtTokenService, IRedisCacheService redisCache, IUserContextService userContext)
+    public AuthenticationService(UserManager<User> userManager, JwtTokenService jwtTokenService,
+        IRedisCacheService redisCache, IUserContextService userContext)
     {
         _userManager = userManager;
         _jwtTokenService = jwtTokenService;

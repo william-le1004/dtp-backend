@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Features.Company.Commands;
 
-public record UpdateCompanyCommand(Guid Id, string Name, string Email, string Phone, string TaxCode) 
+public record UpdateCompanyCommand(Guid Id, string Name, string Email, string Phone, string TaxCode)
     : IRequest<ApiResponse<bool>>;
 
 public class UpdateCompanyValidator : AbstractValidator<UpdateCompanyCommand>

@@ -1,6 +1,5 @@
 ﻿using Application.Contracts;
 using Application.Contracts.Persistence;
-using Domain.Common;
 using Domain.DataModel;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -8,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Contexts;
 
-public class DtpDbContext(DbContextOptions<DtpDbContext> options, IUserContextService userContext) : IdentityDbContext<User>(options), IDtpDbContext
+public class DtpDbContext(DbContextOptions<DtpDbContext> options, IUserContextService userContext)
+    : IdentityDbContext<User>(options), IDtpDbContext
 {
     public virtual DbSet<Company> Companies { get; set; }
 
@@ -33,11 +33,11 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options, IUserContextSe
     public virtual DbSet<Wallet> Wallets { get; set; }
 
     public virtual DbSet<Basket> Baskets { get; set; }
-    
+
     public virtual DbSet<TourBasketItem> TourBasketItems { get; set; }
-    
+
     public virtual DbSet<Ticket> Tickets { get; set; }
-    
+
     public virtual DbSet<TicketType> TicketTypes { get; set; }
     public virtual DbSet<TourScheduleTicket> TourScheduleTicket { get; set; }
     public virtual DbSet<ImageUrl> ImageUrls { get; set; }

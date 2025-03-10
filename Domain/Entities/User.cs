@@ -9,8 +9,8 @@ public sealed class User : IdentityUser
 
     public User()
     {
-        
     }
+
     public User(string userName, string email, string name, string address, string phoneNumber)
     {
         UserName = userName;
@@ -23,7 +23,7 @@ public sealed class User : IdentityUser
         Wallet = new Wallet(Id);
         CreatedAt = DateTime.UtcNow;
     }
-    
+
     public DateTime CreatedAt { get; init; }
     public string? CreatedBy { get; set; }
     public DateTime? LastModified { get; set; }

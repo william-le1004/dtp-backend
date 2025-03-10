@@ -7,7 +7,7 @@ public partial class Rating : AuditEntity
     public string UserId { get; set; }
 
     public int Star { get; set; }
-    
+
     public string Comment { get; set; }
 
     public virtual Tour Tour { get; set; } = null!;

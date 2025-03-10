@@ -15,7 +15,8 @@ public class LoginHandler
         _authenticationService = authenticationService;
     }
 
-    public async Task<ApiResponse<AccessTokenResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<AccessTokenResponse>> Handle(LoginCommand request,
+        CancellationToken cancellationToken)
     {
         var validator = new LoginValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -24,7 +25,7 @@ public class LoginHandler
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
             return ApiResponse<AccessTokenResponse>.Failure("Validation failed", 400, errors);
         }
-        
+
         try
         {
             var user = new LoginRequestDto(request.UserName, request.Password);

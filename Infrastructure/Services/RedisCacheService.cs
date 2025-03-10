@@ -27,10 +27,10 @@ public class RedisCacheService : IRedisCacheService
         {
             AbsoluteExpirationRelativeToNow = expiration ?? TimeSpan.FromMinutes(1)
         };
-        
+
         await _redisCache.SetStringAsync(key, JsonSerializer.Serialize(data), options);
     }
-    
+
     public async Task<bool> RemoveDataAsync(string key)
     {
         await _redisCache.RemoveAsync(key);

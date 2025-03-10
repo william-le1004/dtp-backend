@@ -18,7 +18,7 @@ public record TourTemplateResponse
     public double AvgStar { get; set; }
 
     public int TotalRating { get; set; }
-    
+
     public decimal OnlyFromCost { get; set; }
 }
 
@@ -35,7 +35,8 @@ public class GetToursHandler(IDtpDbContext context) : IRequestHandler<GetTours, 
             {
                 Id = tour.Id,
                 ThumbnailUrl = context.ImageUrls.Any(image => image.RefId == tour.Id)
-                    ? context.ImageUrls.FirstOrDefault(image => image.RefId == tour.Id).Url : null,
+                    ? context.ImageUrls.FirstOrDefault(image => image.RefId == tour.Id).Url
+                    : null,
                 Title = tour.Title,
                 CompanyName = tour.Company.Name,
                 Description = tour.Description,
@@ -47,4 +48,3 @@ public class GetToursHandler(IDtpDbContext context) : IRequestHandler<GetTours, 
         return await tours.ToListAsync(cancellationToken);
     }
 }
-

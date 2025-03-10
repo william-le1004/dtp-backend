@@ -1,7 +1,6 @@
 using Application.Contracts;
 using Application.Contracts.Caching;
 using Application.Contracts.Persistence;
-using Application.Features.Users.Queries.Get;
 using Domain.Entities;
 using Infrastructure.Common.Constants;
 using Infrastructure.Contexts;
@@ -51,8 +50,9 @@ public class UserRepository : IUserRepository
     {
         IQueryable<User> query = _dtpDbContext.Users
             .Include(x => x.Company)
-            .Include(x => x.Wallet);
-        
+            .Include(x => x.Wallet)
+            .AsNoTracking();
+
         if (!_userContextService.IsAdminRole())
         {
             var managerCompanyIds = (await _userManager.GetUsersInRoleAsync(ApplicationRole.MANAGER))
@@ -67,11 +67,12 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetUserDetailAsync(string userId)
     {
-        IQueryable<User> query = _dtpDbContext.Users.Where(x => x.Id == userId)
+        return await _dtpDbContext.Users
+            .Where(x => x.Id == userId)
             .Include(x => x.Company)
-            .Include(x => x.Wallet);
-
-        return await query.FirstOrDefaultAsync();
+            .Include(x => x.Wallet)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
     }
 
     public async Task<bool> CreateUser(User user, string role)

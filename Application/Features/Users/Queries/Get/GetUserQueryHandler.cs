@@ -23,7 +23,7 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, ApiResponse<Lis
             user.Email,
             user.Company?.Name ?? "N/A"
         )).ToList();
-        
+
         return ApiResponse<List<UserDto>>.SuccessResult(userDtos);
     }
 }

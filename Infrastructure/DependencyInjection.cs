@@ -24,20 +24,19 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructureService(this IServiceCollection services,
         IConfiguration configuration)
     {
-        
         var environmentSection = configuration.GetSection("Environment");
-        
+
         var connectionString = environmentSection.GetConnectionString("DefaultConnection");
         var jwtSettings = environmentSection.GetSection("JwtSettings");
         var redisConnection = environmentSection.GetSection("Redis");
         var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
-        
+
         services.Configure<JwtSettings>(jwtSettings);
 
         services.AddDbContext<DtpDbContext>((sp, options) =>
         {
             options.UseMySQL(connectionString)
-                .AddInterceptors(sp.GetService<AuditableEntityInterceptor>()); 
+                .AddInterceptors(sp.GetService<AuditableEntityInterceptor>());
         });
 
         services.AddStackExchangeRedisCache(options =>
@@ -51,18 +50,18 @@ public static class DependencyInjection
                 SyncTimeout = 10000
             };
         });
-        
+
         services.AddSingleton<IConnectionMultiplexer>(sp =>
         {
             var configuration = ConfigurationOptions.Parse(redisConnection["Endpoint"], true);
             configuration.Password = redisConnection["Password"];
             return ConnectionMultiplexer.Connect(configuration);
         });
-        
+
         services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<DtpDbContext>()
             .AddDefaultTokenProviders();
-        
+
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
         services.AddScoped<IUserRepository, UserRepository>();
@@ -70,7 +69,7 @@ public static class DependencyInjection
         services.AddScoped<IDtpDbContext, DtpDbContext>();
         services.AddHttpContextAccessor();
         services.AddScoped<IUserContextService, UserContextService>();
-        
+
         services.AddAuthentication(item =>
         {
             item.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -108,7 +107,7 @@ public static class DependencyInjection
                 .AllowAnyOrigin()
                 .AllowAnyMethod());
         });
-        
+
         return services;
     }
 }

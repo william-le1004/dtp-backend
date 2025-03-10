@@ -1,12 +1,9 @@
-﻿using Application.Contracts.Persistence;
-using Application.Common;
-using Application.Dtos; // Giả sử TourResponse được định nghĩa: record TourResponse(Guid Id, string Title, Guid? CompanyId, Guid? Category, string? Description);
-using Domain.Entities;
+﻿using Application.Common;
+using Application.Contracts.Persistence;
+using Application.Dtos;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+// Giả sử TourResponse được định nghĩa: record TourResponse(Guid Id, string Title, Guid? CompanyId, Guid? Category, string? Description);
 
 namespace Application.Features.Tour.Commands
 {
@@ -28,7 +25,8 @@ namespace Application.Features.Tour.Commands
             _context = context;
         }
 
-        public async Task<ApiResponse<TourResponse>> Handle(UpdateTourInforCommand request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<TourResponse>> Handle(UpdateTourInforCommand request,
+            CancellationToken cancellationToken)
         {
             // Tìm Tour theo TourId
             var tour = await _context.Tours.FirstOrDefaultAsync(t => t.Id == request.TourId, cancellationToken);

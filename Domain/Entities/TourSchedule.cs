@@ -21,6 +21,7 @@ public class TourSchedule : AuditEntity
     public TourSchedule()
     {
     }
+
     public TourSchedule(Guid tourId, DateTime startDate, DateTime endDate)
     {
         Id = Guid.NewGuid();
@@ -28,15 +29,17 @@ public class TourSchedule : AuditEntity
         OpenDate = startDate;
         CloseDate = endDate;
     }
+
     public void AddTicket(TourScheduleTicket ticket)
     {
         _tourScheduleTickets.Add(ticket);
     }
+
     public bool IsAvailable()
     {
         return _tourScheduleTickets.Sum(x => x.AvailableTicket) > 0 && !IsStarted();
     }
-    
+
     public bool IsAvailableTicket(Guid ticketTypeId)
     {
         return _tourScheduleTickets.Single(x => x.TicketTypeId == ticketTypeId).IsAvailable();

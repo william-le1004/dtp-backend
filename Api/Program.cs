@@ -35,7 +35,7 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1",
         Description = "API documentation for DTP project",
     });
-    
+
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -57,7 +57,7 @@ builder.Services.AddSwaggerGen(c =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            new string[] { }
         }
     });
 });

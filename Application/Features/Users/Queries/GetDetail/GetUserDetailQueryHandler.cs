@@ -17,8 +17,8 @@ public class GetUserDetailQueryHandler : IRequestHandler<GetUserDetailQuery, Api
         CancellationToken cancellationToken)
     {
         var result = await _userRepository.GetUserDetailAsync(request.Id);
-        
-        if(result == null)
+
+        if (result == null)
             return ApiResponse<UserDetailDto>.Failure("User not found");
 
         var userDetail = new UserDetailDto
