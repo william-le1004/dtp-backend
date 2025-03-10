@@ -18,7 +18,7 @@ public class CompanyController : BaseController
     {
         _mediator = mediator;
     }
-    
+
     [HttpGet]
     [Authorize(Policy = ApplicationConst.ADMIN_POLICY)]
     public async Task<IActionResult> Get()
@@ -26,30 +26,30 @@ public class CompanyController : BaseController
         var response = await _mediator.Send(new GetCompaniesQuery());
         return HandleServiceResult(response);
     }
-    
+
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> Get([FromQuery] Guid id)
+    public async Task<IActionResult> Get([FromRoute] Guid id)
     {
         var response = await _mediator.Send(new GetCompanyQuery(id));
         return HandleServiceResult(response);
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateCompanyCommand command)
     {
         var response = await _mediator.Send(command);
         return HandleServiceResult(response);
     }
-    
+
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdateCompanyCommand command)
     {
         var response = await _mediator.Send(command);
         return HandleServiceResult(response);
     }
-    
+
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Update([FromQuery] string id)
+    public async Task<IActionResult> Update([FromRoute] Guid id)
     {
         var response = await _mediator.Send(new DeleteCompanyCommand(id));
         return HandleServiceResult(response);

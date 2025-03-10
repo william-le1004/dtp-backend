@@ -16,7 +16,8 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         _contextService = contextService;
     }
 
-    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
+    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData,
+        InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
         UpdateEntities(eventData.Context);
 
@@ -43,7 +44,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                 entry.Entity.LastModified = DateTime.Now;
             }
         }
-        
+
         foreach (var entry in context.ChangeTracker.Entries<User>())
         {
             if (entry.State == EntityState.Added)

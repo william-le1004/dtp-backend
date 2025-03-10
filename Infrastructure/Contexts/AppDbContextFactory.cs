@@ -1,5 +1,4 @@
 using Application.Contracts;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -21,6 +20,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<DtpDbContext>
 public class DummyUserContextService : IUserContextService
 {
     public string GetCurrentUserId() => "system";
+
     public List<string> GetCurrentUserRoles()
         => new List<string> { "Admin" };
 

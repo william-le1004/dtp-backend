@@ -26,13 +26,13 @@ public class JwtTokenService
         _userManager = userManager;
         _redisDb = redis.GetDatabase();
     }
-    
+
     public async Task<AccessTokenResponse> GenerateTokens(User user)
     {
         var accessToken = await GenerateJwtToken(user);
         var refreshToken = GenerateRefreshToken();
         var userRole = await _userManager.GetRolesAsync(user);
-        
+
         var response = new AccessTokenResponse
         {
             AccessToken = accessToken,
@@ -42,7 +42,7 @@ public class JwtTokenService
         };
         return response;
     }
-    
+
     private async Task<string> GenerateJwtToken(User user)
     {
         var userRoles = await _userManager.GetRolesAsync(user);
@@ -71,7 +71,7 @@ public class JwtTokenService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-    
+
     private string GenerateRefreshToken()
     {
         var randomNumber = new byte[64];
@@ -79,9 +79,10 @@ public class JwtTokenService
         {
             rng.GetBytes(randomNumber);
         }
+
         return Convert.ToBase64String(randomNumber);
     }
-    
+
     public string GetJtiFromToken(string token)
     {
         var handler = new JwtSecurityTokenHandler();
@@ -95,7 +96,7 @@ public class JwtTokenService
         var jwtToken = handler.ReadJwtToken(token);
         return jwtToken.ValidTo;
     }
-    
+
     public async Task<string> ValidateRefreshToken(string refreshToken)
     {
         var server = _redisDb.Multiplexer.GetServer(_redisDb.Multiplexer.GetEndPoints()[0]);

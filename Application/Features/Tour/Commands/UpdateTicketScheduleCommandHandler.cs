@@ -1,12 +1,7 @@
-﻿using Application.Contracts.Persistence;
-using Application.Common;
+﻿using Application.Common;
+using Application.Contracts.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Domain.Entities;
 
 namespace Application.Features.Tour.Commands
 {
@@ -16,7 +11,7 @@ namespace Application.Features.Tour.Commands
         Guid TourId,
         decimal? NewNetCost,
         int? NewAvailableTicket,
-        DateTime? StartDate,  // Nếu có, chỉ áp dụng cho những vé của TourSchedule có StartDate nằm trong khoảng này
+        DateTime? StartDate, // Nếu có, chỉ áp dụng cho những vé của TourSchedule có StartDate nằm trong khoảng này
         DateTime? EndDate
     ) : IRequest<ApiResponse<string>>;
 
@@ -29,7 +24,8 @@ namespace Application.Features.Tour.Commands
             _context = context;
         }
 
-        public async Task<ApiResponse<string>> Handle(UpdateTicketScheduleCommand request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<string>> Handle(UpdateTicketScheduleCommand request,
+            CancellationToken cancellationToken)
         {
             // Cast _context sang DbContext để sử dụng Entry
             var dbContext = _context as DbContext;
@@ -62,6 +58,7 @@ namespace Application.Features.Tour.Commands
                 {
                     dbContext.Entry(ticket).Property("NetCost").CurrentValue = request.NewNetCost.Value;
                 }
+
                 if (request.NewAvailableTicket.HasValue)
                 {
                     dbContext.Entry(ticket).Property("AvailableTicket").CurrentValue = request.NewAvailableTicket.Value;
@@ -82,6 +79,7 @@ namespace Application.Features.Tour.Commands
                     {
                         dbContext.Entry(st).Property("NetCost").CurrentValue = request.NewNetCost.Value;
                     }
+
                     dbContext.Entry(tt).Property("DefaultNetCost").CurrentValue = request.NewNetCost.Value;
                 }
             }

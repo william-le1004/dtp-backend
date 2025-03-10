@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Features.Company.Commands;
 
-public record DeleteCompanyCommand(string UserId) : IRequest<ApiResponse<bool>>;
+public record DeleteCompanyCommand(Guid Id) : IRequest<ApiResponse<bool>>;
 
 public class DeleteCompanyCommandHandler : IRequestHandler<DeleteCompanyCommand, ApiResponse<bool>>
 {
@@ -17,7 +17,7 @@ public class DeleteCompanyCommandHandler : IRequestHandler<DeleteCompanyCommand,
 
     public async Task<ApiResponse<bool>> Handle(DeleteCompanyCommand request, CancellationToken cancellationToken)
     {
-        var company = await _context.Companies.FindAsync(request.UserId);
+        var company = await _context.Companies.FindAsync(request.Id);
 
         if (company is null)
             return ApiResponse<bool>.Failure("Company not found");

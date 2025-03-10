@@ -42,4 +42,3 @@ public class JwtBlacklistMiddleware
         await _next(context);
     }
 }
-

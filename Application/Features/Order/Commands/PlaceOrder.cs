@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Application.Contracts.Persistence;
+﻿using Application.Contracts.Persistence;
 using Application.Features.Order.Event;
 using Domain.Entities;
 using MediatR;

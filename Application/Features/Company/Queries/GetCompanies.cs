@@ -21,8 +21,12 @@ public class GetCompaniesQueryHandler : IRequestHandler<GetCompaniesQuery, ApiRe
     public async Task<ApiResponse<List<CompanyDto>>> Handle(GetCompaniesQuery request,
         CancellationToken cancellationToken)
     {
-        
-        var companies = await _context.Companies.Include(x => x.Staffs).ToListAsync(cancellationToken);
+        var companies = await _context.Companies
+            .Include(x => x.Staffs)
+            .Include(x => x.Tours)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
         return ApiResponse<List<CompanyDto>>.SuccessResult(companies.Select(c => new CompanyDto(
             c.Id,
             c.Name,
@@ -30,7 +34,8 @@ public class GetCompaniesQueryHandler : IRequestHandler<GetCompaniesQuery, ApiRe
             c.Email,
             c.TaxCode,
             c.Licensed,
-            c.Staffs.Select(x => new StaffDto(x.Id, x.Name, x.PhoneNumber, x.Email)).FirstOrDefault()
+            c.StaffCount(),
+            c.TourCount()
         )).ToList());
     }
 }

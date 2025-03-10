@@ -15,7 +15,7 @@ public partial class Wallet : AuditEntity
         UserId = userId;
         Balance = 0;
     }
-    
+
     public Wallet(string userId, decimal balance)
     {
         UserId = userId;

@@ -37,7 +37,10 @@ public partial class TourBooking : AuditEntity
 
     public virtual TourSchedule? TourSchedule { get; private set; } = null!;
 
-    public TourBooking() { }
+    public TourBooking()
+    {
+    }
+
     public TourBooking(string userId, Guid tourScheduleId, TourSchedule? tourSchedule)
     {
         Code = (userId.Substring(0, 4)

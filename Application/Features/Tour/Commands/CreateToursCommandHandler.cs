@@ -1,10 +1,11 @@
-﻿using Application.Contracts.Persistence;
-using Application.Common;
+﻿using Application.Common;
+using Application.Contracts.Persistence;
 using Application.Dtos;
 using Domain.Entities;
 using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+
 namespace Application.Features.Tour.Commands
 {
     public record DestinationToAdd(
@@ -42,15 +43,18 @@ namespace Application.Features.Tour.Commands
             _context = context;
         }
 
-        public async Task<ApiResponse<TourResponse>> Handle(CreateTourCommand request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<TourResponse>> Handle(CreateTourCommand request,
+            CancellationToken cancellationToken)
         {
-            var tour = new Domain.Entities.Tour(request.Title, request.CompanyId, request.Category, request.Description);
+            var tour = new Domain.Entities.Tour(request.Title, request.CompanyId, request.Category,
+                request.Description);
 
             if (request.Destinations is not null)
             {
                 foreach (var dest in request.Destinations)
                 {
-                    var tourDestination = new TourDestination(tour.Id, dest.DestinationId, dest.StartTime, dest.EndTime, dest.SortOrder, dest.SortOrderByDate);
+                    var tourDestination = new TourDestination(tour.Id, dest.DestinationId, dest.StartTime, dest.EndTime,
+                        dest.SortOrder, dest.SortOrderByDate);
                     tour.TourDestinations.Add(tourDestination);
                 }
             }
@@ -60,7 +64,8 @@ namespace Application.Features.Tour.Commands
                 foreach (var ticket in request.Tickets)
                 {
                     var ticketKind = (TicketKind)ticket.TicketKind;
-                    var ticketType = new TicketType(ticket.DefaultNetCost, ticket.MinimumPurchaseQuantity, ticketKind, tour.Id);
+                    var ticketType = new TicketType(ticket.DefaultNetCost, ticket.MinimumPurchaseQuantity, ticketKind,
+                        tour.Id);
                     tour.Tickets.Add(ticketType);
                 }
             }
@@ -68,7 +73,8 @@ namespace Application.Features.Tour.Commands
             var dbContext = _context as DbContext;
             if (dbContext == null)
             {
-                throw new Exception("The IDtpDbContext instance is not a DbContext. Ensure your context implements Microsoft.EntityFrameworkCore.DbContext.");
+                throw new Exception(
+                    "The IDtpDbContext instance is not a DbContext. Ensure your context implements Microsoft.EntityFrameworkCore.DbContext.");
             }
 
             DateTime currentDay = request.OpenDay.Date;
@@ -87,7 +93,8 @@ namespace Application.Features.Tour.Commands
                 dbContext.Entry(schedule).Property("CloseDate").CurrentValue = currentDay;
                 foreach (var ticketType in tour.Tickets)
                 {
-                    var scheduleTicket = new TourScheduleTicket(ticketType.DefaultNetCost, 100, ticketType.Id, schedule.Id);
+                    var scheduleTicket =
+                        new TourScheduleTicket(ticketType.DefaultNetCost, 100, ticketType.Id, schedule.Id);
                     schedule.AddTicket(scheduleTicket);
                 }
 
@@ -99,7 +106,8 @@ namespace Application.Features.Tour.Commands
             await _context.SaveChangesAsync(cancellationToken);
 
             var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.CategoryId, tour.Description);
-            return ApiResponse<TourResponse>.SuccessResult(tourResponse, "Tour created successfully with destinations, tickets, and schedules");
+            return ApiResponse<TourResponse>.SuccessResult(tourResponse,
+                "Tour created successfully with destinations, tickets, and schedules");
         }
     }
 }

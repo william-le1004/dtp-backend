@@ -2,7 +2,6 @@ using Application.Common;
 using Application.Contracts.Persistence;
 using FluentValidation;
 using MediatR;
-using Domain.Entities;
 
 namespace Application.Features.Company.Commands;
 

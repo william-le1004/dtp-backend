@@ -1,11 +1,8 @@
-﻿using Application.Contracts.Persistence;
-using Application.Common;
+﻿using Application.Common;
+using Application.Contracts.Persistence;
+using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Domain.Entities;
 
 namespace Application.Features.Tour.Commands
 {
@@ -14,7 +11,7 @@ namespace Application.Features.Tour.Commands
         Guid TourId,
         DateTime OpenDay,
         DateTime CloseDay,
-        string ScheduleFrequency  // "daily", "weekly", "monthly"
+        string ScheduleFrequency // "daily", "weekly", "monthly"
     ) : IRequest<ApiResponse<string>>;
 
     public class AddScheduleHandler : IRequestHandler<AddScheduleCommand, ApiResponse<string>>
@@ -43,7 +40,8 @@ namespace Application.Features.Tour.Commands
             var dbContext = _context as DbContext;
             if (dbContext == null)
             {
-                throw new Exception("The IDtpDbContext instance is not a DbContext. Ensure your context implements Microsoft.EntityFrameworkCore.DbContext.");
+                throw new Exception(
+                    "The IDtpDbContext instance is not a DbContext. Ensure your context implements Microsoft.EntityFrameworkCore.DbContext.");
             }
 
             // Xác định hàm tăng theo tần suất: daily (1 ngày), weekly (7 ngày), monthly (1 tháng)
@@ -52,7 +50,7 @@ namespace Application.Features.Tour.Commands
             {
                 "weekly" => d => d.AddDays(7),
                 "monthly" => d => d.AddMonths(1),
-                _ => d => d.AddDays(1)  // Mặc định là daily
+                _ => d => d.AddDays(1) // Mặc định là daily
             };
 
             // Lặp qua từng ngày (hoặc tuần, hoặc tháng) trong khoảng thời gian [OpenDay, CloseDay]
@@ -87,7 +85,8 @@ namespace Application.Features.Tour.Commands
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return ApiResponse<string>.SuccessResult("Tour schedules added successfully", "Schedule added successfully");
+            return ApiResponse<string>.SuccessResult("Tour schedules added successfully",
+                "Schedule added successfully");
         }
     }
 }

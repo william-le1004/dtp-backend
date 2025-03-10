@@ -12,7 +12,7 @@ public class TicketType
 
     public TicketType(decimal defaultNetCost, int minimumPurchaseQuantity, TicketKind ticketKind, Guid tourId)
     {
-        Id = Guid.NewGuid(); 
+        Id = Guid.NewGuid();
         DefaultNetCost = defaultNetCost;
         MinimumPurchaseQuantity = minimumPurchaseQuantity;
         TicketKind = ticketKind;

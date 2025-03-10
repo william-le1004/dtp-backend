@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Application.Common;
 using Application.Contracts;
 using Application.Features.Users.Commands.Login;
@@ -30,7 +29,7 @@ public class AuthenticationController : BaseController
         var response = await _mediator.Send(request);
         return HandleServiceResult(response);
     }
-    
+
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegistrationCommand request)
     {
@@ -47,6 +46,7 @@ public class AuthenticationController : BaseController
         {
             return Unauthorized(ApiResponse<bool>.Failure("User not authenticated", 401));
         }
+
         var response = await _mediator.Send(new LogoutCommand(userId));
         return HandleServiceResult(response);
     }

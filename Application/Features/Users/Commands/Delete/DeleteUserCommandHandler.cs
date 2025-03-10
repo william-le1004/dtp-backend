@@ -21,7 +21,7 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, ApiRe
             return ApiResponse<bool>.Failure("User not found");
 
         user.Deactivate();
-        
+
         await _userRepository.InactiveUser(user);
 
         return ApiResponse<bool>.SuccessResult(true);

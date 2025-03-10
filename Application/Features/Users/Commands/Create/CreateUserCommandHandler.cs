@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Features.Users.Commands.Create;
 
-public class CreateUserCommandHandler 
+public class CreateUserCommandHandler
     : IRequestHandler<CreateUserCommand, ApiResponse<bool>>
 {
     private readonly IUserRepository _userRepository;
@@ -14,7 +14,7 @@ public class CreateUserCommandHandler
     {
         _userRepository = userRepository;
     }
-    
+
     public async Task<ApiResponse<bool>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var validator = new CreateUserValidator();
@@ -27,7 +27,7 @@ public class CreateUserCommandHandler
         }
 
         var newUser = new User(request.UserName, request.Email, request.Name, request.Address, request.PhoneNumber);
-        
+
         var result = await _userRepository.CreateUser(newUser, request.RoleName);
         return result
             ? ApiResponse<bool>.SuccessResult(true, "User created successfully")

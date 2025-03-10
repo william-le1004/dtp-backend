@@ -6,7 +6,6 @@ using Microsoft.OData.ModelBuilder;
 
 namespace Api;
 
-
 public static class DependencyInjection
 {
     public static IServiceCollection AddEndpointServices(this IServiceCollection services)

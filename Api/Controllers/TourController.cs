@@ -3,7 +3,6 @@ using Application.Features.Tour.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using System.Security.Claims;
 
 namespace Api.Controllers;
 
@@ -31,8 +30,7 @@ public class TourController(ILogger<TourController> logger, IMediator mediator)
             None: () => NotFound($"Tour ({id}) not found."));
     }
 
-  
-   
+
     [HttpPost]
     public async Task<IActionResult> CreateTour([FromBody] CreateTourCommand command)
     {
@@ -53,6 +51,7 @@ public class TourController(ILogger<TourController> logger, IMediator mediator)
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
     }
+
     // Endpoint GET: /api/tour/getlisttourbycompany?companyId={companyId}
     [HttpGet("getlisttourbycompany")]
     public async Task<IActionResult> GetListTourByCompany([FromQuery] Guid companyId)
@@ -68,18 +67,21 @@ public class TourController(ILogger<TourController> logger, IMediator mediator)
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
     }
+
     [HttpDelete("deletetourschedule")]
     public async Task<IActionResult> DeleteTourSchedule([FromBody] DeleteTourScheduleCommand command)
     {
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
     }
+
     [HttpPost("addschedule")]
     public async Task<IActionResult> AddSchedule([FromBody] AddScheduleCommand command)
     {
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
     }
+
     // Endpoint PUT: /api/tour/updateticketschedule
     [HttpPut("updateticketschedule")]
     public async Task<IActionResult> UpdateTicketSchedule([FromBody] UpdateTicketScheduleCommand command)
@@ -87,5 +89,4 @@ public class TourController(ILogger<TourController> logger, IMediator mediator)
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
     }
-
 }

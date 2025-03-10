@@ -15,7 +15,8 @@ public class RefreshTokenCommandHandler
         _authenticationService = authenticationService;
     }
 
-    public async Task<ApiResponse<AccessTokenResponse>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<AccessTokenResponse>> Handle(RefreshTokenCommand request,
+        CancellationToken cancellationToken)
     {
         try
         {

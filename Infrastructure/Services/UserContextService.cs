@@ -17,7 +17,7 @@ public class UserContextService : IUserContextService
     {
         return _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
     }
-    
+
     public List<string> GetCurrentUserRoles()
     {
         return _httpContextAccessor.HttpContext?.User?
@@ -36,7 +36,7 @@ public class UserContextService : IUserContextService
 
         return user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
     }
-    
+
     public bool IsOperatorRole()
     {
         var user = _httpContextAccessor.HttpContext?.User;
@@ -47,7 +47,7 @@ public class UserContextService : IUserContextService
 
         return user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Operator");
     }
-    
+
     public string? GetAccessToken()
     {
         var authHeader = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();

@@ -12,14 +12,15 @@ public partial class TourDestination
     public TimeSpan EndTime { get; private set; }
 
     public int? SortOrder { get; private set; }
-    
+
     public int? SortOrderByDate { get; private set; }
 
     public virtual Destination Destination { get; private set; } = null!;
 
     public virtual Tour Tour { get; private set; } = null!;
 
-    public TourDestination(Guid tourId, Guid destinationId, TimeSpan startTime, TimeSpan endTime, int? sortOrder = null, int? sortOrderByDate = null)
+    public TourDestination(Guid tourId, Guid destinationId, TimeSpan startTime, TimeSpan endTime, int? sortOrder = null,
+        int? sortOrderByDate = null)
     {
         TourId = tourId;
         DestinationId = destinationId;
