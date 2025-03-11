@@ -11,6 +11,7 @@ public class Ticket
     public decimal GrossCost { get; private set; }
     public Guid TourBookingId { get; private set; }
     public virtual TourBooking TourBooking { get; private set; }
+    public virtual TicketType TicketType { get; private set; }
 
     public Ticket(Guid ticketTypeId, int quantity, decimal grossCost)
     {

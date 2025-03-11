@@ -1,5 +1,6 @@
 ﻿using Domain.DataModel;
 using Domain.Entities;
+using Domain.ValueObject;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Contracts.Persistence;
@@ -42,6 +43,7 @@ public interface IDtpDbContext
 
     public DbSet<TourScheduleTicket> TourScheduleTicket { get; set; }
     public DbSet<ImageUrl> ImageUrls { get; set; }
+    public DbSet<Voucher> Voucher { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

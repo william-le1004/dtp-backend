@@ -15,11 +15,13 @@ public record PlaceOrderCommand : IRequest<TourBooking>
 
     [Required] [Phone] public required string PhoneNumber { get; set; }
     [Required] [EmailAddress] public required string Email { get; set; }
-    // ReSharper disable once CollectionNeverUpdated.Global
+
+    public string? VoucherCode { get; set; }
+
     [Required] public List<TicketRequest> Tickets { get; set; } = new();
 }
 
-public abstract record TicketRequest
+public record TicketRequest
 {
     [Required] public Guid TicketTypeId { get; set; }
     [Required] public int Quantity { get; set; }
@@ -31,12 +33,13 @@ public class PlaceOrderCommandHandler(IDtpDbContext context, IPublisher publishe
     public async Task<TourBooking> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
     {
         var userId = userService.GetCurrentUserId()!;
-        
+
         var removeBasketEvent = new OrderSubmittedEvent(userId, request.TourScheduleId);
         var touSchedule = context.TourSchedules.Include(x => x.TourScheduleTickets)
             .AsSplitQuery()
-            .AsNoTracking()
             .Single(t => t.Id == request.TourScheduleId);
+        var voucher = await context.Voucher.SingleOrDefaultAsync(x => x.Code == request.VoucherCode,
+            cancellationToken: cancellationToken);
 
         var booking = new TourBooking(userId, request.TourScheduleId, touSchedule,
             request.Name, request.PhoneNumber, request.Email);
@@ -46,9 +49,14 @@ public class PlaceOrderCommandHandler(IDtpDbContext context, IPublisher publishe
             booking.AddTicket(ticket.Quantity, ticket.TicketTypeId);
         }
 
+        if (voucher is not null)
+        {
+            booking.ApplyVoucher(voucher);
+        }
+
         context.TourBookings.Add(booking);
         await context.SaveChangesAsync(cancellationToken: cancellationToken);
-        await publisher.Publish(removeBasketEvent, cancellationToken);
+        // await publisher.Publish(removeBasketEvent, cancellationToken);
 
         return booking;
     }

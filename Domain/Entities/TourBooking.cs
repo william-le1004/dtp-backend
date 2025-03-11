@@ -29,10 +29,8 @@ public partial class TourBooking : AuditEntity
         get { return _tickets.Sum(x => x.GrossCost * x.Quantity) * (decimal)Tax; }
     }
 
-    public decimal FinalAmount()
-    {
-        return GrossCost - DiscountAmount;
-    }
+    public decimal FinalAmount() => GrossCost - DiscountAmount;
+
 
     public BookingStatus Status { get; private set; }
 
@@ -44,7 +42,8 @@ public partial class TourBooking : AuditEntity
     {
     }
 
-    public TourBooking(string userId, Guid tourScheduleId, TourSchedule tourSchedule, string name, string phoneNumber, string email)
+    public TourBooking(string userId, Guid tourScheduleId, TourSchedule tourSchedule, string name, string phoneNumber,
+        string email)
     {
         Code = (userId.Substring(0, 4)
                 + tourScheduleId.ToString("N").Substring(0, 4)).Random();
@@ -57,13 +56,8 @@ public partial class TourBooking : AuditEntity
         Email = email;
     }
 
-    public void ApplyVoucher(Voucher? voucher)
+    public void ApplyVoucher(Voucher voucher)
     {
-        if (voucher == null)
-        {
-            return;
-        }
-
         if (!voucher.IsValid())
         {
             throw new ArgumentException("Invalid voucher");
@@ -75,6 +69,11 @@ public partial class TourBooking : AuditEntity
 
     public void AddTicket(int quantity, Guid ticketTypeId)
     {
+        if (TourSchedule.IsStarted())
+        {
+            throw new AggregateException("Tour schedule is already started");
+        }
+
         if (!TourSchedule.HasAvailableTicket(quantity, ticketTypeId))
         {
             throw new AggregateException("Ticket quantity is out of range");
@@ -95,6 +94,21 @@ public partial class TourBooking : AuditEntity
 
     public void CancelBooking(string remark)
     {
+        if (TourSchedule.IsStarted())
+        {
+            throw new AggregateException("Tour schedule is already started");
+        }
+        
+        if (!TourSchedule.IsBeforeStartDate())
+        {
+            throw new AggregateException("Cannot cancel booking before one date from start date");
+        }
+
+        if (!IsFreeCancellationPeriod())
+        {
+            throw new AggregateException("Cannot cancel booking after one date from booking date");
+        }
+
         if (Status == BookingStatus.Completed)
         {
             throw new AggregateException($"Can't cancel this tour booking. Status: {Status}.");
@@ -124,5 +138,11 @@ public partial class TourBooking : AuditEntity
 
         Status = BookingStatus.Completed;
         Remark = remark;
+    }
+
+    private bool IsFreeCancellationPeriod()
+    {
+        var freeCancellationPeriod = CreatedAt.AddDays(1);
+        return freeCancellationPeriod < DateTime.Now;
     }
 }

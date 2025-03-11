@@ -1,37 +1,34 @@
 ﻿using Application.Features.Order.Commands;
-using Domain.Entities;
-using Infrastructure.Contexts;
-using MediatR;
+using Application.Features.Order.Queries;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Domain.Entities;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class OderController(DtpDbContext context, IMediator mediator) : ControllerBase
+public class OderController(IMediator mediator) : ControllerBase
 {
     // GET: api/Oder
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TourBooking>>> GetTourBookings()
+    public async Task<IEnumerable<OrderResponses>> GetTourBookings()
     {
-        return await context.TourBookings.ToListAsync();
+        return await mediator.Send(new GetOrders());
     }
 
     // GET: api/Oder/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<TourBooking>> GetTourBooking(Guid id)
+    public async Task<ActionResult<OrderDetailResponse>> GetTourBooking(Guid id)
     {
-        var tourBooking = await context.TourBookings.FindAsync(id);
+        var result = await mediator.Send(new GetOrderDetail(id));
 
-        if (tourBooking == null)
-        {
-            return NotFound();
-        }
-
-        return tourBooking;
+        return result.Match<ActionResult<OrderDetailResponse>>(
+            Some: (value) => Ok(value),
+            None: () => NotFound($"Order ({id}) not found."));
     }
-
 
     // POST: api/Oder
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -39,23 +36,17 @@ public class OderController(DtpDbContext context, IMediator mediator) : Controll
     public async Task<ActionResult<TourBooking>> Checkout(PlaceOrderCommand command)
     {
         var order = await mediator.Send(command);
-
-        return order;
+        return CreatedAtAction(nameof(GetTourBookings), new { id = order.Id });
     }
 
     // DELETE: api/Oder/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTourBooking(Guid id)
+    [HttpPut("{id}")]
+    public async Task<ActionResult<Guid>> CancelBooking(Guid id,[FromBody] string remake)
     {
-        var tourBooking = await context.TourBookings.FindAsync(id);
-        if (tourBooking == null)
-        {
-            return NotFound();
-        }
+        var order = await mediator.Send(new CancelOrder(id, remake));
 
-        context.TourBookings.Remove(tourBooking);
-        await context.SaveChangesAsync();
-
-        return NoContent();
+        return order.Match<ActionResult<Guid>>(
+            Some: (value) => NoContent(),
+            None: () => BadRequest($"Order ({id}) not found."));
     }
 }
