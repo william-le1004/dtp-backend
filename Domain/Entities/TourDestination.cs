@@ -22,10 +22,12 @@ public partial class TourDestination
     public TourDestination(Guid tourId, Guid destinationId, TimeSpan startTime, TimeSpan endTime, int? sortOrder = null,
         int? sortOrderByDate = null)
     {
+        Id = Guid.NewGuid();
         TourId = tourId;
         DestinationId = destinationId;
         StartTime = startTime;
         EndTime = endTime;
         SortOrder = sortOrder;
+        SortOrderByDate = sortOrderByDate;
     }
 }

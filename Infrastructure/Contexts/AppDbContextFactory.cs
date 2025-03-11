@@ -9,7 +9,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<DtpDbContext>
     public DtpDbContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<DtpDbContext>();
-        optionsBuilder.UseMySQL("Server=MYSQL1001.site4now.net;Database=db_ab3495_dtp;Uid=ab3495_dtp;Pwd=dtpct123");
+        optionsBuilder.UseMySQL("Server=localhost;Database=dtp;Uid=root;Pwd=123456");
 
         var dummyUserContext = new DummyUserContextService();
 
@@ -37,5 +37,10 @@ public class DummyUserContextService : IUserContextService
     public string? GetAccessToken()
     {
         throw new NotImplementedException();
+    }
+
+    public Guid? GetCompanyId()
+    {
+        return Guid.Empty;
     }
 }

@@ -7,4 +7,5 @@ public interface IUserContextService
     bool IsAdminRole();
     bool IsOperatorRole();
     string? GetAccessToken();
+    Guid? GetCompanyId();
 }
