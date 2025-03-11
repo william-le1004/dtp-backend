@@ -27,16 +27,16 @@ public partial class Tour : AuditEntity
 
     public Tour(string title, Guid? companyId, Guid? category, string? description)
     {
+        Id = Guid.NewGuid();
         Title = title;
         CompanyId = companyId;
         CategoryId = category;
         Description = description;
     }
 
-    public void Update(string title, Guid? companyId, Guid? category, string? description)
+    public void Update(string title, Guid? category, string? description)
     {
         Title = title;
-        CompanyId = companyId;
         CategoryId = category;
         Description = description;
     }
@@ -45,4 +45,5 @@ public partial class Tour : AuditEntity
     {
         return Tickets.Select(x => x.DefaultNetCost).Min();
     }
+
 }

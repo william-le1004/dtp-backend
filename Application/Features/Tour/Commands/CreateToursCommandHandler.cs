@@ -1,6 +1,8 @@
 ﻿using Application.Common;
+using Application.Contracts;
 using Application.Contracts.Persistence;
 using Application.Dtos;
+using Domain.DataModel;
 using Domain.Entities;
 using Domain.Enum;
 using MediatR;
@@ -13,7 +15,8 @@ namespace Application.Features.Tour.Commands
         TimeSpan StartTime,
         TimeSpan EndTime,
         int? SortOrder = null,
-        int? SortOrderByDate = null
+        int? SortOrderByDate = null,
+        string Img = null
     );
 
     public record TicketToAdd(
@@ -24,31 +27,36 @@ namespace Application.Features.Tour.Commands
 
     public record CreateTourCommand(
         string Title,
-        Guid? CompanyId,
-        Guid? Category,
+        Guid? Categoryid,
         string? Description,
         List<DestinationToAdd>? Destinations,
         List<TicketToAdd>? Tickets,
         DateTime OpenDay,
         DateTime CloseDay,
         int Duration,
-        string ScheduleFrequency
+        string ScheduleFrequency,
+        string Img
     ) : IRequest<ApiResponse<TourResponse>>;
 
     public class CreateTourHandler : IRequestHandler<CreateTourCommand, ApiResponse<TourResponse>>
     {
         private readonly IDtpDbContext _context;
+        private readonly IUserContextService _userContextService;
 
-        public CreateTourHandler(IDtpDbContext context)
+        public CreateTourHandler(IDtpDbContext context, IUserContextService userContextService )
         {
             _context = context;
+            _userContextService = userContextService;
         }
 
         public async Task<ApiResponse<TourResponse>> Handle(CreateTourCommand request,
             CancellationToken cancellationToken)
         {
-            var tour = new Domain.Entities.Tour(request.Title, request.CompanyId, request.Category,
+            var companyId = _userContextService.GetCompanyId();
+            var tour = new Domain.Entities.Tour(request.Title, companyId, request.Categoryid,
                 request.Description);
+           
+                _context.ImageUrls.Add(new ImageUrl(tour.Id, request.Img));
 
             if (request.Destinations is not null)
             {
@@ -57,6 +65,10 @@ namespace Application.Features.Tour.Commands
                     var tourDestination = new TourDestination(tour.Id, dest.DestinationId, dest.StartTime, dest.EndTime,
                         dest.SortOrder, dest.SortOrderByDate);
                     tour.TourDestinations.Add(tourDestination);
+                    
+                        _context.ImageUrls.Add(new ImageUrl(tourDestination.Id, dest.Img));
+                    
+                    
                 }
             }
 

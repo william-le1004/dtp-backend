@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Application.Contracts.Persistence;
 using Application.Dtos;
+using Domain.DataModel;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 // Giả sử TourResponse được định nghĩa: record TourResponse(Guid Id, string Title, Guid? CompanyId, Guid? Category, string? Description);
@@ -11,9 +12,9 @@ namespace Application.Features.Tour.Commands
     public record UpdateTourInforCommand(
         Guid TourId,
         string Title,
-        Guid? CompanyId,
         Guid? Category,
-        string? Description
+        string? Description,
+        List<String>? img
     ) : IRequest<ApiResponse<TourResponse>>;
 
     public class UpdateTourInforHandler : IRequestHandler<UpdateTourInforCommand, ApiResponse<TourResponse>>
@@ -24,19 +25,23 @@ namespace Application.Features.Tour.Commands
         {
             _context = context;
         }
-
         public async Task<ApiResponse<TourResponse>> Handle(UpdateTourInforCommand request,
             CancellationToken cancellationToken)
         {
             // Tìm Tour theo TourId
             var tour = await _context.Tours.FirstOrDefaultAsync(t => t.Id == request.TourId, cancellationToken);
+            
             if (tour == null)
             {
                 return ApiResponse<TourResponse>.Failure("Tour not found", 404);
             }
 
             // Cập nhật thông tin của Tour
-            tour.Update(request.Title, request.CompanyId, request.Category, request.Description);
+            tour.Update(request.Title, request.Category, request.Description);
+            foreach (var img in request.img)
+            {
+                _context.ImageUrls.Add(new ImageUrl(tour.Id, img));
+            }
 
             // Cập nhật lại vào DbContext
             _context.Tours.Update(tour);

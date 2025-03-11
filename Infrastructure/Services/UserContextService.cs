@@ -53,4 +53,10 @@ public class UserContextService : IUserContextService
         var authHeader = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
         return authHeader?.StartsWith("Bearer ") == true ? authHeader.Substring(7) : null;
     }
+
+    public Guid? GetCompanyId()
+    {
+        var companyId = _httpContextAccessor.HttpContext?.User?.FindFirstValue("company_id");
+        return companyId != null ? Guid.Parse(companyId) : (Guid?)null;
+    }
 }
