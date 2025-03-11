@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Application.Contracts.Persistence;
 using Application.Dtos;
+using Domain.DataModel;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -62,10 +63,11 @@ namespace Application.Features.Tour.Commands
                         dest.SortOrder,
                         dest.SortOrderByDate
                     );
+                    _context.ImageUrls.RemoveRange(_context.ImageUrls.Where(i => i.RefId == newTourDestination.Id));
+                    _context.ImageUrls.Add(new ImageUrl(newTourDestination.Id, dest.Img));
                     tour.TourDestinations.Add(newTourDestination);
                 }
             }
-
             _context.Tours.Update(tour);
             await _context.SaveChangesAsync(cancellationToken);
 
