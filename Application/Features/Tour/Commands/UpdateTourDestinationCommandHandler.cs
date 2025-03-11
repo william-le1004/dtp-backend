@@ -9,23 +9,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Tour.Commands
 {
-    // DTO nhận thông tin Destination cần thêm vào Tour
-    public record DestinationToUpdate(
-        Guid DestinationId,
-        TimeSpan StartTime,
-        TimeSpan EndTime,
-        int? SortOrder = null,
-        int? SortOrderByDate = null
-    );
-
-    // Command cập nhật danh sách TourDestination cho Tour:
-    // Xóa toàn bộ các TourDestination hiện có và thêm danh sách mới.
+  
     public record UpdateTourDestinationCommand(
         Guid TourId,
         List<DestinationToAdd> Destinations
-    ) : IRequest<ApiResponse<TourResponse>>;
+    ) : IRequest<ApiResponse<string >>;
 
-    public class UpdateTourDestinationHandler : IRequestHandler<UpdateTourDestinationCommand, ApiResponse<TourResponse>>
+    public class UpdateTourDestinationHandler : IRequestHandler<UpdateTourDestinationCommand, ApiResponse<string>>
     {
         private readonly IDtpDbContext _context;
 
@@ -34,7 +24,7 @@ namespace Application.Features.Tour.Commands
             _context = context;
         }
 
-        public async Task<ApiResponse<TourResponse>> Handle(UpdateTourDestinationCommand request,
+        public async Task<ApiResponse<string>> Handle(UpdateTourDestinationCommand request,
             CancellationToken cancellationToken)
         {
             // Lấy Tour theo TourId kèm theo collection TourDestinations
@@ -43,7 +33,7 @@ namespace Application.Features.Tour.Commands
                 .FirstOrDefaultAsync(t => t.Id == request.TourId, cancellationToken);
             if (tour == null)
             {
-                return ApiResponse<TourResponse>.Failure("Tour not found", 404);
+                return ApiResponse<string>.Failure("Tour not found", 404);
             }
 
             // Xóa hết các TourDestination hiện tại
@@ -72,8 +62,7 @@ namespace Application.Features.Tour.Commands
             await _context.SaveChangesAsync(cancellationToken);
 
             // Tạo DTO response
-            var response = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.CategoryId, tour.Description);
-            return ApiResponse<TourResponse>.SuccessResult(response, "Tour destinations updated successfully");
+            return ApiResponse<string>.SuccessResult("Tour destinations updated successfully", "Update successful");
         }
     }
 }
