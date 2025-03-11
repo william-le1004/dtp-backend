@@ -60,10 +60,9 @@ public sealed class User : IdentityUser
         _ratings.Add(rating);
     }
 
-    public void AssignCompany(Company company)
+    public void AssignCompany(Guid companyId)
     {
-        Company = company ?? throw new ArgumentNullException(nameof(company));
-        CompanyId = company.Id;
+        CompanyId = companyId;
     }
 
     public void Deactivate() => IsActive = false;
