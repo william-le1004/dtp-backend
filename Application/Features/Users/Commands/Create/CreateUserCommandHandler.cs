@@ -28,6 +28,8 @@ public class CreateUserCommandHandler
 
         var newUser = new User(request.UserName, request.Email, request.Name, request.Address, request.PhoneNumber);
 
+        newUser.AssignCompany(request.CompanyId);
+
         var result = await _userRepository.CreateUser(newUser, request.RoleName);
         return result
             ? ApiResponse<bool>.SuccessResult(true, "User created successfully")
