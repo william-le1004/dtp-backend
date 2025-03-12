@@ -27,7 +27,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Name = "Admin User",
                 Address = "123 Admin St",
                 PhoneNumber = "1234567890",
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true
             },
             new User
             {
@@ -41,8 +42,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Name = "Operator User",
                 Address = "456 Operator Rd",
                 PhoneNumber = "0987654321",
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true
             }
         );
+
+        builder.HasQueryFilter(u => u.IsActive);
     }
 }

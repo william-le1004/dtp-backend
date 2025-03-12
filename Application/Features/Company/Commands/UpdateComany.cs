@@ -32,11 +32,11 @@ public class UpdateCompanyValidator : AbstractValidator<UpdateCompanyCommand>
 
 public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand, ApiResponse<bool>>
 {
-    private readonly IDtpDbContext _context;
+    private readonly ICompanyRepository _companyRepository;
 
-    public UpdateCompanyCommandHandler(IDtpDbContext context)
+    public UpdateCompanyCommandHandler(ICompanyRepository companyRepository)
     {
-        _context = context;
+        _companyRepository = companyRepository;
     }
 
     public async Task<ApiResponse<bool>> Handle(UpdateCompanyCommand request, CancellationToken cancellationToken)
@@ -50,16 +50,22 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand,
             return ApiResponse<bool>.Failure("Validation failed", 400, errors);
         }
 
-        var company = await _context.Companies.FindAsync(request.Id);
+        var company = await _companyRepository.GetCompanyAsync(request.Id);
 
         if (company == null)
         {
             return ApiResponse<bool>.Failure("Company not found");
         }
 
-        company.UpdateDetails(request.Name, request.Email, request.Phone, request.TaxCode);
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return ApiResponse<bool>.SuccessResult(true, "Company updated successfully");
+        try
+        {
+            company.UpdateDetails(request.Name, request.Email, request.Phone, request.TaxCode);
+            await _companyRepository.UpsertCompanyAsync(company);
+            return ApiResponse<bool>.SuccessResult(true, "Company updated successfully");
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse<bool>.Failure($"An error occurred {ex.Message}");
+        }
     }
 }

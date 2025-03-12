@@ -27,7 +27,7 @@ public class UserController : BaseController
         _userContextService = userContextService;
     }
 
-    [HttpGet]
+    [HttpGet("me")]
     public async Task<IActionResult> Get()
     {
         var userId = _userContextService.GetCurrentUserId();

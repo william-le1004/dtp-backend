@@ -42,7 +42,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<AccessTokenResponse> LoginAsync(LoginRequestDto request)
     {
-        var user = await _userManager.FindByNameAsync(request.UserName);
+        var user = await _userManager.FindByNameAsync(request.UserNameOrPassword) ?? await _userManager.FindByNameAsync(request.UserNameOrPassword);
         if (user == null || !(await _userManager.CheckPasswordAsync(user, request.Password)))
             throw new UnauthorizedAccessException("Invalid username or password.");
 
@@ -63,6 +63,8 @@ public class AuthenticationService : IAuthenticationService
 
         var user = await _userManager.FindByIdAsync(userId)
                    ?? throw new UnauthorizedAccessException("User not found.");
+        
+        await RevokeToken();
 
         var accessTokenResponse = await _jwtTokenService.GenerateTokens(user);
         await StoreRefreshToken(user.Id, accessTokenResponse.AccessToken);
@@ -70,10 +72,8 @@ public class AuthenticationService : IAuthenticationService
         return accessTokenResponse;
     }
 
-    public async Task<bool> LogoutAsync(string userId)
+    private async Task RevokeToken()
     {
-        await _redisCache.RemoveDataAsync($"{ApplicationConst.REFRESH_TOKEN}:{userId}");
-
         var accessToken = _userContext.GetAccessToken();
         var tokenJti = _jwtTokenService.GetJtiFromToken(accessToken);
         var tokenExpiry = _jwtTokenService.GetTokenExpiry(accessToken);
@@ -83,6 +83,13 @@ public class AuthenticationService : IAuthenticationService
         {
             await _redisCache.SetDataAsync($"{ApplicationConst.BLACKLIST}:{tokenJti}", "revoked", expiryTime);
         }
+    }
+
+    public async Task<bool> LogoutAsync(string userId)
+    {
+        await _redisCache.RemoveDataAsync($"{ApplicationConst.REFRESH_TOKEN}:{userId}");
+
+        await RevokeToken();
 
         return true;
     }
