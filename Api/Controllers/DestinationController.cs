@@ -37,11 +37,6 @@ public class DestinationController(DtpDbContext context) : BaseController
     [HttpPut("{id}")]
     public async Task<IActionResult> PutDestination(Guid id, Destination destination)
     {
-        if (id != destination.Id)
-        {
-            return BadRequest();
-        }
-
         context.Entry(destination).State = EntityState.Modified;
 
         try
