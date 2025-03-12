@@ -32,13 +32,11 @@ public class CreateCompanyValidator : AbstractValidator<CreateCompanyCommand>
 
 public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand, ApiResponse<bool>>
 {
-    private readonly IDtpDbContext _context;
-    private readonly IUserRepository _userRepository;
+    private readonly ICompanyRepository _companyRepository;
 
-    public CreateCompanyCommandHandler(IDtpDbContext context, IUserRepository userRepository)
+    public CreateCompanyCommandHandler(ICompanyRepository companyRepository)
     {
-        _context = context;
-        _userRepository = userRepository;
+        _companyRepository = companyRepository;
     }
 
     public async Task<ApiResponse<bool>> Handle(CreateCompanyCommand request, CancellationToken cancellationToken)
@@ -52,19 +50,17 @@ public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand,
             return ApiResponse<bool>.Failure("Validation failed", 400, errors);
         }
 
-        var newCompany = new Domain.Entities.Company(request.Name, request.Email, request.Phone, request.TaxCode);
-
-        var currentUser = await _userRepository.GetUserDetailAsync(request.UserId);
-        if (currentUser != null)
+        try
         {
-            _context.Users.Attach(currentUser);
-            newCompany.AddStaff(currentUser);
+            var newCompany = new Domain.Entities.Company(request.Name, request.Email, request.Phone, request.TaxCode);
+  
+            await _companyRepository.UpsertCompanyAsync(newCompany, request.UserId);
+
+            return ApiResponse<bool>.SuccessResult(true, "Company created successfully");
         }
-
-        await _context.Companies.AddAsync(newCompany);
-
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return ApiResponse<bool>.SuccessResult(true, "Company created successfully");
+        catch (Exception ex)
+        {
+            return ApiResponse<bool>.Failure($"An error occurred: {ex.Message}");
+        }
     }
 }

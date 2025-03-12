@@ -24,12 +24,19 @@ public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand,
             return ApiResponse<bool>.Failure("Validation failed", 400, errors);
         }
 
-        var user = await _userRepository.GetUserDetailAsync(request.Id);
-        if (user is null) return ApiResponse<bool>.Failure("User not found", 404);
+        try
+        {
+            var user = await _userRepository.GetUserDetailAsync(request.Id);
+            if (user is null) return ApiResponse<bool>.Failure("User not found", 404);
 
-        user.UpdateProfile(request.Name, request.Address, request.PhoneNumber, request.Email, request.UserName);
+            user.UpdateProfile(request.Name, request.Address, request.PhoneNumber, request.Email, request.UserName);
 
-        var result = await _userRepository.UpdateProfile(user, request.RoleName);
-        return result ? ApiResponse<bool>.SuccessResult(true) : ApiResponse<bool>.Failure("Profile update failed");
+            var result = await _userRepository.UpdateProfileAsync(user, request.RoleName);
+            return result ? ApiResponse<bool>.SuccessResult(true) : ApiResponse<bool>.Failure("Profile update failed");
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse<bool>.Failure($"An error occurred: {ex.Message}");
+        }
     }
 }

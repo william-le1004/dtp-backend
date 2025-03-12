@@ -28,11 +28,18 @@ public class CreateUserCommandHandler
 
         var newUser = new User(request.UserName, request.Email, request.Name, request.Address, request.PhoneNumber);
 
-        newUser.AssignCompany(request.CompanyId);
+        try
+        {
+            newUser.AssignCompany(request.CompanyId);
 
-        var result = await _userRepository.CreateUser(newUser, request.RoleName);
-        return result
-            ? ApiResponse<bool>.SuccessResult(true, "User created successfully")
-            : ApiResponse<bool>.Failure("User creation failed");
+            var result = await _userRepository.CreateUserAsync(newUser, request.RoleName);
+            return result
+                ? ApiResponse<bool>.SuccessResult(true, "User created successfully")
+                : ApiResponse<bool>.Failure("User creation failed");
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse<bool>.Failure($"An error occurred: {ex.Message}");
+        }
     }
 }

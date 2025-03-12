@@ -15,7 +15,7 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, ApiResponse<Lis
 
     public async Task<ApiResponse<List<UserDto>>> Handle(GetUserQuery request, CancellationToken cancellationToken)
     {
-        var result = await _userRepository.GetAll();
+        var result = await _userRepository.GetAllAsync();
 
         var userDtos = result.Select(user => new UserDto(
             user.Id,

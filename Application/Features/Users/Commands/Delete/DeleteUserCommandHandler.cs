@@ -22,7 +22,7 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, ApiRe
 
         user.Deactivate();
 
-        await _userRepository.InactiveUser(user);
+        await _userRepository.InactiveUserAsync(user);
 
         return ApiResponse<bool>.SuccessResult(true);
     }
