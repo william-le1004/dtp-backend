@@ -1,9 +1,6 @@
 using Application.Common;
 using Application.Contracts.Persistence;
-using Domain.Entities;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Company.Queries;
 
@@ -11,21 +8,17 @@ public record GetCompaniesQuery : IRequest<ApiResponse<List<CompanyDto>>>;
 
 public class GetCompaniesQueryHandler : IRequestHandler<GetCompaniesQuery, ApiResponse<List<CompanyDto>>>
 {
-    private readonly IDtpDbContext _context;
+    private readonly ICompanyRepository _companyRepository;
 
-    public GetCompaniesQueryHandler(IDtpDbContext context, UserManager<User> userManager)
+    public GetCompaniesQueryHandler(ICompanyRepository companyRepository)
     {
-        _context = context;
+        _companyRepository = companyRepository;
     }
 
     public async Task<ApiResponse<List<CompanyDto>>> Handle(GetCompaniesQuery request,
         CancellationToken cancellationToken)
     {
-        var companies = await _context.Companies
-            .Include(x => x.Staffs)
-            .Include(x => x.Tours)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
+        var companies = await _companyRepository.GetCompaniesAsync();
 
         return ApiResponse<List<CompanyDto>>.SuccessResult(companies.Select(c => new CompanyDto(
             c.Id,

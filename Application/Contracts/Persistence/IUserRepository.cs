@@ -4,9 +4,9 @@ namespace Application.Contracts.Persistence;
 
 public interface IUserRepository
 {
-    Task<bool> CreateUser(User user, string role = "");
-    Task<bool> UpdateProfile(User user, string role = "");
-    Task<bool> InactiveUser(User user);
-    Task<IEnumerable<User>> GetAll();
+    Task<bool> CreateUserAsync(User user, string role = "");
+    Task<bool> UpdateProfileAsync(User user, string role = "");
+    Task<bool> InactiveUserAsync(User user);
+    Task<IEnumerable<User>> GetAllAsync();
     Task<User?> GetUserDetailAsync(string userId);
 }

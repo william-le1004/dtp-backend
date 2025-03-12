@@ -54,4 +54,12 @@ public class CompanyController : BaseController
         var response = await _mediator.Send(new DeleteCompanyCommand(id));
         return HandleServiceResult(response);
     }
+
+    [HttpPut("grant")]
+    [Authorize(Policy = ApplicationConst.ADMIN_POLICY)]
+    public async Task<IActionResult> Grant(GrantLicenseCommand command)
+    {
+        var response = await _mediator.Send(command);
+        return HandleServiceResult(response);
+    }
 }

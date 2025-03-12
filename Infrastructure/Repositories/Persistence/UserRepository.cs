@@ -25,7 +25,7 @@ public class UserRepository : IUserRepository
         _redisCache = redisCache;
     }
 
-    public async Task<bool> InactiveUser(User user)
+    public async Task<bool> InactiveUserAsync(User user)
     {
         if (_userContextService.IsAdminRole())
         {
@@ -46,7 +46,7 @@ public class UserRepository : IUserRepository
         return false;
     }
 
-    public async Task<IEnumerable<User>> GetAll()
+    public async Task<IEnumerable<User>> GetAllAsync()
     {
         IQueryable<User> query = _dtpDbContext.Users
             .Include(x => x.Company)
@@ -75,7 +75,7 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task<bool> CreateUser(User user, string role)
+    public async Task<bool> CreateUserAsync(User user, string role)
     {
         var result = await _userManager.CreateAsync(user, $"{user.UserName}{ApplicationConst.DEFAULT_PASSWORD}");
         if (!result.Succeeded) return false;
@@ -84,7 +84,7 @@ public class UserRepository : IUserRepository
         return await SaveChangesIfNeededAsync();
     }
 
-    public async Task<bool> UpdateProfile(User user, string role)
+    public async Task<bool> UpdateProfileAsync(User user, string role)
     {
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded) return false;
