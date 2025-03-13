@@ -2,7 +2,9 @@ using Application.Common;
 using Application.Contracts.Persistence;
 using MediatR;
 
-namespace Application.Features.Users.Commands.Delete;
+namespace Application.Features.Users.Commands;
+
+public record DeleteUserCommand(string UserId) : IRequest<ApiResponse<bool>>;
 
 public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, ApiResponse<bool>>
 {
@@ -19,8 +21,6 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, ApiRe
 
         if (user is null)
             return ApiResponse<bool>.Failure("User not found");
-
-        user.Deactivate();
 
         await _userRepository.InactiveUserAsync(user);
 

@@ -1,6 +1,15 @@
 ﻿version: '3.8'
 
 services:
+#  api-service:
+#    image: api-service
+#    container_name: api-service
+#    build:
+#      context: ./Api
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080 : 8080"
+  
   mysql:
     image: mysql:8.0
     container_name: mysql_container

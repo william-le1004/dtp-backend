@@ -3,7 +3,9 @@ using Application.Contracts.Authentication;
 using Application.Dtos;
 using MediatR;
 
-namespace Application.Features.Users.Commands.RefreshToken;
+namespace Application.Features.Users.Commands;
+
+public record RefreshTokenCommand(string RefreshToken) : IRequest<ApiResponse<AccessTokenResponse>>;
 
 public class RefreshTokenCommandHandler
     : IRequestHandler<RefreshTokenCommand, ApiResponse<AccessTokenResponse>>
@@ -21,11 +23,11 @@ public class RefreshTokenCommandHandler
         try
         {
             var newToken = await _authenticationService.RefreshTokenAsync(request.RefreshToken);
-            return ApiResponse<AccessTokenResponse>.SuccessResult(newToken, "Refresh Token successfully");
+            return ApiResponse<AccessTokenResponse>.SuccessResult(newToken);
         }
         catch (Exception ex)
         {
-            return ApiResponse<AccessTokenResponse>.Failure(ex.Message, 400);
+            return ApiResponse<AccessTokenResponse>.Failure($"An error occurred", 400, new List<string> { ex.Message });
         }
     }
 }

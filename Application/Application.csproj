@@ -9,7 +9,6 @@
     <ItemGroup>
         <Folder Include="Contracts\Persistence\"/>
         <Folder Include="Features\Order\Queries\"/>
-        <Folder Include="Features\Users\Queries\"/>
     </ItemGroup>
 
     <ItemGroup>

@@ -97,7 +97,7 @@ public static class DependencyInjection
             options.AddPolicy(ApplicationConst.ADMIN_POLICY, policy => policy.RequireRole(ApplicationRole.ADMIN));
             options.AddPolicy(ApplicationConst.OPERATOR_POLICY,
                 policy => policy.RequireRole(ApplicationRole.OPERATOR));
-            options.AddPolicy(ApplicationConst.AD_OR_OP_POLICY,
+            options.AddPolicy(ApplicationConst.ADMIN_OR_OPERATOR_POLICY,
                 policy => policy.RequireRole(ApplicationRole.ADMIN, ApplicationRole.OPERATOR));
         });
 

@@ -40,6 +40,7 @@ public class CompanyRepository : ICompanyRepository
     public async Task<IEnumerable<Company>> GetCompaniesAsync()
     {
         return await _dbContext.Companies
+            .OrderBy(c => c.Name)
             .Include(x => x.Staffs)
             .Include(x => x.Tours)
             .AsNoTracking()
@@ -58,13 +59,24 @@ public class CompanyRepository : ICompanyRepository
     {
         if (company.Id == Guid.Empty)
         {
-            var staff = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            company.Staffs.Add(staff);
+            var staff = await _dbContext.Users.FindAsync(userId);
+            if (!company.Staffs.Contains(staff))
+            {
+                company.Staffs.Add(staff);
+            }
+
             await _dbContext.Companies.AddAsync(company);
         }
         else
         {
-            _dbContext.Companies.Update(company);
+            var existingCompany = await GetCompanyAsync(company.Id);
+
+            if (existingCompany == null)
+            {
+                throw new KeyNotFoundException($"Company with ID {company.Id} not found.");
+            }
+
+            _dbContext.Entry(existingCompany).CurrentValues.SetValues(company);
         }
 
         return await _dbContext.SaveChangesAsync() > 0;

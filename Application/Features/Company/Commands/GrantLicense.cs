@@ -32,7 +32,7 @@ public class GrantLicenseCommandHandler : IRequestHandler<GrantLicenseCommand, A
         }
         catch (Exception ex)
         {
-            return ApiResponse<bool>.Failure($"An error occurred: {ex.Message}");
+            return ApiResponse<bool>.Failure($"An error occurred", 400, new List<string> { ex.Message });
         }
     }
 }

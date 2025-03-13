@@ -2,7 +2,9 @@ using Application.Common;
 using Application.Contracts.Authentication;
 using MediatR;
 
-namespace Application.Features.Users.Commands.Logout;
+namespace Application.Features.Users.Commands;
+
+public record LogoutCommand(string UserId) : IRequest<ApiResponse<bool>>;
 
 public class LogoutCommandHandler
     : IRequestHandler<LogoutCommand, ApiResponse<bool>>

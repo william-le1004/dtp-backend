@@ -1,9 +1,6 @@
 using Application.Common;
 using Application.Contracts;
-using Application.Features.Users.Commands.Login;
-using Application.Features.Users.Commands.Logout;
-using Application.Features.Users.Commands.RefreshToken;
-using Application.Features.Users.Commands.Registration;
+using Application.Features.Users.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
