@@ -22,11 +22,11 @@ public record TourTemplateResponse
     public decimal OnlyFromCost { get; set; }
 }
 
-public record GetTours() : IRequest<IEnumerable<TourTemplateResponse>>;
+public record GetTours() : IRequest<IQueryable<TourTemplateResponse>>;
 
-public class GetToursHandler(IDtpDbContext context) : IRequestHandler<GetTours, IEnumerable<TourTemplateResponse>>
+public class GetToursHandler(IDtpDbContext context) : IRequestHandler<GetTours, IQueryable<TourTemplateResponse>>
 {
-    public async Task<IEnumerable<TourTemplateResponse>> Handle(GetTours request, CancellationToken cancellationToken)
+    public Task<IQueryable<TourTemplateResponse>> Handle(GetTours request, CancellationToken cancellationToken)
     {
         var tours = context.Tours.Include(tour => tour.Company)
             .Include(tour => tour.Ratings)
@@ -45,6 +45,6 @@ public class GetToursHandler(IDtpDbContext context) : IRequestHandler<GetTours, 
                 OnlyFromCost = tour.OnlyFromCost()
             });
 
-        return await tours.ToListAsync(cancellationToken);
+        return Task.FromResult(tours.AsQueryable());
     }
 }

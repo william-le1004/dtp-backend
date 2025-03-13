@@ -13,14 +13,14 @@ public class DestinationController(DtpDbContext context) : BaseController
     // GET: api/Destination
     [HttpGet]
     [EnableQuery]
-    public async Task<ActionResult<IEnumerable<Destination>>> GetDestinations()
+    public IQueryable<Destination> Get()
     {
-        return await context.Destinations.ToListAsync();
+        return context.Destinations.AsQueryable();
     }
 
     // GET: api/Destination/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Destination>> GetDestination(Guid id)
+    public async Task<ActionResult<Destination>> GetDest(Guid id)
     {
         var destination = await context.Destinations.FindAsync(id);
 

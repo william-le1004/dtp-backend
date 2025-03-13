@@ -11,17 +11,16 @@ namespace Api.Controllers;
 public class TourController(ILogger<TourController> logger, IMediator mediator)
     : BaseController
 {
-    // GET: api/odata/Tours
     [HttpGet]
     [EnableQuery]
-    public async Task<IEnumerable<TourTemplateResponse>> GetTours()
+    public async Task<IQueryable<TourTemplateResponse>> Get()
     {
         return await mediator.Send(new GetTours());
     }
 
     // GET: api/Tour/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<TourDetailResponse>> GetTour(Guid id)
+    public async Task<ActionResult<TourDetailResponse>> GetTours(Guid id)
     {
         var result = await mediator.Send(new GetTourDetail(id));
 

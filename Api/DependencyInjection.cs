@@ -18,7 +18,8 @@ public static class DependencyInjection
         services.AddControllers().AddOData(
             options => options.EnableQueryFeatures(maxTopValue: null).AddRouteComponents(
                 routePrefix: "odata",
-                model: modelBuilder.GetEdmModel()));
+                model: modelBuilder.GetEdmModel()).Select().Filter().Count().OrderBy());
+
         return services;
     }
 }
