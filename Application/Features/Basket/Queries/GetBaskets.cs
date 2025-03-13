@@ -1,4 +1,5 @@
-﻿using Application.Contracts.Persistence;
+﻿using Application.Contracts;
+using Application.Contracts.Persistence;
 using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -25,13 +26,12 @@ public record TicketResponse
 
 public record GetBaskets : IRequest<IEnumerable<BasketTourItemResponse>>;
 
-public class BasketHandler(IDtpDbContext context) : IRequestHandler<GetBaskets, IEnumerable<BasketTourItemResponse>>
+public class BasketHandler(IDtpDbContext context, IUserContextService userService) : IRequestHandler<GetBaskets, IEnumerable<BasketTourItemResponse>>
 {
     public async Task<IEnumerable<BasketTourItemResponse>> Handle(GetBaskets request,
         CancellationToken cancellationToken)
     {
-        var userId = "7bd74dd8-e86a-40b8-837c-34929235d424";
-        // Update later when we have done the identity
+        var userId = userService.GetCurrentUserId();
 
         var basket = await context.Baskets.Include(x => x.Items)
             .Include(x => x.Items)
