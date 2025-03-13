@@ -27,28 +27,14 @@ public class UserRepository : IUserRepository
 
     public async Task<bool> InactiveUserAsync(User user)
     {
-        if (_userContextService.IsAdminRole())
-        {
-            await _dtpDbContext.SaveChangesAsync();
-            return true;
-        }
-
-        if (_userContextService.IsOperatorRole())
-        {
-            var isManager = await _userManager.IsInRoleAsync(user, ApplicationRole.MANAGER);
-            if (isManager)
-            {
-                await _dtpDbContext.SaveChangesAsync();
-                return true;
-            }
-        }
-
-        return false;
+        user.Deactivate();
+        return await SaveChangesIfNeededAsync();
     }
 
     public async Task<IEnumerable<User>> GetAllAsync()
     {
         IQueryable<User> query = _dtpDbContext.Users
+            .OrderBy(u => u.Name)
             .Include(x => x.Company)
             .Include(x => x.Wallet)
             .AsNoTracking();
@@ -71,14 +57,28 @@ public class UserRepository : IUserRepository
             .Where(x => x.Id == userId)
             .Include(x => x.Company)
             .Include(x => x.Wallet)
-            .AsNoTracking()
             .FirstOrDefaultAsync();
     }
 
-    public async Task<bool> CreateUserAsync(User user, string role)
+    public async Task<string> GetUserRole(string userId)
     {
+        var user = await _userManager.FindByIdAsync(userId);
+        return (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+    }
+
+    public async Task<bool> CreateUserAsync(User user, string role, Guid companyId)
+    {
+        if (companyId != Guid.Empty)
+        {
+            user.AssignCompany(companyId);
+        }
+
         var result = await _userManager.CreateAsync(user, $"{user.UserName}{ApplicationConst.DEFAULT_PASSWORD}");
-        if (!result.Succeeded) return false;
+        if (!result.Succeeded)
+        {
+            var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+            throw new Exception($"User creation failed: {errors}");
+        }
 
         await AssignRole(user, role);
         return await SaveChangesIfNeededAsync();
@@ -87,7 +87,11 @@ public class UserRepository : IUserRepository
     public async Task<bool> UpdateProfileAsync(User user, string role)
     {
         var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded) return false;
+        if (!result.Succeeded)
+        {
+            var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+            throw new Exception($"User creation failed: {errors}");
+        }
 
         if (!string.IsNullOrEmpty(role))
         {
@@ -116,7 +120,7 @@ public class UserRepository : IUserRepository
 
     private async Task<bool> SaveChangesIfNeededAsync()
     {
-        await _dtpDbContext.SaveChangesAsync();
-        return true;
+        var changes = await _dtpDbContext.SaveChangesAsync();
+        return changes > 0;
     }
 }

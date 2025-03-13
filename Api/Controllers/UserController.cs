@@ -1,10 +1,7 @@
 using Application.Common;
 using Application.Contracts;
-using Application.Features.Users.Commands.Create;
-using Application.Features.Users.Commands.Delete;
-using Application.Features.Users.Commands.UpdateProfile;
-using Application.Features.Users.Queries.Get;
-using Application.Features.Users.Queries.GetDetail;
+using Application.Features.Users.Commands;
+using Application.Features.Users.Queries;
 using Infrastructure.Common.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -42,7 +39,7 @@ public class UserController : BaseController
     }
 
     [HttpGet("all")]
-    [Authorize(Policy = ApplicationConst.AD_OR_OP_POLICY)]
+    [Authorize(Policy = ApplicationConst.ADMIN_OR_OPERATOR_POLICY)]
     [EnableQuery]
     public async Task<IActionResult> GetAll()
     {
@@ -51,7 +48,7 @@ public class UserController : BaseController
     }
 
     [HttpPost]
-    [Authorize(Policy = ApplicationConst.AD_OR_OP_POLICY)]
+    [Authorize(Policy = ApplicationConst.ADMIN_OR_OPERATOR_POLICY)]
     public async Task<IActionResult> Create([FromBody] CreateUserCommand createUserCommand)
     {
         var response = await _mediator.Send(createUserCommand);
@@ -59,8 +56,8 @@ public class UserController : BaseController
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Policy = ApplicationConst.AD_OR_OP_POLICY)]
-    public async Task<IActionResult> Delete([FromRoute] string userId)
+    [Authorize(Policy = ApplicationConst.ADMIN_OR_OPERATOR_POLICY)]
+    public async Task<IActionResult> Inactive([FromRoute] string userId)
     {
         var response = await _mediator.Send(new DeleteUserCommand(userId));
         return HandleServiceResult(response);

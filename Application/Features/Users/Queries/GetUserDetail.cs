@@ -2,7 +2,9 @@ using Application.Common;
 using Application.Contracts.Persistence;
 using MediatR;
 
-namespace Application.Features.Users.Queries.GetDetail;
+namespace Application.Features.Users.Queries;
+
+public record GetUserDetailQuery(string Id) : IRequest<ApiResponse<UserDetailDto>>;
 
 public class GetUserDetailQueryHandler : IRequestHandler<GetUserDetailQuery, ApiResponse<UserDetailDto>>
 {
@@ -17,21 +19,22 @@ public class GetUserDetailQueryHandler : IRequestHandler<GetUserDetailQuery, Api
         CancellationToken cancellationToken)
     {
         var result = await _userRepository.GetUserDetailAsync(request.Id);
+        var role = await _userRepository.GetUserRole(request.Id);
 
         if (result == null)
             return ApiResponse<UserDetailDto>.Failure("User not found");
 
-        var userDetail = new UserDetailDto
-        {
-            Id = result.Id,
-            UserName = result.UserName,
-            Balance = result.Wallet.Balance,
-            Email = result.Email,
-            PhoneNumber = result.PhoneNumber,
-            Address = result.Address,
-            Name = result.Name,
-            CompanyName = result.Company?.Name
-        };
-        return ApiResponse<UserDetailDto>.SuccessResult(userDetail);
+        return ApiResponse<UserDetailDto>.SuccessResult(new UserDetailDto(
+            result.Id,
+            result.UserName,
+            result.Wallet.Balance,
+            result.Name,
+            result.Email,
+            result.PhoneNumber,
+            result.Address,
+            result.Company?.Name,
+            role,
+            result.IsActive
+        ));
     }
 }

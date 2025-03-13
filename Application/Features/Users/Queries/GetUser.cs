@@ -2,7 +2,9 @@ using Application.Common;
 using Application.Contracts.Persistence;
 using MediatR;
 
-namespace Application.Features.Users.Queries.Get;
+namespace Application.Features.Users.Queries;
+
+public record GetUserQuery : IRequest<ApiResponse<List<UserDto>>>;
 
 public class GetUserQueryHandler : IRequestHandler<GetUserQuery, ApiResponse<List<UserDto>>>
 {
@@ -17,12 +19,20 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, ApiResponse<Lis
     {
         var result = await _userRepository.GetAllAsync();
 
-        var userDtos = result.Select(user => new UserDto(
-            user.Id,
-            user.UserName,
-            user.Email,
-            user.Company?.Name ?? "N/A"
-        )).ToList();
+        var userDtos = new List<UserDto>();
+
+        foreach (var user in result)
+        {
+            var userRole = await _userRepository.GetUserRole(user.Id);
+            userDtos.Add(new UserDto(
+                user.Id,
+                user.UserName,
+                user.Email,
+                user.Company?.Name ?? "N/A",
+                userRole,
+                user.IsActive
+            ));
+        }
 
         return ApiResponse<List<UserDto>>.SuccessResult(userDtos);
     }

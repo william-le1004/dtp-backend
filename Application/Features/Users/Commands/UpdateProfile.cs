@@ -1,8 +1,41 @@
 using Application.Common;
 using Application.Contracts.Persistence;
+using FluentValidation;
 using MediatR;
 
-namespace Application.Features.Users.Commands.UpdateProfile;
+namespace Application.Features.Users.Commands;
+
+public record UpdateProfileCommand(
+    string Id,
+    string UserName,
+    string Name,
+    string Email,
+    string PhoneNumber,
+    string Address,
+    string RoleName
+) : IRequest<ApiResponse<bool>>;
+
+public class UpdateProfileValidator : AbstractValidator<UpdateProfileCommand>
+{
+    public UpdateProfileValidator()
+    {
+        RuleFor(x => x.UserName)
+            .NotEmpty().WithMessage("UserName is required");
+
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Name is required");
+
+        RuleFor(x => x.Email)
+            .NotEmpty().EmailAddress().WithMessage("Email is required");
+
+        RuleFor(x => x.PhoneNumber)
+            .NotEmpty().WithMessage("Phone is required.")
+            .Matches(@"^(0|\+84)(3|5|7|8|9)[0-9]{8}$").WithMessage("A valid Vietnamese phone number is required.");
+
+        RuleFor(x => x.Address)
+            .NotEmpty().WithMessage("Address is required");
+    }
+}
 
 public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand, ApiResponse<bool>>
 {
@@ -36,7 +69,7 @@ public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand,
         }
         catch (Exception ex)
         {
-            return ApiResponse<bool>.Failure($"An error occurred: {ex.Message}");
+            return ApiResponse<bool>.Failure($"An error occurred", 400, new List<string> { ex.Message });
         }
     }
 }
