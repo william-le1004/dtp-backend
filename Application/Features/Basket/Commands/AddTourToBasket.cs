@@ -1,4 +1,5 @@
-﻿using Application.Contracts.Persistence;
+﻿using Application.Contracts;
+using Application.Contracts.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,12 +9,11 @@ public record BasketItemRequest(Guid TourScheduleId, Guid TicketTypeId, int Unit
 
 public record AddTourToBasket(List<BasketItemRequest> Items) : IRequest;
 
-public class AddTourToBasketHandler(IDtpDbContext context) : IRequestHandler<AddTourToBasket>
+public class AddTourToBasketHandler(IDtpDbContext context, IUserContextService userService) : IRequestHandler<AddTourToBasket>
 {
     public async Task Handle(AddTourToBasket request, CancellationToken cancellationToken)
     {
-        var userId = "7bd74dd8-e86a-40b8-837c-34929235d424";
-        // Update later when we have done the identity
+        var userId = userService.GetCurrentUserId();
 
         var basket = await context.Baskets.Include(x => x.Items)
             .Include(x => x.Items)
