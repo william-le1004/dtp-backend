@@ -14,6 +14,7 @@ public static class DependencyInjection
         modelBuilder.EntitySet<TourTemplateResponse>("Tour");
         modelBuilder.EntitySet<Destination>("Destination");
         modelBuilder.EntitySet<UserDto>("User");
+        modelBuilder.EnableLowerCamelCase();
 
         services.AddControllers().AddOData(
             options => options.EnableQueryFeatures(maxTopValue: null).AddRouteComponents(
