@@ -28,9 +28,9 @@ public class CompanyController : BaseController
         var response = await _mediator.Send(new GetCompaniesQuery());
         return ReturnList(response);
     }
-
+    
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> Get([FromRoute] Guid id)
+    public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
         var response = await _mediator.Send(new GetCompanyQuery(id));
         return HandleServiceResult(response);
