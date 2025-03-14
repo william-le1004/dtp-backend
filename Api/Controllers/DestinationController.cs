@@ -66,7 +66,7 @@ public class DestinationController(DtpDbContext context) : BaseController
         context.Destinations.Add(destination);
         await context.SaveChangesAsync();
 
-        return CreatedAtAction("GetDestination", new { id = destination.Id }, destination);
+        return CreatedAtAction(nameof(GetDest), new { id = destination.Id }, destination);
     }
 
     // DELETE: api/Destination/5
