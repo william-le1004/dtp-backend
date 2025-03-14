@@ -1,5 +1,7 @@
 using Domain.Entities;
+using Infrastructure.Common.Constants;
 using Infrastructure.Contexts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +10,7 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Roles = ApplicationRole.ADMIN)]
 public class DestinationController(DtpDbContext context) : BaseController
 {
     // GET: api/Destination

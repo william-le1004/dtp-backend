@@ -1,14 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.Entities;
+using Infrastructure.Common.Constants;
 using Infrastructure.Contexts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.OData.Query;
 
 namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-// [Authorize(Roles = ApplicationRole.ADMIN)]
+[Authorize(Roles = ApplicationRole.ADMIN)]
 public class CategoryController(DtpDbContext context) : BaseController
 {
     // GET: api/Category
