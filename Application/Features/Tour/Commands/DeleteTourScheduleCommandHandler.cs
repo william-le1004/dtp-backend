@@ -11,11 +11,11 @@ namespace Application.Features.Tour.Commands
 {
     // Command nhận vào TourId và khoảng thời gian cần xóa lịch trình
     public record DeleteTourSchedule(
+        Guid TourId,
         DateOnly StartDay,
         DateOnly EndDay
-    );
-    public record DeleteTourScheduleCommand(Guid TourId, DateOnly StartDay, DateOnly EndDay) : IRequest<ApiResponse<string>>;
-    public class DeleteTourScheduleHandler : IRequestHandler<DeleteTourScheduleCommand, ApiResponse<string>>
+    ) : IRequest<ApiResponse<string>>;
+    public class DeleteTourScheduleHandler : IRequestHandler<DeleteTourSchedule, ApiResponse<string>>
     {
         private readonly IDtpDbContext _context;
 
@@ -24,7 +24,7 @@ namespace Application.Features.Tour.Commands
             _context = context;
         }
 
-        public async Task<ApiResponse<string>> Handle(DeleteTourScheduleCommand request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<string>> Handle(DeleteTourSchedule request, CancellationToken cancellationToken)
         {
             // Lấy tất cả các TourSchedule của Tour có TourId = request.TourId và nằm trong khoảng thời gian được chỉ định
             var schedules = await _context.TourSchedules
