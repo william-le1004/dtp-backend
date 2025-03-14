@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Domain.Enum;
 
 namespace Application.Features.Tour.Queries
 {
@@ -14,6 +15,7 @@ namespace Application.Features.Tour.Queries
     // DTO cho thông tin vé lịch trình của một TicketType trong một TourSchedule
     public record TicketTypeScheduleDto(
         Guid TicketTypeId,
+        TicketKind TicketKind,
         decimal NetCost,
         int AvailableTicket,
         Guid TourScheduleId
@@ -51,6 +53,7 @@ namespace Application.Features.Tour.Queries
                     TicketSchedules: g.SelectMany(s => s.TourScheduleTickets)
                         .Select(tst => new TicketTypeScheduleDto(
                             TicketTypeId: tst.TicketTypeId,
+                            TicketKind: _context.TicketTypes.FirstOrDefault(tt => tt.Id == tst.TicketTypeId).TicketKind,
                             NetCost: tst.NetCost,
                             AvailableTicket: tst.AvailableTicket,
                             TourScheduleId: tst.TourScheduleId
