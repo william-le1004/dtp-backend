@@ -28,16 +28,3 @@ public record StaffDto(
     string Phone,
     string Email,
     string RoleName);
-
-// public StaffDto()
-// {
-// }
-//
-// public StaffDto(string id, string name, string phone, string email, string roleName)
-// {
-//     Id = id;
-//     Name = name;
-//     Phone = phone;
-//     Email = email;
-//     RoleName = roleName;
-// }

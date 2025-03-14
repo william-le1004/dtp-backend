@@ -4,9 +4,9 @@ using MediatR;
 
 namespace Application.Features.Users.Queries;
 
-public record GetUserQuery : IRequest<ApiResponse<List<UserDto>>>;
+public record GetUserQuery : IRequest<ApiResponse<IQueryable<UserDto>>>;
 
-public class GetUserQueryHandler : IRequestHandler<GetUserQuery, ApiResponse<List<UserDto>>>
+public class GetUserQueryHandler : IRequestHandler<GetUserQuery, ApiResponse<IQueryable<UserDto>>>
 {
     private readonly IUserRepository _userRepository;
 
@@ -15,25 +15,19 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, ApiResponse<Lis
         _userRepository = userRepository;
     }
 
-    public async Task<ApiResponse<List<UserDto>>> Handle(GetUserQuery request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<IQueryable<UserDto>>> Handle(GetUserQuery request, CancellationToken cancellationToken)
     {
         var result = await _userRepository.GetAllAsync();
 
-        var userDtos = new List<UserDto>();
+        var userDtos = result.Select(user => new UserDto(
+            user.Id,
+            user.UserName,
+            user.Email,
+            user.Company?.Name ?? "N/A",
+            _userRepository.GetUserRole(user.Id).Result, // Get role asynchronously
+            user.IsActive
+        )).AsQueryable(); // ✅ Make it IQueryable for OData
 
-        foreach (var user in result)
-        {
-            var userRole = await _userRepository.GetUserRole(user.Id);
-            userDtos.Add(new UserDto(
-                user.Id,
-                user.UserName,
-                user.Email,
-                user.Company?.Name ?? "N/A",
-                userRole,
-                user.IsActive
-            ));
-        }
-
-        return ApiResponse<List<UserDto>>.SuccessResult(userDtos);
+        return ApiResponse<IQueryable<UserDto>>.SuccessResult(userDtos);
     }
 }

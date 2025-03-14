@@ -44,7 +44,7 @@ public class UserController : BaseController
     public async Task<IActionResult> GetAll()
     {
         var response = await _mediator.Send(new GetUserQuery());
-        return HandleServiceResult(response);
+        return ReturnList(response);
     }
 
     [HttpPost]

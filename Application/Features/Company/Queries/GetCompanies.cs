@@ -4,9 +4,9 @@ using MediatR;
 
 namespace Application.Features.Company.Queries;
 
-public record GetCompaniesQuery : IRequest<ApiResponse<List<CompanyDto>>>;
+public record GetCompaniesQuery : IRequest<ApiResponse<IQueryable<CompanyDto>>>;
 
-public class GetCompaniesQueryHandler : IRequestHandler<GetCompaniesQuery, ApiResponse<List<CompanyDto>>>
+public class GetCompaniesQueryHandler : IRequestHandler<GetCompaniesQuery, ApiResponse<IQueryable<CompanyDto>>>
 {
     private readonly ICompanyRepository _companyRepository;
 
@@ -15,12 +15,12 @@ public class GetCompaniesQueryHandler : IRequestHandler<GetCompaniesQuery, ApiRe
         _companyRepository = companyRepository;
     }
 
-    public async Task<ApiResponse<List<CompanyDto>>> Handle(GetCompaniesQuery request,
+    public async Task<ApiResponse<IQueryable<CompanyDto>>> Handle(GetCompaniesQuery request,
         CancellationToken cancellationToken)
     {
         var companies = await _companyRepository.GetCompaniesAsync();
 
-        return ApiResponse<List<CompanyDto>>.SuccessResult(companies.Select(c => new CompanyDto(
+        return ApiResponse<IQueryable<CompanyDto>>.SuccessResult(companies.Select(c => new CompanyDto(
             c.Id,
             c.Name,
             c.Phone,
@@ -29,6 +29,6 @@ public class GetCompaniesQueryHandler : IRequestHandler<GetCompaniesQuery, ApiRe
             c.Licensed,
             c.StaffCount(),
             c.TourCount()
-        )).ToList());
+        )).AsQueryable());
     }
 }

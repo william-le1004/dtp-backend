@@ -1,3 +1,4 @@
+using Application.Features.Company.Queries;
 using Application.Features.Tour.Queries;
 using Application.Features.Users.Queries;
 using Domain.Entities;
@@ -14,8 +15,9 @@ public static class DependencyInjection
         modelBuilder.EntitySet<TourTemplateResponse>("Tour");
         modelBuilder.EntitySet<Destination>("Destination");
         modelBuilder.EntitySet<UserDto>("User");
+        modelBuilder.EntitySet<CompanyDto>("Company");
+        
         modelBuilder.EnableLowerCamelCase();
-
         services.AddControllers().AddOData(
             options => options.EnableQueryFeatures(maxTopValue: null).AddRouteComponents(
                 routePrefix: "odata",
