@@ -87,30 +87,30 @@ public class TourController(ILogger<TourController> logger, IMediator mediator)
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
     }
-    [HttpGet("id")]
-    public async Task<IActionResult> GetTourInforByTourID([FromQuery] Guid tourId)
+    [HttpGet()]
+    public async Task<IActionResult> GetTourInforByTourID([FromQuery] Guid id)
     {
-        var response = await mediator.Send(new GetTourInforByTourIDQuery(tourId));
+        var response = await mediator.Send(new GetTourInforByTourIDQuery(id));
         return HandleServiceResult(response);
     }
-    [HttpGet("tourdestination/id")]
-    public async Task<IActionResult> GetTourDestinationByTourID([FromQuery] Guid tourId)
+    [HttpGet("tourdestination/")]
+    public async Task<IActionResult> GetTourDestinationByTourID([FromQuery] Guid id)
     {
-        var response = await mediator.Send(new GetTourDestinationByTourIDQuery(tourId));
+        var response = await mediator.Send(new GetTourDestinationByTourIDQuery(id));
         return HandleServiceResult(response);
     }
     // Endpoint GET: /api/tour/getlistticketschedulebytourid?tourId={tourId}
-    [HttpGet("scheduleticket/id")]
-    public async Task<IActionResult> GetListTicketScheduleByTourID([FromQuery] Guid tourId)
+    [HttpGet("scheduleticket/")]
+    public async Task<IActionResult> GetListTicketScheduleByTourID([FromQuery] Guid id)
     {
-        var response = await mediator.Send(new GetListTicketScheduleByTourIDQuery(tourId));
+        var response = await mediator.Send(new GetListTicketScheduleByTourIDQuery(id));
         return HandleServiceResult(response);
     }
     // Endpoint GET: /api/tour/gettourschedulebytourid?tourId={tourId}
-    [HttpGet("schedule/id")]
-    public async Task<IActionResult> GetTourScheduleByTourID([FromQuery] Guid tourId)
+    [HttpGet("schedule/")]
+    public async Task<IActionResult> GetTourScheduleByTourID([FromQuery] Guid id)
     {
-        var response = await mediator.Send(new GetTourScheduleByTourIDQuery(tourId));
+        var response = await mediator.Send(new GetTourScheduleByTourIDQuery(id));
         return HandleServiceResult(response);
     }
 
