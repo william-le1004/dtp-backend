@@ -16,9 +16,9 @@ public class CategoryController(DtpDbContext context) : BaseController
     // GET: api/Category
     [HttpGet]
     [EnableQuery]
-    public async Task<ActionResult<IEnumerable<Category>>> Get()
+    public IQueryable<Category> Get()
     {
-        return await context.Categories.ToListAsync();
+        return context.Categories.AsQueryable();
     }
 
     // GET: api/Category/5
