@@ -14,6 +14,7 @@ public static class DependencyInjection
         var modelBuilder = new ODataConventionModelBuilder();
         modelBuilder.EntitySet<TourTemplateResponse>("Tour");
         modelBuilder.EntitySet<Destination>("Destination");
+        modelBuilder.EntitySet<Category>("Category");
         modelBuilder.EntitySet<UserDto>("User");
         modelBuilder.EntitySet<CompanyDto>("Company");
         
