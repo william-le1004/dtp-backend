@@ -4,6 +4,7 @@ using Infrastructure.Common.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace Api.Controllers;
 
@@ -21,10 +22,11 @@ public class CompanyController : BaseController
 
     [HttpGet]
     [Authorize(Policy = ApplicationConst.ADMIN_POLICY)]
+    [EnableQuery]
     public async Task<IActionResult> Get()
     {
         var response = await _mediator.Send(new GetCompaniesQuery());
-        return HandleServiceResult(response);
+        return ReturnList(response);
     }
 
     [HttpGet("{id:guid}")]
