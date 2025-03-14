@@ -44,71 +44,67 @@ public class TourController(ILogger<TourController> logger, IMediator mediator)
         return HandleServiceResult(response);
     }
 
-    [HttpPut("updatetourinfor")]
-    public async Task<IActionResult> PutTour([FromBody] UpdateTourInforCommand command)
+    [HttpPut("tourinfor/{id}")]
+    public async Task<IActionResult> PutTour(Guid id,[FromBody] UpdateTourInforCommand command)
     {
-        var response = await mediator.Send(command);
+        var updatedCommand = command with { TourId = id };
+        var response = await mediator.Send(updatedCommand);
+        return HandleServiceResult(response);
+
+    }
+
+    [HttpPut("tourdestination/{id}")]
+    public async Task<IActionResult> UpdateTourDestination(Guid id,[FromBody] UpdateTourDestinationCommand command)
+    {
+        var updatedCommand = command with { TourId = id };
+        var response = await mediator.Send(updatedCommand);
         return HandleServiceResult(response);
     }
 
-    // Endpoint GET: /api/tour/getlisttourbycompany?companyId={companyId}
-    [HttpGet("getlisttourbycompany")]
-    public async Task<IActionResult> GetListTourByCompany([FromQuery] Guid companyId)
+    [HttpDelete("tourschedule/{id}")]
+    public async Task<IActionResult> DeleteTourSchedule(Guid id, [FromBody] DeleteTourSchedule command)
     {
-        var response = await mediator.Send(new GetListTourByCompanyQuery(companyId));
+        var updatedCommand = command with { TourId = id };
+        var response = await mediator.Send(updatedCommand);
+        return HandleServiceResult(response);
+
+    }
+
+    [HttpPost("addschedule/{id}")]
+    public async Task<IActionResult> AddSchedule(Guid id, [FromBody] AddScheduleCommand command)
+    {
+        var updatedCommand = command with { TourId = id };
+        var response = await mediator.Send(updatedCommand);
         return HandleServiceResult(response);
     }
 
-    // Endpoint PUT: /api/tour/updatetourdestination
-    [HttpPut("updatetourdestination")]
-    public async Task<IActionResult> UpdateTourDestination([FromBody] UpdateTourDestinationCommand command)
+    [HttpPut("ticketschedule/{id}")]
+    public async Task<IActionResult> UpdateTicketSchedule(Guid id,[FromBody] UpdateTicketScheduleCommand command)
     {
-        var response = await mediator.Send(command);
+        var updatedCommand = command with { TourId = id };
+        var response = await mediator.Send(updatedCommand);
         return HandleServiceResult(response);
     }
-
-    [HttpDelete("deletetourschedule")]
-    public async Task<IActionResult> DeleteTourSchedule([FromBody] DeleteTourScheduleCommand command)
-    {
-        var response = await mediator.Send(command);
-        return HandleServiceResult(response);
-    }
-
-    [HttpPost("addschedule")]
-    public async Task<IActionResult> AddSchedule([FromBody] AddScheduleCommand command)
-    {
-        var response = await mediator.Send(command);
-        return HandleServiceResult(response);
-    }
-
-    [HttpPut("updateticketschedule")]
-    public async Task<IActionResult> UpdateTicketSchedule([FromBody] UpdateTicketScheduleCommand command)
-    {
-        var response = await mediator.Send(command);
-        return HandleServiceResult(response);
-    }
-    [HttpGet()]
-    public async Task<IActionResult> GetTourInforByTourID([FromQuery] Guid id)
+    [HttpGet("tourinfor/{id}")]
+    public async Task<IActionResult> GetTourInforByTourID(Guid id)
     {
         var response = await mediator.Send(new GetTourInforByTourIDQuery(id));
         return HandleServiceResult(response);
     }
-    [HttpGet("tourdestination/")]
-    public async Task<IActionResult> GetTourDestinationByTourID([FromQuery] Guid id)
+    [HttpGet("tourdestination/{id}")]
+    public async Task<IActionResult> GetTourDestinationByTourID(Guid id)
     {
         var response = await mediator.Send(new GetTourDestinationByTourIDQuery(id));
         return HandleServiceResult(response);
     }
-    // Endpoint GET: /api/tour/getlistticketschedulebytourid?tourId={tourId}
-    [HttpGet("scheduleticket/")]
-    public async Task<IActionResult> GetListTicketScheduleByTourID([FromQuery] Guid id)
+    [HttpGet("scheduleticket/{id}")]
+    public async Task<IActionResult> GetListTicketScheduleByTourID(Guid id)
     {
         var response = await mediator.Send(new GetListTicketScheduleByTourIDQuery(id));
         return HandleServiceResult(response);
     }
-    // Endpoint GET: /api/tour/gettourschedulebytourid?tourId={tourId}
-    [HttpGet("schedule/")]
-    public async Task<IActionResult> GetTourScheduleByTourID([FromQuery] Guid id)
+    [HttpGet("schedule/{id}")]
+    public async Task<IActionResult> GetTourScheduleByTourID(Guid id)
     {
         var response = await mediator.Send(new GetTourScheduleByTourIDQuery(id));
         return HandleServiceResult(response);
