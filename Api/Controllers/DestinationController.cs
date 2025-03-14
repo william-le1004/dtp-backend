@@ -37,23 +37,18 @@ public class DestinationController(DtpDbContext context) : BaseController
     [HttpPut("{id}")]
     public async Task<IActionResult> PutDestination(Guid id, Destination destination)
     {
-        context.Entry(destination).State = EntityState.Modified;
+        var exitedDest = await context.Destinations.FirstOrDefaultAsync(x => x.Id == id);
 
-        try
+        if (exitedDest == null)
         {
-            await context.SaveChangesAsync();
+            return NotFound();
         }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!DestinationExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
+
+        exitedDest.Name = destination.Name;
+        exitedDest.Longitude = destination.Longitude;
+        exitedDest.Latitude = destination.Latitude;
+        context.Destinations.Update(exitedDest);
+        await context.SaveChangesAsync();
 
         return NoContent();
     }
