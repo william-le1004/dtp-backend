@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Domain.Enum;
 
 namespace Application.Features.Tour.Queries
 {
@@ -14,6 +15,7 @@ namespace Application.Features.Tour.Queries
     // DTO cho thông tin vé lịch trình của một TicketType trong một TourSchedule
     public record TicketTypeScheduleDto(
         Guid TicketTypeId,
+        TicketKind TicketKind,
         decimal NetCost,
         int AvailableTicket,
         Guid TourScheduleId
@@ -21,7 +23,7 @@ namespace Application.Features.Tour.Queries
 
     // DTO nhóm theo ngày: chứa ngày và danh sách vé lịch trình trong ngày đó
     public record TicketScheduleByDayDto(
-        DateTime Day,
+        DateOnly Day,
         List<TicketTypeScheduleDto> TicketSchedules
     );
     // Query nhận vào TourId và trả về danh sách TicketScheduleByDayDto được bọc trong ApiResponse
@@ -45,12 +47,13 @@ namespace Application.Features.Tour.Queries
                 .ToListAsync(cancellationToken);
 
             // Nhóm các vé lịch trình theo ngày (dựa trên OpenDate của TourSchedule)
-            var result = schedules.GroupBy(s => s.OpenDate.Date)
+            var result = schedules.GroupBy(s => DateOnly.FromDateTime(s.OpenDate))
                 .Select(g => new TicketScheduleByDayDto(
                     Day: g.Key,
                     TicketSchedules: g.SelectMany(s => s.TourScheduleTickets)
                         .Select(tst => new TicketTypeScheduleDto(
                             TicketTypeId: tst.TicketTypeId,
+                            TicketKind: _context.TicketTypes.FirstOrDefault(tt => tt.Id == tst.TicketTypeId).TicketKind,
                             NetCost: tst.NetCost,
                             AvailableTicket: tst.AvailableTicket,
                             TourScheduleId: tst.TourScheduleId

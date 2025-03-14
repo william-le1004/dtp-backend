@@ -14,7 +14,7 @@ namespace Application.Features.Tour.Commands
         string Title,
         Guid? Category,
         string? Description,
-        String img
+        string img
     ) : IRequest<ApiResponse<TourResponse>>;
 
     public class UpdateTourInforHandler : IRequestHandler<UpdateTourInforCommand, ApiResponse<TourResponse>>
