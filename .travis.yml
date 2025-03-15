@@ -1,7 +1,5 @@
 ﻿# .travis.yml
-
-language: csharp  # Choose a language based on your app (python example here)
-sudo: required
+language: csharp  # Choose a language based on your app (python example here)os: linux
 
 addons:
   apt:
