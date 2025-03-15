@@ -6,7 +6,7 @@ public record CompanyDto(
     string Phone,
     string Email,
     string TaxCode,
-    bool Lisenced,
+    bool Licensed,
     int Staff,
     int TourCount);
 
@@ -16,7 +16,7 @@ public record CompanyDetailDto(
     string Phone,
     string Email,
     string TaxCode,
-    bool Lisenced,
+    bool Licensed,
     List<StaffDto> Staffs,
     List<Tours> Tours);
 

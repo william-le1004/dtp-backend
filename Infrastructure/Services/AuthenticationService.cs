@@ -42,7 +42,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<AccessTokenResponse> LoginAsync(LoginRequestDto request)
     {
-        var user = await _userManager.FindByNameAsync(request.UserNameOrPassword) ?? await _userManager.FindByNameAsync(request.UserNameOrPassword);
+        var user = await _userManager.FindByNameAsync(request.UserNameOrPassword) ?? await _userManager.FindByEmailAsync(request.UserNameOrPassword);
         if (user == null || !(await _userManager.CheckPasswordAsync(user, request.Password)))
             throw new UnauthorizedAccessException("Invalid username or password.");
 

@@ -81,7 +81,7 @@ public class UserRepository : IUserRepository
         }
 
         await AssignRole(user, role);
-        return await SaveChangesIfNeededAsync();
+        return true;
     }
 
     public async Task<bool> UpdateProfileAsync(User user, string role)
@@ -104,7 +104,7 @@ public class UserRepository : IUserRepository
             await AssignRole(user, role);
         }
 
-        return await SaveChangesIfNeededAsync();
+        return true;
     }
 
     private async Task AssignRole(User user, string role)

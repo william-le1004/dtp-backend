@@ -10,7 +10,7 @@ namespace Api.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class OderController(IMediator mediator) : ControllerBase
+public class OrderController(IMediator mediator) : ControllerBase
 {
     // GET: api/Oder
     [HttpGet]
