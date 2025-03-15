@@ -1,26 +1,34 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
-WORKDIR /app
+﻿# Learn about building .NET container images:
+# https://github.com/dotnet/dotnet-docker/blob/main/samples/README.md
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG TARGETARCH
+WORKDIR /source
+
+# Copy the .csproj files first to restore dependencies
+COPY --link Api/Api.csproj Api/
+COPY --link Domain/Domain.csproj Domain/
+COPY --link Infrastructure/Infrastructure.csproj Infrastructure/
+COPY --link Application/Application.csproj Application/
+
+# Restore dependencies as distinct layers
+RUN dotnet restore Api/Api.csproj -a $TARGETARCH
+
+# Now copy the rest of the source code
+COPY --link . .
+
+# Publish the app
+RUN dotnet publish Api/Api.csproj -a $TARGETARCH --no-restore -o /app
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
 EXPOSE 8080
-EXPOSE 8081
-
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["Api/Api.csproj", "Api/"]
-COPY ["Domain/Domain.csproj", "Domain/"]
-COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
-COPY ["Application/Application.csproj", "Application/"]
-RUN dotnet restore "Api/Api.csproj"
-COPY . .
-WORKDIR "/src/Api"
-RUN dotnet build "Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
-
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+
+# Copy the build output from the previous stage
+COPY --link --from=build /app . 
+
+# Optionally, if you need to run the app as a non-root user
+USER 1000  # You can replace 1000 with your specific user ID if needed
+
+# Set the entry point for the application
 ENTRYPOINT ["dotnet", "Api.dll"]
