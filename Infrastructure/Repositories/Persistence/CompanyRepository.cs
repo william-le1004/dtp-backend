@@ -1,3 +1,4 @@
+using Application.Contracts;
 using Application.Contracts.Persistence;
 using Domain.Entities;
 using Infrastructure.Common.Constants;
@@ -11,11 +12,13 @@ public class CompanyRepository : ICompanyRepository
 {
     private readonly DtpDbContext _dbContext;
     private readonly UserManager<User> _userManager;
+    private readonly IUserContextService _userContext;
 
-    public CompanyRepository(DtpDbContext dbContext, UserManager<User> userManager)
+    public CompanyRepository(DtpDbContext dbContext, UserManager<User> userManager, IUserContextService userContext)
     {
         _dbContext = dbContext;
         _userManager = userManager;
+        _userContext = userContext;
     }
 
     public async Task<bool> GrantCompanyAsync(Guid companyId)
@@ -55,10 +58,11 @@ public class CompanyRepository : ICompanyRepository
             .FirstOrDefaultAsync(c => c.Id == companyId);
     }
 
-    public async Task<bool> UpsertCompanyAsync(Company company, string userId)
+    public async Task<bool> UpsertCompanyAsync(Company company)
     {
         if (company.Id == Guid.Empty)
         {
+            var userId = _userContext.GetCurrentUserId();
             var staff = await _dbContext.Users.FindAsync(userId);
             if (!company.Staffs.Contains(staff))
             {
