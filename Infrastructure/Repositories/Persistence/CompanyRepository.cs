@@ -26,7 +26,6 @@ public class CompanyRepository : ICompanyRepository
         var company = await _dbContext.Companies
             .Include(c => c.Staffs)
             .Include(c => c.Tours)
-            .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == companyId);
         company?.AcceptLicense();
 
