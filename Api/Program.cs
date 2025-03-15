@@ -3,6 +3,7 @@ using Api.Middlewares;
 using Application;
 using Infrastructure;
 using Infrastructure.Common.Extensions;
+using Microsoft.AspNetCore.OData;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,10 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Load environment variables (for local development)
 DotNetEnv.Env.Load();
 
-// Read values from environment
-var dbUser = Environment.GetEnvironmentVariable("MYSQL_USER");
-var dbPassword = Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
-var dbName = Environment.GetEnvironmentVariable("MYSQL_DATABASE");
 
 var configuration = builder.Configuration;
 builder.Services.AddEndpointsApiExplorer();
@@ -26,26 +23,26 @@ builder.Services.AddInfrastructureService(configuration)
     .AddApplicationServices()
     .AddEndpointServices();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("all", corsPolicyBuilder => corsPolicyBuilder
+        .AllowAnyHeader()
+        .AllowAnyOrigin()
+        .AllowAnyMethod());
+});
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "DTP API",
-        Version = "v1",
-        Description = "API documentation for DTP project",
-    });
-
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
+        In = ParameterLocation.Header,
+        Description = "Please enter token",
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
-        Scheme = "Bearer",
         BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter 'Bearer {token}' to authenticate.",
+        Scheme = "bearer"
     });
-
+        
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -67,16 +64,14 @@ var app = builder.Build();
 app.UseMiddleware<JwtBlacklistMiddleware>();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.ApplyMigrations();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+// app.ApplyMigrations();
 
 app.UseCors("all");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseODataRouteDebug();
 app.MapControllers();
 app.UseHttpsRedirection();
 
