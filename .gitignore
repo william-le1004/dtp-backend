@@ -89,8 +89,6 @@ appsettings.*.json
 !Api/appsettings.json # Keep this one tracked
 
 # Ignore Docker & Kubernetes files (if applicable)
-docker-compose.override.yml
-Dockerfile
 .kube/
 
 # Ignore migrations
