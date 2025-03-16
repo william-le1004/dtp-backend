@@ -11,10 +11,16 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Tour.Queries
 {
-    // DTO định nghĩa trong file query
+    public record DestinationActivity(
+        string Name,
+        TimeSpan StartTime,
+        TimeSpan EndTime,
+        int? SortOrder
+    );
     public record TourDestinationDto(
         Guid Id,
         Guid DestinationId,
+        List<DestinationActivity>? DestinationActivities,
         string DestinationName,
         TimeSpan StartTime,
         TimeSpan EndTime,
@@ -44,6 +50,12 @@ namespace Application.Features.Tour.Queries
             var dtoList = tourDestinations.Select(td => new TourDestinationDto(
                 td.Id,
                 td.DestinationId,
+                td.DestinationActivities.Select(da => new DestinationActivity(
+                    da.Name,
+                    da.StartTime,
+                    da.EndTime,
+                    da.SortOrder
+                )).ToList(),
                 td.Destination.Name,
                 td.StartTime,
                 td.EndTime,

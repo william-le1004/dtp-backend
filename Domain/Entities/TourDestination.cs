@@ -16,6 +16,7 @@ public partial class TourDestination
     public int? SortOrderByDate { get; private set; }
 
     public virtual Destination Destination { get; private set; } = null!;
+    public virtual ICollection<DestinationActivity> DestinationActivities { get; private set; } = new List<DestinationActivity>();
 
     public virtual Tour Tour { get; private set; } = null!;
 
