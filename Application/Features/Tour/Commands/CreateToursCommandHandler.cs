@@ -58,19 +58,22 @@ namespace Application.Features.Tour.Commands
             _userContextService = userContextService;
         }
 
-        // Phương thức sinh mã Tour theo quy tắc: 2 chữ cuối của company.Name + năm hiện tại + 4 chữ số sequence
         private async Task<string> GenerateTourCode(Guid? companyId, CancellationToken cancellationToken)
         {
-            var company = await _context.Companies.FirstOrDefaultAsync(c => c.Id == companyId, cancellationToken);
+            if (!companyId.HasValue || companyId.Value == Guid.Empty)
+                throw new Exception("CompanyId is null or empty. Ensure the user has an associated company.");
+
+            var company = await _context.Companies
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id==companyId, cancellationToken);
             if (company == null)
-                throw new Exception("Company not found");
+                throw new Exception($"No company found with Id: {companyId}");
 
             string abbreviation = company.Name.Length >= 2
                 ? company.Name.Substring(company.Name.Length - 2).ToUpper()
                 : company.Name.ToUpper();
             string year = DateTime.Now.Year.ToString();
 
-            // Đếm số tour đã có của công ty
             var count = await _context.Tours.CountAsync(t => t.CompanyId == companyId, cancellationToken);
             int sequenceNumber = count + 1;
             string sequenceStr = sequenceNumber.ToString("D4");
@@ -78,12 +81,15 @@ namespace Application.Features.Tour.Commands
             return $"{abbreviation}{year}{sequenceStr}";
         }
 
+
         public async Task<ApiResponse<TourResponse>> Handle(CreateTourCommand request, CancellationToken cancellationToken)
         {
+
             var companyId = _userContextService.GetCompanyId();
             // Sinh mã cho Tour
             string tourCode = await GenerateTourCode(companyId, cancellationToken);
-
+     
+           
             // Tạo Tour mới và gán Code
             var tour = new Domain.Entities.Tour(request.Title, companyId, request.Categoryid, request.Description,tourCode);
             // Lưu hình ảnh của tour
