@@ -1,28 +1,72 @@
-using Domain.Entities;
-using Infrastructure;
-using Infrastructure.Context;
+using Application.Common;
+using Application.Contracts;
+using Application.Features.Users.Commands;
+using Application.Features.Users.Queries;
+using Infrastructure.Common.Constants;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.OData.Query;
 
-namespace Api.Controllers
+namespace Api.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+[Authorize(Policy = ApplicationConst.AUTH_POLICY)]
+public class UserController : BaseController
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
-    {
-        private readonly DtpDbContext _context;
+    private readonly IMediator _mediator;
+    private readonly IUserContextService _userContextService;
 
-        public UserController(DtpDbContext context)
+    public UserController(IMediator mediator, IUserContextService userContextService)
+    {
+        _mediator = mediator;
+        _userContextService = userContextService;
+    }
+
+    [HttpGet("me")]
+    public async Task<IActionResult> Get()
+    {
+        var userId = _userContextService.GetCurrentUserId();
+        if (string.IsNullOrEmpty(userId))
         {
-            _context = context;
+            return Unauthorized(ApiResponse<bool>.Failure("User not authenticated", 401));
         }
-        
-        [HttpGet]
-        public async Task<IEnumerable<User>> Get()
-        {
-            var users = await _context.Users.AsNoTracking().ToListAsync();
-            return users;
-        }
-        
+
+        var response = await _mediator.Send(new GetUserDetailQuery(userId));
+
+        return HandleServiceResult(response);
+    }
+
+    [HttpGet("all")]
+    [Authorize(Policy = ApplicationConst.ADMIN_OR_OPERATOR_POLICY)]
+    [EnableQuery]
+    public async Task<IActionResult> GetAll()
+    {
+        var response = await _mediator.Send(new GetUserQuery());
+        return ReturnList(response);
+    }
+
+    [HttpPost]
+    [Authorize(Policy = ApplicationConst.ADMIN_OR_OPERATOR_POLICY)]
+    public async Task<IActionResult> Create([FromBody] CreateUserCommand createUserCommand)
+    {
+        var response = await _mediator.Send(createUserCommand);
+        return HandleServiceResult(response);
+    }
+
+    [HttpDelete("{id}")]
+    [Authorize(Policy = ApplicationConst.ADMIN_OR_OPERATOR_POLICY)]
+    public async Task<IActionResult> Inactive([FromRoute] string userId)
+    {
+        var response = await _mediator.Send(new DeleteUserCommand(userId));
+        return HandleServiceResult(response);
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileCommand profileCommand)
+    {
+        var response = await _mediator.Send(profileCommand);
+        return HandleServiceResult(response);
     }
 }

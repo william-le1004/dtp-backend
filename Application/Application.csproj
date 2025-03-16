@@ -7,16 +7,25 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Tour\Commands\" />
+        <Folder Include="Contracts\Persistence\"/>
+        <Folder Include="Features\Order\Queries\"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MediatR" Version="12.4.1" />
-      <PackageReference Include="Option" Version="3.0.1" />
+        <PackageReference Include="MediatR" Version="12.4.1" />
+        <PackageReference Include="Option" Version="3.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.13" />
+        <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.11" />
+        <PackageReference Include="FluentValidation" Version="11.11.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+        <ProjectReference Include="..\Domain\Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features\Company\" />
     </ItemGroup>
 
 </Project>

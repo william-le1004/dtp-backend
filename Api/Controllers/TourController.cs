@@ -1,30 +1,26 @@
-using Application.Tour.Queries;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Domain.Entities;
-using Infrastructure.Context;
+﻿using Application.Features.Tour.Commands;
+using Application.Features.Tour.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class TourController(DtpDbContext context, ILogger<TourController> logger, IMediator mediator)
-    : ODataController
+public class TourController(ILogger<TourController> logger, IMediator mediator)
+    : BaseController
 {
-    // GET: api/odata/Tours
     [HttpGet]
     [EnableQuery]
-    public async Task<IEnumerable<TourResponse>> GetTours()
+    public async Task<IQueryable<TourTemplateResponse>> Get()
     {
         return await mediator.Send(new GetTours());
     }
 
     // GET: api/Tour/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<TourDetailResponse>> GetTour(Guid id)
+    public async Task<ActionResult<TourDetailResponse>> GetTours(Guid id)
     {
         var result = await mediator.Send(new GetTourDetail(id));
 
@@ -33,66 +29,85 @@ public class TourController(DtpDbContext context, ILogger<TourController> logger
             None: () => NotFound($"Tour ({id}) not found."));
     }
 
-    // PUT: api/Tour/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutTour(Guid id, Tour tour)
-    {
-        if (id != tour.Id)
-        {
-            return BadRequest();
-        }
 
-        context.Entry(tour).State = EntityState.Modified;
-
-        try
-        {
-            await context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!TourExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
-
-        return NoContent();
-    }
-
-    // POST: api/Tour
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Tour>> PostTour(Tour tour)
+    public async Task<IActionResult> CreateTour([FromBody] CreateTourCommand command)
     {
-        context.Tours.Add(tour);
-        await context.SaveChangesAsync();
-
-        return CreatedAtAction("GetTour", new { id = tour.Id }, tour);
+        var response = await mediator.Send(command);
+        return HandleServiceResult(response);
     }
 
-    // DELETE: api/Tour/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTour(Guid id)
+    [HttpGet("get")]
+    public async Task<IActionResult> GetListTour()
     {
-        var tour = await context.Tours.FindAsync(id);
-        if (tour == null)
-        {
-            return NotFound();
-        }
-
-        context.Tours.Remove(tour);
-        await context.SaveChangesAsync();
-
-        return NoContent();
+        var response = await mediator.Send(new GetListTour());
+        return HandleServiceResult(response);
     }
 
-    private bool TourExists(Guid id)
+    [HttpPut("tourinfor/{id}")]
+    public async Task<IActionResult> PutTour(Guid id,[FromBody] UpdateTourInforCommand command)
     {
-        return context.Tours.Any(e => e.Id == id);
+        var updatedCommand = command with { TourId = id };
+        var response = await mediator.Send(updatedCommand);
+        return HandleServiceResult(response);
+
     }
+
+    [HttpPut("tourdestination/{id}")]
+    public async Task<IActionResult> UpdateTourDestination(Guid id,[FromBody] UpdateTourDestinationCommand command)
+    {
+        var updatedCommand = command with { TourId = id };
+        var response = await mediator.Send(updatedCommand);
+        return HandleServiceResult(response);
+    }
+
+    [HttpDelete("tourschedule/{id}")]
+    public async Task<IActionResult> DeleteTourSchedule(Guid id, [FromBody] DeleteTourSchedule command)
+    {
+        var updatedCommand = command with { TourId = id };
+        var response = await mediator.Send(updatedCommand);
+        return HandleServiceResult(response);
+
+    }
+
+    [HttpPost("addschedule/{id}")]
+    public async Task<IActionResult> AddSchedule(Guid id, [FromBody] AddScheduleCommand command)
+    {
+        var updatedCommand = command with { TourId = id };
+        var response = await mediator.Send(updatedCommand);
+        return HandleServiceResult(response);
+    }
+
+    [HttpPut("ticketschedule/{id}")]
+    public async Task<IActionResult> UpdateTicketSchedule(Guid id,[FromBody] UpdateTicketScheduleCommand command)
+    {
+        var updatedCommand = command with { TourId = id };
+        var response = await mediator.Send(updatedCommand);
+        return HandleServiceResult(response);
+    }
+    [HttpGet("tourinfor/{id}")]
+    public async Task<IActionResult> GetTourInforByTourID(Guid id)
+    {
+        var response = await mediator.Send(new GetTourInforByTourIDQuery(id));
+        return HandleServiceResult(response);
+    }
+    [HttpGet("tourdestination/{id}")]
+    public async Task<IActionResult> GetTourDestinationByTourID(Guid id)
+    {
+        var response = await mediator.Send(new GetTourDestinationByTourIDQuery(id));
+        return HandleServiceResult(response);
+    }
+    [HttpGet("scheduleticket/{id}")]
+    public async Task<IActionResult> GetListTicketScheduleByTourID(Guid id)
+    {
+        var response = await mediator.Send(new GetListTicketScheduleByTourIDQuery(id));
+        return HandleServiceResult(response);
+    }
+    [HttpGet("schedule/{id}")]
+    public async Task<IActionResult> GetTourScheduleByTourID(Guid id)
+    {
+        var response = await mediator.Send(new GetTourScheduleByTourIDQuery(id));
+        return HandleServiceResult(response);
+    }
+
 }

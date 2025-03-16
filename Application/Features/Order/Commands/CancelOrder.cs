@@ -1,0 +1,29 @@
+﻿using Application.Contracts;
+using Application.Contracts.Persistence;
+using Functional.Option;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+
+namespace Application.Features.Order.Commands;
+
+public record CancelOrder(Guid Id, string Remark) : IRequest<Option<Guid>>;
+
+public class CancelOrderHandler(IDtpDbContext context, IUserContextService userService)
+    : IRequestHandler<CancelOrder, Option<Guid>>
+{
+    public async Task<Option<Guid>> Handle(CancelOrder request, CancellationToken cancellationToken)
+    {
+        var userId = userService.GetCurrentUserId()!;
+        var order = await context.TourBookings.Include(x => x.TourSchedule)
+            .SingleOrDefaultAsync(x => x.UserId == userId 
+                                       && x.Id == request.Id, cancellationToken: cancellationToken);
+
+        if (order is not null)
+        {
+            order.CancelBooking(request.Remark);
+            return Option.Some(order.Id);
+        }
+
+        return Option.None;
+    }
+}

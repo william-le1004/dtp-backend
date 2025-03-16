@@ -2,27 +2,48 @@
 
 public partial class Tour : AuditEntity
 {
-    public string Title { get; set; } = null!;
+    public string Title { get; private set; } = null!;
 
-    public Guid? CompanyId { get; set; }
+    public Guid? CompanyId { get; private set; }
 
-    public Guid? Category { get; set; }
+    public Guid? CategoryId { get; private set; }
+    public Category Category { get; private set; }
+    public string? Description { get; private set; }
 
-    public decimal Price { get; set; }
+    public List<TicketType> Tickets { get; private set; } = new();
+    public virtual Company Company { get; private set; } = null!;
 
-    public string? Description { get; set; }
+    public virtual ICollection<Feedback> Feedbacks { get; private set; } = new List<Feedback>();
 
-    public DateTime? CreatedAt { get; set; }
+    public virtual ICollection<Rating> Ratings { get; private set; } = new List<Rating>();
 
-    public DateTime? UpdatedAt { get; set; }
+    public virtual ICollection<TourDestination> TourDestinations { get; private set; } = new List<TourDestination>();
 
-    public virtual Company Company { get; set; } = null!;
+    public virtual ICollection<TourSchedule> TourSchedules { get; private set; } = new List<TourSchedule>();
 
-    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+    public Tour()
+    {
+    }
 
-    public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+    public Tour(string title, Guid? companyId, Guid? category, string? description)
+    {
+        Id = Guid.NewGuid();
+        Title = title;
+        CompanyId = companyId;
+        CategoryId = category;
+        Description = description;
+    }
 
-    public virtual ICollection<TourDestination> TourDestinations { get; set; } = new List<TourDestination>();
+    public void Update(string title, Guid? category, string? description)
+    {
+        Title = title;
+        CategoryId = category;
+        Description = description;
+    }
 
-    public virtual ICollection<TourSchedule> TourSchedules { get; set; } = new List<TourSchedule>();
+    public decimal OnlyFromCost()
+    {
+        return Tickets.Select(x => x.DefaultNetCost).Min();
+    }
+
 }
