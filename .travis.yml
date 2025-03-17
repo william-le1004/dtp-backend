@@ -1,0 +1,41 @@
+﻿language: csharp  # Choose a language based on your app (python example here)os: linux
+
+addons:
+  apt:
+    packages:
+      - docker-ce  # Install Docker CE (Community Edition)
+
+services:
+  - docker  # Ensure Docker service is available in the Travis CI environment
+
+env:
+  - TRAVIS_BUILD_TIMEOUT=3600  # Set to 1 hour
+
+before_install:
+  - docker --version
+  # Set memory configuration to allow Docker to use more memory (optional)
+  - sudo sysctl -w vm.overcommit_memory=1
+
+cache:
+  directories:
+    - ~/.nuget/packages
+
+# Specify the branch to build
+branches:
+  only:
+    - master  # Only run on the 'master' branch (you can also add 'dev' here if you want to trigger builds from 'dev')
+
+# Script section where you build and push the Docker image
+script:
+  - docker build -f Api/Dockerfile -t $DOCKER_USERNAME/dtp-backend:$TRAVIS_COMMIT .
+
+after_success:
+  # Log in to Docker Hub using Travis CI environment variables
+  - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+  
+  # Push the Docker image to Docker Hub
+  - docker push $DOCKER_USERNAME/dtp-backend:$TRAVIS_COMMIT
+  
+  # Optionally, you can tag the image as 'latest' or add version numbers
+  - docker tag $DOCKER_USERNAME/dtp-backend:$TRAVIS_COMMIT $DOCKER_USERNAME/dtp-backend:latest
+  - docker push $DOCKER_USERNAME/dtp-backend:latest
