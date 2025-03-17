@@ -1,9 +1,11 @@
-﻿language: csharp  # Choose a language based on your app (python example here)os: linux
+language: csharp  # Choose a language based on your app (python example here)os: linux
+
 
 addons:
   apt:
     packages:
       - docker-ce  # Install Docker CE (Community Edition)
+
 
 services:
   - docker  # Ensure Docker service is available in the Travis CI environment
@@ -38,4 +40,5 @@ after_success:
   
   # Optionally, you can tag the image as 'latest' or add version numbers
   - docker tag $DOCKER_USERNAME/dtp-backend:$TRAVIS_COMMIT $DOCKER_USERNAME/dtp-backend:latest
+  
   - docker push $DOCKER_USERNAME/dtp-backend:latest

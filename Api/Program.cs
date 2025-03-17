@@ -64,9 +64,10 @@ var app = builder.Build();
 app.UseMiddleware<JwtBlacklistMiddleware>();
 
 // Configure the HTTP request pipeline.
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    // app.ApplyMigrations();
+
+app.UseSwagger();
+app.UseSwaggerUI();
+// app.ApplyMigrations();
 
 app.UseCors("all");
 app.UseAuthentication();

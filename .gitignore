@@ -98,3 +98,19 @@ Migrations/
 .localhistory/
 Backup*/
 MigrationBackup/
+
+
+# Ionide (cross platform F# VS Code tools) working folder
+.ionide/
+
+# Fody - auto-generated XML schema
+FodyWeavers.xsd
+
+# Idea file
+.idea
+
+# Ignore environment variables
+.env
+
+# Ignore migration folder
+Migrations/
