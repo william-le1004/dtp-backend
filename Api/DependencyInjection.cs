@@ -1,9 +1,11 @@
+using Api.Extensions;
 using Application.Features.Company.Queries;
 using Application.Features.Tour.Queries;
 using Application.Features.Users.Queries;
 using Domain.Entities;
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.ModelBuilder;
+using Microsoft.OpenApi.Models;
 
 namespace Api;
 
@@ -23,7 +25,39 @@ public static class DependencyInjection
             options => options.EnableQueryFeatures(maxTopValue: null).AddRouteComponents(
                 routePrefix: "odata",
                 model: modelBuilder.GetEdmModel()).Select().Filter().Count().OrderBy());
-
+        
+        services.AddRedisOutputCache(options =>
+        {
+            options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(5)));
+        });
+        
+        services.AddSwaggerGen(c =>
+        {
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Description = "Please enter token",
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                Scheme = "bearer"
+            });
+        
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] { }
+                }
+            });
+        });
         return services;
     }
 }
