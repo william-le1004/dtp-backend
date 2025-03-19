@@ -22,8 +22,8 @@ public class RedisCacheService(IDistributedCache redisCache, ILogger<RedisCacheS
         {
             AbsoluteExpirationRelativeToNow = expiration ?? TimeSpan.FromMinutes(1)
         };
-
-        await redisCache.SetStringAsync(key, JsonSerializer.Serialize(data), options);
+        string storedValue = data is string str ? str : JsonSerializer.Serialize(data);
+        await redisCache.SetStringAsync(key, storedValue, options);
     }
 
     public async Task<bool> RemoveDataAsync(string key)
