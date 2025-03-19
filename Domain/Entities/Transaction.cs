@@ -21,7 +21,11 @@ public class Transaction : AuditEntity
     public TransactionStatus Status { get; private set; }
 
     public virtual Wallet Wallet { get; private set; } = null!;
-    
+
+    public Transaction()
+    {
+    }
+
     public Transaction(decimal currentBalance,
         decimal amount, TransactionType type, Guid walletId, string? description = null, Guid? receiveWalletId = null)
     {
