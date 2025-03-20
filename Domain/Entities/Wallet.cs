@@ -7,8 +7,6 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
     public string UserId { get; private set; } = userId;
     public decimal Balance { get; private set; } = balance;
 
-    public bool IsActive { get; private set; }
-
     private readonly List<Transaction> _transactions = new();
     public IReadOnlyCollection<Transaction> Transactions => _transactions.AsReadOnly();
 
