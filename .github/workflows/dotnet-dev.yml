@@ -38,5 +38,4 @@ jobs:
 
 
     - name: Push Docker image to Docker Hub
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE_NAME }}:${{ github.sha }}
-           docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE_NAME }}:latest
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE_NAME }}:${{ github.sha }} && docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE_NAME }}:latest
