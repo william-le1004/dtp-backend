@@ -1,6 +1,8 @@
+using Domain.DataModel;
+
 namespace Domain.Common;
 
-public class AuditEntity
+public class AuditEntity : SoftDeleteEntity
 {
     public Guid Id { get; set; }
 
@@ -12,5 +14,4 @@ public class AuditEntity
 
     public string? LastModifiedBy { get; set; }
 
-    public bool IsDeleted { get; set; }
 }

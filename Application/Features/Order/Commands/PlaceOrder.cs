@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Application.Contracts;
 using Application.Contracts.Persistence;
-using Application.Features.Order.Event;
+using Application.Features.Basket.Events;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -56,7 +56,7 @@ public class PlaceOrderCommandHandler(IDtpDbContext context, IPublisher publishe
 
         context.TourBookings.Add(booking);
         await context.SaveChangesAsync(cancellationToken: cancellationToken);
-        // await publisher.Publish(removeBasketEvent, cancellationToken);
+        await publisher.Publish(removeBasketEvent, cancellationToken);
 
         return booking;
     }
