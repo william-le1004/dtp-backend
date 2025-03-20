@@ -1,4 +1,5 @@
-﻿using Application.Contracts.Persistence;
+﻿using Application.Contracts;
+using Application.Contracts.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,11 +7,11 @@ namespace Application.Features.Basket.Commands;
 
 public record RemoveAllFromBasket() : IRequest;
 
-public class RemoveAllFromBasketHandler(IDtpDbContext context) : IRequestHandler<RemoveAllFromBasket>
+public class RemoveAllFromBasketHandler(IDtpDbContext context, IUserContextService userService) : IRequestHandler<RemoveAllFromBasket>
 {
     public async Task Handle(RemoveAllFromBasket request, CancellationToken cancellationToken)
     {
-        var userId = Guid.Empty;
+        var userId = userService.GetCurrentUserId();
         // Update later when we have done the identity
 
         var basket = await context.Baskets.Include(x => x.Items)

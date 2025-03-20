@@ -1,27 +1,29 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Domain.Entities;
+using Infrastructure.Common.Constants;
 using Infrastructure.Contexts;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Roles = ApplicationRole.ADMIN)]
 public class DestinationController(DtpDbContext context) : BaseController
 {
     // GET: api/Destination
     [HttpGet]
     [EnableQuery]
-    public async Task<ActionResult<IEnumerable<Destination>>> GetDestinations()
+    public IQueryable<Destination> Get()
     {
-        return await context.Destinations.ToListAsync();
+        return context.Destinations.AsQueryable();
     }
 
     // GET: api/Destination/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Destination>> GetDestination(Guid id)
+    public async Task<ActionResult<Destination>> GetDest(Guid id)
     {
         var destination = await context.Destinations.FindAsync(id);
 
@@ -38,28 +40,18 @@ public class DestinationController(DtpDbContext context) : BaseController
     [HttpPut("{id}")]
     public async Task<IActionResult> PutDestination(Guid id, Destination destination)
     {
-        if (id != destination.Id)
+        var exitedDest = await context.Destinations.FirstOrDefaultAsync(x => x.Id == id);
+
+        if (exitedDest == null)
         {
-            return BadRequest();
+            return NotFound();
         }
 
-        context.Entry(destination).State = EntityState.Modified;
-
-        try
-        {
-            await context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!DestinationExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
+        exitedDest.Name = destination.Name;
+        exitedDest.Longitude = destination.Longitude;
+        exitedDest.Latitude = destination.Latitude;
+        context.Destinations.Update(exitedDest);
+        await context.SaveChangesAsync();
 
         return NoContent();
     }
@@ -72,7 +64,7 @@ public class DestinationController(DtpDbContext context) : BaseController
         context.Destinations.Add(destination);
         await context.SaveChangesAsync();
 
-        return CreatedAtAction("GetDestination", new { id = destination.Id }, destination);
+        return CreatedAtAction(nameof(GetDest), new { id = destination.Id }, destination);
     }
 
     // DELETE: api/Destination/5

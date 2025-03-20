@@ -8,6 +8,6 @@ public class TourDestinationConfiguration : IEntityTypeConfiguration<TourDestina
 {
     public void Configure(EntityTypeBuilder<TourDestination> builder)
     {
-        builder.HasKey(x => new { x.TourId, x.DestinationId });
+        builder.HasKey(x => x.Id);
     }
 }

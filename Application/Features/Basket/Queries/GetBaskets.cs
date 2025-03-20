@@ -1,4 +1,5 @@
-﻿using Application.Contracts.Persistence;
+﻿using Application.Contracts;
+using Application.Contracts.Persistence;
 using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,6 @@ public record BasketTourItemResponse
 
 public record TicketResponse
 {
-    public Guid TourScheduleTicketId { get; set; }
     public int AvailableTicket { get; set; }
     public bool HasAvailableTicket { get; set; }
     public int Quantity { get; set; }
@@ -26,13 +26,12 @@ public record TicketResponse
 
 public record GetBaskets : IRequest<IEnumerable<BasketTourItemResponse>>;
 
-public class BasketHandler(IDtpDbContext context) : IRequestHandler<GetBaskets, IEnumerable<BasketTourItemResponse>>
+public class BasketHandler(IDtpDbContext context, IUserContextService userService) : IRequestHandler<GetBaskets, IEnumerable<BasketTourItemResponse>>
 {
     public async Task<IEnumerable<BasketTourItemResponse>> Handle(GetBaskets request,
         CancellationToken cancellationToken)
     {
-        var userId = Guid.Empty;
-        // Update later when we have done the identity
+        var userId = userService.GetCurrentUserId();
 
         var basket = await context.Baskets.Include(x => x.Items)
             .Include(x => x.Items)
@@ -51,14 +50,12 @@ public class BasketHandler(IDtpDbContext context) : IRequestHandler<GetBaskets, 
                 Tickets = x.Select(y =>
                 {
                     var tourScheduleTicket =
-                        y.TourSchedule.TourScheduleTickets.Single(t => t.Id == y.TourScheduleTicketId);
+                        y.TourSchedule.TourScheduleTickets.Single(t => t.TicketTypeId == y.TicketTypeId);
                     return new TicketResponse()
                     {
-                        TourScheduleTicketId = y.TourScheduleTicketId,
                         Quantity = y.Quantity,
                         HasAvailableTicket = tourScheduleTicket.HasAvailableTicket(y.Quantity),
                         NetCost = tourScheduleTicket.NetCost,
-                        Tax = tourScheduleTicket.Tax,
                         TicketKind = tourScheduleTicket
                             .TicketType.TicketKind,
                         IsAvailable = tourScheduleTicket.IsAvailable(),

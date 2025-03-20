@@ -26,30 +26,34 @@ public class JwtTokenService
         _userManager = userManager;
         _redisDb = redis.GetDatabase();
     }
-    
+
     public async Task<AccessTokenResponse> GenerateTokens(User user)
     {
         var accessToken = await GenerateJwtToken(user);
         var refreshToken = GenerateRefreshToken();
-        
+        var userRole = await _userManager.GetRolesAsync(user);
+
         var response = new AccessTokenResponse
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken,
-            ExpiresIn = _jwtSettings.AccessTokenExpirationMinutes * 60
+            ExpiresIn = _jwtSettings.AccessTokenExpirationMinutes * 60,
+            Role = userRole.FirstOrDefault() ?? "No role"
         };
         return response;
     }
-    
+
     private async Task<string> GenerateJwtToken(User user)
     {
         var userRoles = await _userManager.GetRolesAsync(user);
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email)
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim("uid", user.Id),
+            new Claim("company_id", user.CompanyId.ToString() ?? "None")
         };
 
         claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
@@ -67,7 +71,7 @@ public class JwtTokenService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-    
+
     private string GenerateRefreshToken()
     {
         var randomNumber = new byte[64];
@@ -75,13 +79,28 @@ public class JwtTokenService
         {
             rng.GetBytes(randomNumber);
         }
+
         return Convert.ToBase64String(randomNumber);
     }
-    
+
+    public string GetJtiFromToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+        return jwtToken.Claims.First(c => c.Type == JwtRegisteredClaimNames.Jti).Value;
+    }
+
+    public DateTime GetTokenExpiry(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+        return jwtToken.ValidTo;
+    }
+
     public async Task<string> ValidateRefreshToken(string refreshToken)
     {
         var server = _redisDb.Multiplexer.GetServer(_redisDb.Multiplexer.GetEndPoints()[0]);
-        var keys = server.Keys(pattern: $"{ApplicationPrefix.REFRESH_TOKEN}_:*");
+        var keys = server.Keys(pattern: $"{ApplicationConst.REFRESH_TOKEN}:*");
 
         foreach (var key in keys)
         {

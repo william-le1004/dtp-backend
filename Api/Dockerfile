@@ -11,7 +11,7 @@ COPY ["Api/Api.csproj", "Api/"]
 COPY ["Domain/Domain.csproj", "Domain/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["Application/Application.csproj", "Application/"]
-RUN dotnet restore "Api/Api.csproj"
+RUN dotnet restore "Api/Api.csproj" --verbosity detailed
 COPY . .
 WORKDIR "/src/Api"
 RUN dotnet build "Api.csproj" -c $BUILD_CONFIGURATION -o /app/build

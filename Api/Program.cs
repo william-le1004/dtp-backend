@@ -1,17 +1,14 @@
 using Api;
+using Api.Middlewares;
 using Application;
 using Infrastructure;
-using Infrastructure.Common.Extensions;
+using Microsoft.AspNetCore.OData;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Load environment variables (for local development)
 DotNetEnv.Env.Load();
 
-// Read values from environment
-var dbUser = Environment.GetEnvironmentVariable("MYSQL_USER");
-var dbPassword = Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
-var dbName = Environment.GetEnvironmentVariable("MYSQL_DATABASE");
 
 var configuration = builder.Configuration;
 builder.Services.AddEndpointsApiExplorer();
@@ -22,21 +19,24 @@ builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddInfrastructureService(configuration)
     .AddApplicationServices()
-    .AddEndpointServices();
+    .AddEndpointServices(configuration);
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.ApplyMigrations();
-}
+app.UseMiddleware<JwtBlacklistMiddleware>();
 
+// Configure the HTTP request pipeline.
+
+app.UseSwagger();
+app.UseSwaggerUI();
+// app.ApplyMigrations();
+
+app.UseCors("all");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseODataRouteDebug();
+app.UseOutputCache();
 app.MapControllers();
 app.UseHttpsRedirection();
 

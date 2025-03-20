@@ -1,4 +1,5 @@
-﻿using Application.Contracts.Persistence;
+﻿using Application.Contracts;
+using Application.Contracts.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,12 +7,11 @@ namespace Application.Features.Basket.Commands;
 
 public record RemoveTourFromBasket(Guid TourScheduleId) : IRequest;
 
-public class RemoveTourFromBasketHandler(IDtpDbContext context) : IRequestHandler<RemoveTourFromBasket>
+public class RemoveTourFromBasketHandler(IDtpDbContext context, IUserContextService userService) : IRequestHandler<RemoveTourFromBasket>
 {
     public async Task Handle(RemoveTourFromBasket request, CancellationToken cancellationToken)
     {
-        var userId = Guid.Empty;
-        // Update later when we have done the identity
+        var userId = userService.GetCurrentUserId();
 
         var basket = await context.Baskets.Include(x => x.Items)
             .SingleOrDefaultAsync(x => x.UserId == userId, cancellationToken: cancellationToken);

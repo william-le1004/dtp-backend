@@ -7,21 +7,33 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Contracts\Persistence\"/>
-        <Folder Include="Features\Users\Queries\"/>
+        <Folder Include="Contracts\Persistence\" />
+        <Folder Include="Features\Order\Queries\" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="MediatR" Version="12.4.1"/>
-        <PackageReference Include="Option" Version="3.0.1"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.13"/>
-        <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.11"/>
-        <PackageReference Include="FluentValidation" Version="11.11.0"/>
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0"/>
+        <PackageReference Include="MediatR" Version="12.4.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
+        <PackageReference Include="Option" Version="3.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.13" />
+        <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.11" />
+        <PackageReference Include="FluentValidation" Version="11.11.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+        <PackageReference Include="payOS" Version="1.0.9" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Domain\Domain.csproj"/>
+        <ProjectReference Include="..\Domain\Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features\Company\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.AspNetCore.Http.Features">
+        <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.12\Microsoft.AspNetCore.Http.Features.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

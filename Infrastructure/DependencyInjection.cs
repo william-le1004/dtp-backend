@@ -1,11 +1,18 @@
 using System.Text;
+using Application;
+using Application.Contracts;
 using Application.Contracts.Authentication;
 using Application.Contracts.Caching;
+using Application.Contracts.Cloudinary;
 using Application.Contracts.Persistence;
+using CloudinaryDotNet;
 using Domain.Entities;
+using Hangfire;
+using Hangfire.MySql;
 using Infrastructure.Common.Constants;
 using Infrastructure.Common.Settings;
 using Infrastructure.Contexts;
+using Infrastructure.Repositories.Persistence;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -17,22 +24,27 @@ using StackExchange.Redis;
 
 namespace Infrastructure;
 
-public static class InfrastructureRegistration
+public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructureService(this IServiceCollection services,
         IConfiguration configuration)
     {
-        
         var environmentSection = configuration.GetSection("Environment");
-        
+
         var connectionString = environmentSection.GetConnectionString("DefaultConnection");
         var jwtSettings = environmentSection.GetSection("JwtSettings");
         var redisConnection = environmentSection.GetSection("Redis");
         var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
-        
-        services.Configure<JwtSettings>(jwtSettings);
+        var cloudinaryConnection = environmentSection.GetSection("CloudinarySettings");
 
-        services.AddDbContext<DtpDbContext>(options => { options.UseMySQL(connectionString); });
+        services.Configure<JwtSettings>(jwtSettings);
+        services.Configure<CloudinarySettings>(cloudinaryConnection);
+        
+        services.AddDbContext<DtpDbContext>((sp, options) =>
+        {
+            options.UseMySQL(connectionString)
+                .AddInterceptors(sp.GetService<AuditableEntityInterceptor>());
+        });
 
         services.AddStackExchangeRedisCache(options =>
         {
@@ -41,27 +53,33 @@ public static class InfrastructureRegistration
             {
                 EndPoints = { redisConnection["Endpoint"] },
                 Password = redisConnection["Password"],
+                User = redisConnection["User"],
                 ConnectTimeout = 10000,
                 SyncTimeout = 10000
             };
         });
-        
+
         services.AddSingleton<IConnectionMultiplexer>(sp =>
         {
             var configuration = ConfigurationOptions.Parse(redisConnection["Endpoint"], true);
             configuration.Password = redisConnection["Password"];
             return ConnectionMultiplexer.Connect(configuration);
         });
-        
+
         services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<DtpDbContext>()
             .AddDefaultTokenProviders();
-        
+
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ICompanyRepository, CompanyRepository>();
         services.AddScoped<JwtTokenService>();
         services.AddScoped<IDtpDbContext, DtpDbContext>();
-        
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUserContextService, UserContextService>();
+        services.AddSingleton<ICloudinaryService,CloudinaryService>();
+
         services.AddAuthentication(item =>
         {
             item.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -81,6 +99,35 @@ public static class InfrastructureRegistration
                 IssuerSigningKey = new SymmetricSecurityKey(key)
             };
         });
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(ApplicationConst.AUTH_POLICY, policy => policy.RequireAuthenticatedUser());
+            options.AddPolicy(ApplicationConst.ADMIN_POLICY, policy => policy.RequireRole(ApplicationRole.ADMIN));
+            options.AddPolicy(ApplicationConst.OPERATOR_POLICY,
+                policy => policy.RequireRole(ApplicationRole.OPERATOR));
+            options.AddPolicy(ApplicationConst.ADMIN_OR_OPERATOR_POLICY,
+                policy => policy.RequireRole(ApplicationRole.ADMIN, ApplicationRole.OPERATOR));
+        });
+
+        services.AddCors(options =>
+        {
+            options.AddPolicy("all", corsPolicyBuilder => corsPolicyBuilder
+                .AllowAnyHeader()
+                .AllowAnyOrigin()
+                .AllowAnyMethod());
+        });
+        
+        services.AddHangfire(ctg => ctg
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseStorage(new MySqlStorage(connectionString, new MySqlStorageOptions
+            {
+                TablesPrefix = "Hangfire",
+                QueuePollInterval = TimeSpan.FromSeconds(15)
+            })));
+
         return services;
     }
 }

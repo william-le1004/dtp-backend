@@ -27,4 +27,17 @@ public abstract class BaseController : ODataController
             error = result.Errors
         });
     }
+
+    protected IActionResult ReturnList<T>(ApiResponse<IQueryable<T>> result)
+    {
+        if (result.Success)
+        {
+            return Ok(result.Data);
+        }
+
+        return StatusCode(result.StatusCode, new
+        {
+            data = (T?)default
+        });
+    }
 }
