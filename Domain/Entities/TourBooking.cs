@@ -92,7 +92,7 @@ public partial class TourBooking : AuditEntity
         }
     }
 
-    public void CancelBooking(string remark)
+    public void CancelBooking(string? remark = null)
     {
         if (TourSchedule.IsStarted())
         {
@@ -129,14 +129,14 @@ public partial class TourBooking : AuditEntity
         Remark = remark;
     }
 
-    public void PurchaseBooking(string remark)
+    public void PurchaseBooking(string? remark = null)
     {
         if (Status != BookingStatus.Pending)
         {
             throw new AggregateException($"Can't purchase this tour booking. Status: {Status}");
         }
 
-        Status = BookingStatus.Completed;
+        Status = BookingStatus.Paid;
         Remark = remark;
     }
 

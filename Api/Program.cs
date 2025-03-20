@@ -19,7 +19,7 @@ builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddInfrastructureService(configuration)
     .AddApplicationServices()
-    .AddEndpointServices();
+    .AddEndpointServices(configuration);
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
