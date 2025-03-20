@@ -6,12 +6,13 @@ using Domain.Entities;
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
+using Net.payOS;
 
 namespace Api;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddEndpointServices(this IServiceCollection services)
+    public static IServiceCollection AddEndpointServices(this IServiceCollection services, IConfiguration configuration)
     {
         var modelBuilder = new ODataConventionModelBuilder();
         modelBuilder.EntitySet<TourTemplateResponse>("Tour");
@@ -30,6 +31,11 @@ public static class DependencyInjection
         {
             options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(5)));
         });
+        
+        var payOs = new PayOS(configuration["Environment:PayOs:ClientId"] ?? throw new Exception("Cannot find environment"),
+            configuration["Environment:PayOs:ApiKey"] ?? throw new Exception("Cannot find environment"),
+            configuration["Environment:PayOs:ChecksumKey"] ?? throw new Exception("Cannot find environment"));
+        services.AddSingleton(payOs);
         
         services.AddSwaggerGen(c =>
         {
