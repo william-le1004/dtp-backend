@@ -34,7 +34,7 @@ jobs:
 
 
     - name: Build Docker image
-      run: docker build -t Api/Dockerfile ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE_NAME }}:${{ github.sha }} -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE_NAME }}:latest .
+      run: docker build -f Api/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE_NAME }}:${{ github.sha }} -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE_NAME }}:latest .
 
 
     - name: Push Docker image to Docker Hub
