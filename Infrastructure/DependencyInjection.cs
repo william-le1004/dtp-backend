@@ -1,9 +1,14 @@
 using System.Text;
+using Application;
 using Application.Contracts;
 using Application.Contracts.Authentication;
 using Application.Contracts.Caching;
+using Application.Contracts.Cloudinary;
 using Application.Contracts.Persistence;
+using CloudinaryDotNet;
 using Domain.Entities;
+using Hangfire;
+using Hangfire.MySql;
 using Infrastructure.Common.Constants;
 using Infrastructure.Common.Settings;
 using Infrastructure.Contexts;
@@ -30,9 +35,11 @@ public static class DependencyInjection
         var jwtSettings = environmentSection.GetSection("JwtSettings");
         var redisConnection = environmentSection.GetSection("Redis");
         var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+        var cloudinaryConnection = environmentSection.GetSection("CloudinarySettings");
 
         services.Configure<JwtSettings>(jwtSettings);
-
+        services.Configure<CloudinarySettings>(cloudinaryConnection);
+        
         services.AddDbContext<DtpDbContext>((sp, options) =>
         {
             options.UseMySQL(connectionString)
@@ -71,6 +78,7 @@ public static class DependencyInjection
         services.AddScoped<IDtpDbContext, DtpDbContext>();
         services.AddHttpContextAccessor();
         services.AddScoped<IUserContextService, UserContextService>();
+        services.AddSingleton<ICloudinaryService,CloudinaryService>();
 
         services.AddAuthentication(item =>
         {
@@ -109,6 +117,16 @@ public static class DependencyInjection
                 .AllowAnyOrigin()
                 .AllowAnyMethod());
         });
+        
+        services.AddHangfire(ctg => ctg
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseStorage(new MySqlStorage(connectionString, new MySqlStorageOptions
+            {
+                TablesPrefix = "Hangfire",
+                QueuePollInterval = TimeSpan.FromSeconds(15)
+            })));
 
         return services;
     }
