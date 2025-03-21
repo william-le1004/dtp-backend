@@ -19,7 +19,6 @@ public class AddTourToBasketHandler(IDtpDbContext context, IUserContextService u
             .Include(x => x.Items)
             .ThenInclude(x => x.TourSchedule)
             .AsSplitQuery()
-            .AsNoTracking()
             .SingleOrDefaultAsync(x => x.UserId == userId, cancellationToken: cancellationToken);
 
 

@@ -145,4 +145,6 @@ public partial class TourBooking : AuditEntity
         var freeCancellationPeriod = CreatedAt.AddDays(1);
         return freeCancellationPeriod < DateTime.Now;
     }
+    
+    public bool IsCancelled() => Status == BookingStatus.Cancelled;
 }
