@@ -10,7 +10,7 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = ApplicationRole.ADMIN)]
+//[Authorize(Roles = ApplicationRole.ADMIN)]
 public class DestinationController(DtpDbContext context) : BaseController
 {
     // GET: api/Destination
