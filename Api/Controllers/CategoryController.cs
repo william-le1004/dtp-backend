@@ -10,12 +10,12 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize(Roles = ApplicationRole.ADMIN)]
 public class CategoryController(DtpDbContext context) : BaseController
 {
     // GET: api/Category
     [HttpGet]
     [EnableQuery]
+    [Authorize(Policy = ApplicationConst.HighLevelPermission)]
     public IQueryable<Category> Get()
     {
         return context.Categories.AsQueryable();
@@ -23,6 +23,7 @@ public class CategoryController(DtpDbContext context) : BaseController
 
     // GET: api/Category/5
     [HttpGet("{id}")]
+    [Authorize(Policy = ApplicationConst.HighLevelPermission)]
     public async Task<ActionResult<Category>> GetCate(Guid id)
     {
         var category = await context.Categories.FindAsync(id);
@@ -38,6 +39,7 @@ public class CategoryController(DtpDbContext context) : BaseController
     // PUT: api/Category/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
+    [Authorize(Roles = ApplicationRole.ADMIN)]
     public async Task<IActionResult> PutCategory(Guid id, Category category)
     {
         var exitedCategory = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
@@ -57,6 +59,7 @@ public class CategoryController(DtpDbContext context) : BaseController
     // POST: api/Category
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
+    [Authorize(Roles = ApplicationRole.ADMIN)]
     public async Task<ActionResult<Category>> PostCategory(Category category)
     {
         context.Categories.Add(category);
@@ -67,6 +70,7 @@ public class CategoryController(DtpDbContext context) : BaseController
 
     // DELETE: api/Category/5
     [HttpDelete("{id}")]
+    [Authorize(Roles = ApplicationRole.ADMIN)]
     public async Task<IActionResult> DeleteCategory(Guid id)
     {
         var category = await context.Categories.FindAsync(id);

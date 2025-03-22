@@ -12,4 +12,5 @@ public static class ApplicationConst
     public const string ADMIN_POLICY = "Admin";
     public const string OPERATOR_POLICY = "Operator";
     public const string ADMIN_OR_OPERATOR_POLICY = "AdminOrOperatorOnly";
+    public const string HighLevelPermission = "HighLevelPermission";
 }

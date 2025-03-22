@@ -110,6 +110,8 @@ public static class DependencyInjection
                 policy => policy.RequireRole(ApplicationRole.OPERATOR));
             options.AddPolicy(ApplicationConst.ADMIN_OR_OPERATOR_POLICY,
                 policy => policy.RequireRole(ApplicationRole.ADMIN, ApplicationRole.OPERATOR));
+            options.AddPolicy(ApplicationConst.HighLevelPermission,
+                policy => policy.RequireRole(ApplicationRole.ADMIN, ApplicationRole.OPERATOR, ApplicationRole.MANAGER));
         });
 
         services.AddCors(options =>
