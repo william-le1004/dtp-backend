@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Basket.Commands;
 
-public record BasketItemRequest(Guid TourScheduleId, Guid TicketTypeId, int Units = 1);
+public record BasketItemRequest(Guid TourScheduleId, Guid TicketTypeId, int Quantity = 1);
 
 public record AddTourToBasket(List<BasketItemRequest> Items) : IRequest;
 
@@ -26,7 +26,7 @@ public class AddTourToBasketHandler(IDtpDbContext context, IUserContextService u
         {
             foreach (var item in request.Items)
             {
-                basket.AddItem(item.TourScheduleId, item.TicketTypeId, item.Units);
+                basket.AddItem(item.TourScheduleId, item.TicketTypeId, item.Quantity);
             }
 
             context.Baskets.Update(basket);

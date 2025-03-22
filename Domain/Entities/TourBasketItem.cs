@@ -2,7 +2,7 @@ using Domain.DataModel;
 
 namespace Domain.Entities;
 
-public class TourBasketItem(Guid tourScheduleId, Guid ticketTypeId, int quantity) : SoftDeleteEntity
+public class TourBasketItem(Guid tourScheduleId, Guid ticketTypeId, int quantity)
 {
     public Guid BasketId { get; private set; }
     public Guid TourScheduleId { get; private set; } = tourScheduleId;

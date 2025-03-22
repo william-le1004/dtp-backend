@@ -15,9 +15,7 @@ public class OrderSubmittedHandler(IDtpDbContext context) : INotificationHandler
             var basketItem = context.TourBasketItems.Where(i
                 => i.TourScheduleId == notification.TourScheduleId
                    && i.BasketId == basket.Id).ToList();
-            basketItem.ForEach(i => i.IsDeleted = false);
-            
-            context.TourBasketItems.UpdateRange(basketItem);
+            context.TourBasketItems.RemoveRange(basketItem);
             context.SaveChangesAsync(cancellationToken: cancellationToken);
         }
         return Task.CompletedTask;

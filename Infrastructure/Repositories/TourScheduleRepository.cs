@@ -21,7 +21,6 @@ public class TourScheduleRepository(DtpDbContext context) : ITourScheduleReposit
             .Include(x => x.TourScheduleTickets)
             .ThenInclude(x=> x.TicketType)
             .AsSplitQuery()
-            .AsNoTracking()
             .IsDeleted(false).SingleOrDefaultAsync(t => t.Id == tourScheduleId);
 
         if (tourSchedule is not null)
@@ -44,7 +43,6 @@ public class TourScheduleRepository(DtpDbContext context) : ITourScheduleReposit
             .Include(x => x.TourScheduleTickets)
             .ThenInclude(x => x.TicketType)
             .AsSplitQuery()
-            .AsNoTracking()
             .IsDeleted(false).Where(t => tourScheduleIds.Contains(t.Id)).ToListAsync();
 
         return tourSchedule.Select(MapAvailableTourScheduleTickets);
