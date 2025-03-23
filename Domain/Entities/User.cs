@@ -32,6 +32,7 @@ public sealed class User : IdentityUser
     public string Name { get; set; }
     public string Address { get; set; }
     public bool IsActive { get; set; }
+    public string? OtpKey { get; set; }
     public Guid? CompanyId { get; private set; }
     public Company? Company { get; private set; }
     public IReadOnlyCollection<Feedback> Feedbacks => _feedbacks.AsReadOnly();

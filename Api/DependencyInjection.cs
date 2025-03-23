@@ -1,4 +1,5 @@
 using Api.Extensions;
+using Api.Filters;
 using Application.Features.Company.Queries;
 using Application.Features.Tour.Queries;
 using Application.Features.Users.Queries;
@@ -22,6 +23,10 @@ public static class DependencyInjection
         modelBuilder.EntitySet<CompanyDto>("Company");
         
         modelBuilder.EnableLowerCamelCase();
+        services.AddControllers(options =>
+        {
+            options.Filters.Add<OtpValidationFilter>();
+        });
         services.AddControllers().AddOData(
             options => options.EnableQueryFeatures(maxTopValue: null).AddRouteComponents(
                 routePrefix: "odata",
