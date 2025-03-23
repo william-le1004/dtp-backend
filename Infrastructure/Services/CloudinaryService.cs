@@ -39,6 +39,17 @@ public class CloudinaryService : ICloudinaryService
         return uploadedUrls;
     }
 
+    public Task<string> UploadImageAsync(Stream image, string fileName)
+    {
+        var uploadParams = new ImageUploadParams
+        {
+            File = new FileDescription(fileName, image),
+            PublicId = Path.GetFileNameWithoutExtension(fileName),
+            Folder = ImageType.Otp.ToString(),
+        };
+        return UploadAsync(uploadParams, ResourceType.Image.ToString());
+    }
+
     private async Task ProcessUpload(FileUploadDto file, Stream stream, List<string> uploadedUrls)
     {
         if (file.ResourceType == ResourceType.Image)

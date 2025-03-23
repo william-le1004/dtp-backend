@@ -7,7 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Features\Order\Queries\" />
+        <Folder Include="Contracts\Persistence\"/>
+        <Folder Include="Features\Order\Queries\"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -27,12 +28,6 @@
 
     <ItemGroup>
       <Folder Include="Features\Company\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="Microsoft.AspNetCore.Http.Features">
-        <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.12\Microsoft.AspNetCore.Http.Features.dll</HintPath>
-      </Reference>
     </ItemGroup>
 
 </Project>

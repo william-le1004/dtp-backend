@@ -72,6 +72,7 @@ public static class DependencyInjection
             .AddDefaultTokenProviders();
 
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<IAuthenticatorService, AuthenticatorService>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITourScheduleRepository, TourScheduleRepository>();

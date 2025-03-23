@@ -15,7 +15,8 @@ public enum ImageType
 {
     Review = 0,
     Destination = 1,
-    Tour = 2
+    Tour = 2,
+    Otp = 3
 }
 
 public enum ResourceType
