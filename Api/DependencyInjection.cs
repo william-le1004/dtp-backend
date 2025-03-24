@@ -5,6 +5,8 @@ using Application.Features.Tour.Queries;
 using Application.Features.Users.Queries;
 using Domain.Entities;
 using Microsoft.AspNetCore.OData;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using Net.payOS;
@@ -15,14 +17,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddEndpointServices(this IServiceCollection services, IConfiguration configuration)
     {
-        var modelBuilder = new ODataConventionModelBuilder();
-        modelBuilder.EntitySet<TourTemplateResponse>("Tour");
-        modelBuilder.EntitySet<Destination>("Destination");
-        modelBuilder.EntitySet<Category>("Category");
-        modelBuilder.EntitySet<UserDto>("User");
-        modelBuilder.EntitySet<CompanyDto>("Company");
         
-        modelBuilder.EnableLowerCamelCase();
         services.AddControllers(options =>
         {
             options.Filters.Add<OtpValidationFilter>();
@@ -30,7 +25,7 @@ public static class DependencyInjection
         services.AddControllers().AddOData(
             options => options.EnableQueryFeatures(maxTopValue: null).AddRouteComponents(
                 routePrefix: "odata",
-                model: modelBuilder.GetEdmModel()).Select().Filter().Count().OrderBy());
+                model: GetEdmModel()).Select().Filter().Count().OrderBy());
         
         services.AddRedisOutputCache(options =>
         {
@@ -70,5 +65,19 @@ public static class DependencyInjection
             });
         });
         return services;
+    }
+    
+    private static IEdmModel GetEdmModel()
+    {
+        var modelBuilder = new ODataConventionModelBuilder();
+        modelBuilder.EntitySet<TourTemplateResponse>("Tour");
+        modelBuilder.EntityType<TourScheduleResponse>()
+            .Property(x => x.OpenDate).AsDate();
+        modelBuilder.EntitySet<Destination>("Destination");
+        modelBuilder.EntitySet<Category>("Category");
+        modelBuilder.EntitySet<UserDto>("User");
+        modelBuilder.EntitySet<CompanyDto>("Company");
+        modelBuilder.EnableLowerCamelCase();
+        return modelBuilder.GetEdmModel();
     }
 }
