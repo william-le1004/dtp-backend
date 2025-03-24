@@ -73,7 +73,7 @@ public class UserRepository : IUserRepository
             user.AssignCompany(companyId);
         }
 
-        var result = await _userManager.CreateAsync(user, $"{user.UserName}{ApplicationConst.DEFAULT_PASSWORD}");
+        var result = await _userManager.CreateAsync(user, $"{user.UserName}{ApplicationConst.DefaultPassword}");
         if (!result.Succeeded)
         {
             var errors = string.Join("; ", result.Errors.Select(e => e.Description));

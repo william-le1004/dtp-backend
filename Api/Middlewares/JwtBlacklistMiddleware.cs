@@ -28,7 +28,7 @@ public class JwtBlacklistMiddleware
             if (!string.IsNullOrEmpty(token))
             {
                 var tokenJti = jwtTokenService.GetJtiFromToken(token);
-                var isBlacklisted = await redisCache.GetDataAsync<string>($"{ApplicationConst.BLACKLIST}:{tokenJti}");
+                var isBlacklisted = await redisCache.GetDataAsync<string>($"{ApplicationConst.BlacklistPrefix}:{tokenJti}");
 
                 if (!string.IsNullOrEmpty(isBlacklisted))
                 {

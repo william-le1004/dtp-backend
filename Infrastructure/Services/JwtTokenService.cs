@@ -100,7 +100,7 @@ public class JwtTokenService
     public async Task<string> ValidateRefreshToken(string refreshToken)
     {
         var server = _redisDb.Multiplexer.GetServer(_redisDb.Multiplexer.GetEndPoints()[0]);
-        var keys = server.Keys(pattern: $"{ApplicationConst.REFRESH_TOKEN}:*");
+        var keys = server.Keys(pattern: $"{ApplicationConst.RefreshTokenPrefix}:*");
 
         foreach (var key in keys)
         {

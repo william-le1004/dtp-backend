@@ -9,7 +9,7 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Policy = ApplicationConst.AUTH_POLICY)]
+[Authorize(Policy = ApplicationConst.AuthenticatedUser)]
 public class MediaController : BaseController
 {
      private readonly ICloudinaryService _cloudinaryService;

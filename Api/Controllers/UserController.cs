@@ -12,7 +12,7 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Policy = ApplicationConst.AUTH_POLICY)]
+[Authorize(Policy = ApplicationConst.AuthenticatedUser)]
 public class UserController : BaseController
 {
     private readonly IMediator _mediator;
@@ -25,7 +25,7 @@ public class UserController : BaseController
     }
 
     [HttpGet("me")]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> GetById()
     {
         var userId = _userContextService.GetCurrentUserId();
         if (string.IsNullOrEmpty(userId))
@@ -39,16 +39,16 @@ public class UserController : BaseController
     }
 
     [HttpGet("all")]
-    [Authorize(Policy = ApplicationConst.ADMIN_OR_OPERATOR_POLICY)]
+    [Authorize(Policy = ApplicationConst.ManagementPermission)]
     [EnableQuery]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> Get()
     {
         var response = await _mediator.Send(new GetUserQuery());
         return ReturnList(response);
     }
 
     [HttpPost]
-    [Authorize(Policy = ApplicationConst.ADMIN_OR_OPERATOR_POLICY)]
+    [Authorize(Policy = ApplicationConst.ManagementPermission)]
     public async Task<IActionResult> Create([FromBody] CreateUserCommand createUserCommand)
     {
         var response = await _mediator.Send(createUserCommand);
@@ -56,7 +56,7 @@ public class UserController : BaseController
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Policy = ApplicationConst.ADMIN_OR_OPERATOR_POLICY)]
+    [Authorize(Policy = ApplicationConst.ManagementPermission)]
     public async Task<IActionResult> Inactive([FromRoute] string userId)
     {
         var response = await _mediator.Send(new DeleteUserCommand(userId));

@@ -10,7 +10,7 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Policy = ApplicationConst.AUTH_POLICY)]
+[Authorize(Policy = ApplicationConst.AuthenticatedUser)]
 public class CompanyController : BaseController
 {
     private readonly IMediator _mediator;
@@ -21,7 +21,7 @@ public class CompanyController : BaseController
     }
 
     [HttpGet]
-    [Authorize(Policy = ApplicationConst.ADMIN_POLICY)]
+    [Authorize(Policy = ApplicationConst.AdminPermission)]
     [EnableQuery]
     public async Task<IActionResult> Get()
     {
@@ -58,7 +58,7 @@ public class CompanyController : BaseController
     }
 
     [HttpPut("grant")]
-    [Authorize(Policy = ApplicationConst.ADMIN_POLICY)]
+    [Authorize(Policy = ApplicationConst.AdminPermission)]
     public async Task<IActionResult> Grant(GrantLicenseCommand command)
     {
         var response = await _mediator.Send(command);
