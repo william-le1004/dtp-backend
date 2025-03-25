@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.Features.Order.Commands;
 
-public record PayOrder(string OrderCode) : IRequest;
+public record PayOrder(long OrderCode) : IRequest;
 
 public class PayOrderHandler(IDtpDbContext context, IUserContextService userService) : IRequestHandler<PayOrder>
 {
@@ -12,7 +12,7 @@ public class PayOrderHandler(IDtpDbContext context, IUserContextService userServ
     {
         var userId = userService.GetCurrentUserId()!;
 
-        var order = context.TourBookings.SingleOrDefault(b => b.UserId == userId && b.Code == request.OrderCode);
+        var order = context.TourBookings.SingleOrDefault(b => b.UserId == userId && b.RefCode == request.OrderCode);
 
         if (order is not null)
         {

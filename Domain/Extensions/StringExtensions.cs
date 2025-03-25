@@ -14,4 +14,9 @@ public static class StringExtensions
 
         return new string(result);
     }
+    
+    public static long ToLong(this string input)
+    {
+        return Convert.ToInt64(input, 16);
+    }
 }

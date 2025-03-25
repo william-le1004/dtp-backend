@@ -19,9 +19,10 @@ public class PaymentController(IHttpContextAccessor httpContextAccessor,
     public async Task<ActionResult> Checkout(Guid id)
     {
         var result = await mediator.Send(new GetOrderDetail(id));
-
+        var link = await CreatePaymentUri(result.Value);
+        
         return result.Match<ActionResult>(
-            Some: (value) => Ok(CreatePaymentUri(value)),
+            Some: (value) => Ok(link),
             None: () => NotFound($"Order ({id}) not found."));
     }
 
@@ -38,12 +39,16 @@ public class PaymentController(IHttpContextAccessor httpContextAccessor,
         var baseUrl = $"{requestUri?.Scheme}://{requestUri?.Host}";
 
         var paymentData = new PaymentData(
-            order.Code.ToLong(),
+            order.RefCode,
             (int)order.GrossCost,
             $"DTP Payment",
             items,
             $"{baseUrl}/cancel/{order.Code}",
-            $"{baseUrl}/success"
+            $"{baseUrl}/success",
+            null,
+            order.Name,
+            order.Email,
+            order.PhoneNumber
         );
 
         var createPayment = await payOs.createPaymentLink(paymentData);
@@ -64,7 +69,7 @@ public class PaymentController(IHttpContextAccessor httpContextAccessor,
 
         if (body.success)
         {
-            var orderCode = body.data.orderCode.LongToString();
+            var orderCode = body.data.orderCode;
             await mediator.Send(new PayOrder(orderCode));
         }
         return Ok();

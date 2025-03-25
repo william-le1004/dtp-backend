@@ -10,6 +10,8 @@ namespace Application.Features.Order.Queries;
 public record OrderDetailResponse
 {
     public string Code { get; set; }
+    
+    public long RefCode { get; set; }
     public string Name { get; set; }
 
     public string PhoneNumber { get; set; }
@@ -57,6 +59,7 @@ public class GetOrderByIdHandler(IDtpDbContext context, IUserContextService user
             {
                 Code = x.Code,
                 Name = x.Name,
+                RefCode = x.RefCode,
                 PhoneNumber = x.PhoneNumber,
                 Email = x.Email,
                 TourName = x.TourSchedule.Tour.Title,

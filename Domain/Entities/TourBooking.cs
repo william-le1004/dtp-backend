@@ -6,9 +6,10 @@ namespace Domain.Entities;
 
 public partial class TourBooking : AuditEntity
 {
-    private static double Tax { get; } = 0.1;
     public string UserId { get; private set; }
     public string Code { get; private set; }
+    
+    public long RefCode { get; private set; }
     public string Name { get; private set; }
 
     public string PhoneNumber { get; private set; }
@@ -26,7 +27,7 @@ public partial class TourBooking : AuditEntity
 
     public decimal GrossCost
     {
-        get { return _tickets.Sum(x => x.GrossCost * x.Quantity) * (decimal)Tax; }
+        get { return _tickets.Sum(x => x.GrossCost * x.Quantity); }
     }
 
     public decimal FinalAmount() => GrossCost - DiscountAmount;
@@ -45,8 +46,9 @@ public partial class TourBooking : AuditEntity
     public TourBooking(string userId, Guid tourScheduleId, TourSchedule tourSchedule, string name, string phoneNumber,
         string email)
     {
-        Code = (userId.Substring(0, 4)
-                + tourScheduleId.ToString("N").Substring(0, 4)).Random();
+        Code = (userId.Substring(0, 6)
+                + tourScheduleId.ToString("N").Substring(0, 6)).Random();
+        RefCode = Code.ToLong();
         UserId = userId;
         TourScheduleId = tourScheduleId;
         Status = BookingStatus.Pending;
