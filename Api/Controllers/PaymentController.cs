@@ -11,22 +11,22 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PaymentController(IHttpContextAccessor httpContextAccessor,
+public class PaymentController(
     PayOS payOs, IMediator mediator) : ControllerBase
 {
     [Authorize]
-    [HttpGet("{id}")]
-    public async Task<ActionResult> Checkout(Guid id)
+    [HttpPost("{id}")]
+    public async Task<ActionResult> Checkout(Guid id, UriResponse uriResponse)
     {
         var result = await mediator.Send(new GetOrderDetail(id));
-        var link = await CreatePaymentUri(result.Value);
+        var link = await CreatePaymentUri(result.Value, uriResponse);
         
         return result.Match<ActionResult>(
             Some: (value) => Ok(link),
             None: () => NotFound($"Order ({id}) not found."));
     }
 
-    private async Task<CreatePaymentResult> CreatePaymentUri(OrderDetailResponse order)
+    private async Task<CreatePaymentResult> CreatePaymentUri(OrderDetailResponse order,UriResponse uriResponse)
     {
         var items = new List<ItemData>();
         foreach (var item in order.OrderTickets)
@@ -34,17 +34,13 @@ public class PaymentController(IHttpContextAccessor httpContextAccessor,
             items.Add(new ItemData(item.TicketKind.ToString(), item.Quantity, (int)item.GrossCost));
         }
 
-        // Get the current request's base URL
-        var requestUri = httpContextAccessor.HttpContext?.Request;
-        var baseUrl = $"{requestUri?.Scheme}://{requestUri?.Host}";
-
         var paymentData = new PaymentData(
             order.RefCode,
             (int)order.GrossCost,
             $"DTP Payment",
             items,
-            $"{baseUrl}/cancel/{order.Code}",
-            $"{baseUrl}/success",
+            uriResponse.FailUrl,
+            uriResponse.SuccessUrl,
             null,
             order.Name,
             order.Email,
@@ -75,3 +71,5 @@ public class PaymentController(IHttpContextAccessor httpContextAccessor,
         return Ok();
     }
 }
+
+public record UriResponse(string SuccessUrl, string FailUrl);
