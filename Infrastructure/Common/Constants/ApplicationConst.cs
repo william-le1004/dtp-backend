@@ -12,6 +12,7 @@ public static class ApplicationConst
     public const string AdminPermission = "AdminPermission";
     public const string ManagementPermission = "ManagementPermission";
     public const string HighLevelPermission = "HighLevelPermission";
-    
+
+    public const string XOtp = "X-OTP";
     public const string AppName = "Binh Dinh Tour";
 }

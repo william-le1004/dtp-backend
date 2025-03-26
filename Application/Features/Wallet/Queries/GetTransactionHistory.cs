@@ -1,11 +1,23 @@
 ﻿using Application.Contracts;
 using Application.Contracts.Persistence;
+using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Wallet.Queries;
 
-public record TransactionResponse();
+public record TransactionResponse
+{
+    public string? Description { get; set; }
+    
+    public decimal Amount { get; set; }
+
+    public TransactionType Type { get; set; }
+    
+    public Guid TransactionId { get; init; }
+    
+    public DateTime CreatedAt { get; set; }
+};
 
 public record GetTransactionHistory : IRequest<IQueryable<TransactionResponse>>;
 
@@ -21,7 +33,15 @@ public class GetTransactionHistoryHandler(IDtpDbContext context, IUserContextSer
             .Include(x => x.Transactions)
             .AsNoTracking()
             .AsSplitQuery()
-            .First(x => x.UserId == userId).Transactions.Select(x => new TransactionResponse());
+            .First(x => x.UserId == userId).Transactions
+            .Select(x => new TransactionResponse()
+            {
+                Description = x.Description,
+                Amount = x.Amount,
+                CreatedAt = x.CreatedAt,
+                Type = x.Type,
+                TransactionId = x.Id
+            });
 
         return Task.FromResult(transactions.AsQueryable());
     }

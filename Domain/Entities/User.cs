@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Domain.Enum;
+using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Entities;
 
@@ -39,7 +40,20 @@ public sealed class User : IdentityUser
     public IReadOnlyCollection<Rating> Ratings => _ratings.AsReadOnly();
     public Wallet Wallet { get; private set; }
     public Basket Basket { get; private set; }
+    
+    private readonly List<ExternalTransaction> _transactions = new();
+    public IReadOnlyCollection<ExternalTransaction> ExternalTransactions => _transactions.AsReadOnly();
 
+
+    public ExternalTransaction RequestWithdraw(string transactionCode,
+        decimal amount, string description)
+    {
+        var externalTransaction = new ExternalTransaction(
+            transactionCode, amount, ExternalTransactionType.Withdraw, Id, description);
+        _transactions.Add(externalTransaction);
+        return externalTransaction;
+    }
+    
     public void UpdateProfile(string name, string address, string phoneNumber, string email, string userName)
     {
         Name = name;

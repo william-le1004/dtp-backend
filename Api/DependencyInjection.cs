@@ -18,10 +18,6 @@ public static class DependencyInjection
     public static IServiceCollection AddEndpointServices(this IServiceCollection services, IConfiguration configuration)
     {
         
-        services.AddControllers(options =>
-        {
-            options.Filters.Add<OtpValidationFilter>();
-        });
         services.AddControllers().AddOData(
             options => options.EnableQueryFeatures(maxTopValue: null).AddRouteComponents(
                 routePrefix: "odata",
@@ -36,6 +32,7 @@ public static class DependencyInjection
             configuration["Environment:PayOs:ApiKey"] ?? throw new Exception("Cannot find environment"),
             configuration["Environment:PayOs:ChecksumKey"] ?? throw new Exception("Cannot find environment"));
         services.AddSingleton(payOs);
+        services.AddScoped<OtpAuthorizeFilter>();
         
         services.AddSwaggerGen(c =>
         {
