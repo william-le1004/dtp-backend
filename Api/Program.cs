@@ -18,7 +18,7 @@ builder.Services.AddControllers();
 builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddInfrastructureService(configuration)
-    .AddApplicationServices()
+    .AddApplicationServices(configuration)
     .AddEndpointServices(configuration);
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 

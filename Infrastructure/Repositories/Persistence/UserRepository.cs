@@ -1,6 +1,7 @@
 using Application.Contracts;
 using Application.Contracts.Caching;
 using Application.Contracts.Persistence;
+using Domain.Constants;
 using Domain.Entities;
 using Infrastructure.Common.Constants;
 using Infrastructure.Contexts;

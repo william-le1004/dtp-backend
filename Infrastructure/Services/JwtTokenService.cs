@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Application.Dtos;
+using Domain.Constants;
 using Domain.Entities;
 using Infrastructure.Common.Constants;
 using Infrastructure.Common.Settings;

@@ -2,6 +2,7 @@ using Application.Common;
 using Application.Contracts;
 using Application.Features.Users.Commands;
 using Application.Features.Users.Queries;
+using Domain.Constants;
 using Infrastructure.Common.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

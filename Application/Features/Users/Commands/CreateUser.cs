@@ -1,5 +1,8 @@
 using Application.Common;
+using Application.Contracts.EventBus;
 using Application.Contracts.Persistence;
+using Application.Events;
+using Domain.Constants;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
@@ -42,10 +45,12 @@ public class CreateUserCommandHandler
     : IRequestHandler<CreateUserCommand, ApiResponse<bool>>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IEventBus _eventBus;
 
-    public CreateUserCommandHandler(IUserRepository userRepository)
+    public CreateUserCommandHandler(IUserRepository userRepository, IEventBus eventBus)
     {
         _userRepository = userRepository;
+        _eventBus = eventBus;
     }
 
     public async Task<ApiResponse<bool>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -63,6 +68,12 @@ public class CreateUserCommandHandler
         {
             var newUser = new User(request.UserName, request.Email, request.Name, request.Address, request.PhoneNumber);
             var result = await _userRepository.CreateUserAsync(newUser, request.RoleName, request.CompanyId);
+            await _eventBus.PublishAsync(new UserCreated
+            {
+                Email = request.Email,
+                UserName = request.UserName,
+                Password = $"{request.UserName}{ApplicationConst.DefaultPassword}"
+            }, cancellationToken);
             return result
                 ? ApiResponse<bool>.SuccessResult(true)
                 : ApiResponse<bool>.Failure("User creation failed");

@@ -3,7 +3,9 @@ using Application.Contracts;
 using Application.Contracts.Authentication;
 using Application.Contracts.Caching;
 using Application.Contracts.Cloudinary;
+using Application.Contracts.EventBus;
 using Application.Contracts.Persistence;
+using Domain.Constants;
 using Domain.Entities;
 using Hangfire;
 using Hangfire.MySql;
@@ -11,6 +13,7 @@ using Infrastructure.Common.Constants;
 using Infrastructure.Common.Settings;
 using Infrastructure.Contexts;
 using Infrastructure.Repositories;
+using Infrastructure.Repositories.MessageBroker;
 using Infrastructure.Repositories.Persistence;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -87,6 +90,7 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
         services.AddScoped<IUserContextService, UserContextService>();
         services.AddSingleton<ICloudinaryService,CloudinaryService>();
+        services.AddTransient<IEventBus, EventBus>();
 
         services.AddAuthentication(item =>
         {
