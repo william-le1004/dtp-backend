@@ -13,6 +13,7 @@ public static class ApplicationConst
     public const string OPERATOR_POLICY = "Operator";
     public const string ADMIN_OR_OPERATOR_POLICY = "AdminOrOperatorOnly";
     public const string HighLevelPermission = "HighLevelPermission";
-    
+
+    public const string XOtp = "X-OTP";
     public const string AppName = "Binh Dinh Tour";
 }

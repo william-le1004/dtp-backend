@@ -32,4 +32,8 @@
         <ProjectReference Include="..\Infrastructure\Infrastructure.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Filters\OtpValidationFilter.cs" />
+    </ItemGroup>
+
 </Project>

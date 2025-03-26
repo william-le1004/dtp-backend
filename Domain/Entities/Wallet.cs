@@ -12,21 +12,28 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
 
     public User User { get; private set; }
 
-    public void Deposit(decimal amount)
+    public Transaction Deposit(decimal amount)
     {
-        _transactions.Add(new Transaction(Balance, amount, TransactionType.Deposit, Id));
+        var transaction = new Transaction(Balance, amount, TransactionType.Deposit, Id);
+        
+        _transactions.Add(transaction);
         Balance += amount;
+        
+        return transaction;
     }
 
-    public void Withdraw(decimal amount)
+    public Transaction Withdraw(decimal amount)
     {
         if (Balance < amount)
         {
             throw new AggregateException($"Insufficient funds!. Balance: {Balance}.");
         }
 
-        _transactions.Add(new Transaction(Balance, amount, TransactionType.Withdraw, Id));
+        var transaction = new Transaction(Balance, amount, TransactionType.Withdraw, Id);
+        _transactions.Add(transaction);
         Balance -= amount;
+        
+        return transaction;
     }
 
     public void Transfer(Wallet receiveWallet, decimal amount, string destination)
@@ -36,17 +43,43 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
             throw new AggregateException($"Insufficient funds!. Balance: {Balance}.");
         }
 
-        _transactions.Add(new Transaction(Balance, amount, TransactionType.Transfer, Id, destination,
-            receiveWallet.Id));
+        var transaction = new Transaction(Balance, amount, TransactionType.Transfer, Id, destination);
+        _transactions.Add(transaction);
+        transaction.Ref(receiveWallet.Receive(amount, destination, transaction.TransactionCode));
+        
         Balance -= amount;
-        receiveWallet.Receive(amount, destination, receiveWallet.Id);
     }
 
-    private void Receive(decimal amount, string destination, Guid sendingWalletId)
+    private string Receive(decimal amount, string destination, string refTransactionCode)
     {
-        _transactions.Add(new Transaction(Balance, amount, TransactionType.Receive, Id, destination,
-            sendingWalletId));
+        var transaction = new Transaction(Balance, amount, TransactionType.Receive, Id, destination);
+        transaction.Ref(refTransactionCode);
+        _transactions.Add(transaction);
         
         Balance += amount;
+        return transaction.TransactionCode;
+    }
+    
+    public void ThirdPartyPay(Wallet poolFund, decimal amount, string destination)
+    {
+        var transaction = new Transaction(Balance, amount, TransactionType.ThirdPartyPayment, Id, destination);
+        _transactions.Add(transaction);
+        transaction.Ref(poolFund.Receive(amount, destination, transaction.TransactionCode));
+        
+        Balance -= amount;
+    }
+    
+    public void PayInApp(Wallet poolFund, decimal amount, string destination)
+    {
+        if (Balance < amount)
+        {
+            throw new AggregateException($"Insufficient funds!. Balance: {Balance}.");
+        }
+
+        var transaction = new Transaction(Balance, amount, TransactionType.Payment, Id, destination);
+        _transactions.Add(transaction);
+        transaction.Ref(poolFund.Receive(amount, destination, transaction.TransactionCode));
+        
+        Balance -= amount;
     }
 }

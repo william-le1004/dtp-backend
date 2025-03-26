@@ -23,10 +23,6 @@ public static class DependencyInjection
         modelBuilder.EntitySet<CompanyDto>("Company");
         
         modelBuilder.EnableLowerCamelCase();
-        services.AddControllers(options =>
-        {
-            options.Filters.Add<OtpValidationFilter>();
-        });
         services.AddControllers().AddOData(
             options => options.EnableQueryFeatures(maxTopValue: null).AddRouteComponents(
                 routePrefix: "odata",
@@ -41,6 +37,7 @@ public static class DependencyInjection
             configuration["Environment:PayOs:ApiKey"] ?? throw new Exception("Cannot find environment"),
             configuration["Environment:PayOs:ChecksumKey"] ?? throw new Exception("Cannot find environment"));
         services.AddSingleton(payOs);
+        services.AddScoped<OtpAuthorizeFilter>();
         
         services.AddSwaggerGen(c =>
         {
