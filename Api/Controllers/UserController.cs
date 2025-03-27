@@ -56,11 +56,11 @@ public class UserController : BaseController
         return HandleServiceResult(response);
     }
 
-    [HttpDelete("{userId}")]
+    [HttpDelete("{id}")]
     [Authorize(Policy = ApplicationConst.ManagementPermission)]
-    public async Task<IActionResult> Inactive([FromRoute] string userId)
+    public async Task<IActionResult> Inactive([FromRoute] string id)
     {
-        var response = await _mediator.Send(new DeleteUserCommand(userId));
+        var response = await _mediator.Send(new DeleteUserCommand(id));
         return HandleServiceResult(response);
     }
 
