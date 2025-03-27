@@ -56,9 +56,9 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
         Balance -= amount;
     }
 
-    private string Receive(decimal amount, string description, string refTransactionCode)
+    private string Receive(decimal amount, string description, string refTransactionCode, TransactionType transactionType = TransactionType.Receive)
     {
-        var transaction = new Transaction(Balance, amount, TransactionType.Receive, Id, description);
+        var transaction = new Transaction(Balance, amount, transactionType, Id, description);
         transaction.Ref(refTransactionCode);
         _transactions.Add(transaction);
         
@@ -66,13 +66,14 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
         return transaction.TransactionCode;
     }
     
-    public void ThirdPartyPay(Wallet poolFund, decimal amount, string description)
+    public string ThirdPartyPay(Wallet poolFund, decimal amount, string description)
     {
         var transaction = new Transaction(Balance, amount, TransactionType.ThirdPartyPayment, Id, description);
         _transactions.Add(transaction);
         transaction.Ref(poolFund.Receive(amount, description, transaction.TransactionCode));
         
         Balance -= amount;
+        return transaction.TransactionCode;
     }
     
     public void PayInApp(Wallet poolFund, decimal amount, string description)
@@ -85,6 +86,20 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
         var transaction = new Transaction(Balance, amount, TransactionType.Payment, Id, description);
         _transactions.Add(transaction);
         transaction.Ref(poolFund.Receive(amount, description, transaction.TransactionCode));
+        
+        Balance -= amount;
+    }
+    
+    public void Refund(Wallet receiveWallet, decimal amount, string description)
+    {
+        if (Balance < amount)
+        {
+            throw new AggregateException($"Insufficient funds!. Balance: {Balance}.");
+        }
+
+        var transaction = new Transaction(Balance, amount, TransactionType.Transfer, Id, description);
+        _transactions.Add(transaction);
+        transaction.Ref(receiveWallet.Receive(amount, description, transaction.TransactionCode, TransactionType.Refund));
         
         Balance -= amount;
     }

@@ -15,6 +15,8 @@ public record PaymentProcessor : IRequest
     [JsonIgnore]
     public string? PaymentLinkId { get; set; }
     public UriResponse ResponseUrl { get; set; }
+    
+    public decimal NetCost  { get; set; }
 
     [JsonIgnore] public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.PayOs;
 }
@@ -23,7 +25,7 @@ public class PaymentProcessorHandler(IDtpDbContext context) : IRequestHandler<Pa
 {
     public async Task Handle(PaymentProcessor request, CancellationToken cancellationToken)
     {
-        var payment = new PaymentEntity(request.BookingId, request.PaymentLinkId);
+        var payment = new PaymentEntity(request.BookingId, request.PaymentLinkId, request.NetCost);
         context.Payments.Add(payment);
         await context.SaveChangesAsync(cancellationToken);
     }

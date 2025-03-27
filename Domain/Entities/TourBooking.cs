@@ -37,7 +37,7 @@ public partial class TourBooking : AuditEntity
 
     public string? Remark { get; private set; }
 
-    public virtual TourSchedule TourSchedule { get; private set; } = null!;
+    public virtual TourSchedule TourSchedule { get; set; } = null!;
 
     public TourBooking()
     {
@@ -101,17 +101,7 @@ public partial class TourBooking : AuditEntity
             throw new AggregateException("Tour schedule is already started");
         }
         
-        if (!TourSchedule.IsBeforeStartDate())
-        {
-            throw new AggregateException("Cannot cancel booking before one date from start date");
-        }
-
-        if (!IsFreeCancellationPeriod())
-        {
-            throw new AggregateException("Cannot cancel booking after one date from booking date");
-        }
-
-        if (Status == BookingStatus.Completed)
+        if (Status == BookingStatus.Completed || Status == BookingStatus.Cancelled)
         {
             throw new AggregateException($"Can't cancel this tour booking. Status: {Status}.");
         }
@@ -142,11 +132,13 @@ public partial class TourBooking : AuditEntity
         Remark = remark;
     }
 
-    private bool IsFreeCancellationPeriod()
+    public bool IsFreeCancellationPeriod()
     {
         var freeCancellationPeriod = CreatedAt.AddDays(1);
-        return freeCancellationPeriod < DateTime.Now;
+        return DateTime.Now < freeCancellationPeriod;
     }
     
     public bool IsCancelled() => Status == BookingStatus.Cancelled;
+    public bool IsPending() => Status == BookingStatus.Pending;
+    public bool IsPaid() => Status == BookingStatus.Paid;
 }

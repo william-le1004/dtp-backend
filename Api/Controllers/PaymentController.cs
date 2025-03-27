@@ -21,6 +21,8 @@ public class PaymentController(
         var result = await mediator.Send(new GetOrderDetail(request.BookingId));
         var link = await CreatePaymentUri(result.Value, request.ResponseUrl);
         request.PaymentLinkId = link.paymentLinkId;
+        request.NetCost = link.amount;
+        
         await mediator.Send(request);
         
         return result.Match<ActionResult>(

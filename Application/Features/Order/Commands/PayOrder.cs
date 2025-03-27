@@ -31,9 +31,11 @@ public class PayOrderHandler(
 
         if (payment != null && wallet != null)
         {
-            var description = payment.PurchaseBooking(request.RefCode);
-            wallet.ThirdPartyPay(poolFund, request.Amount, description);
-            
+            var description = $"Thanh toan booking: {request.OrderCode}";
+
+            var transactionCode = wallet.ThirdPartyPay(poolFund, request.Amount, description);
+            payment.PurchaseBooking(transactionCode, request.RefCode);
+
             context.Payments.Update(payment);
             context.Wallets.UpdateRange(wallet, poolFund);
             await context.SaveChangesAsync(cancellationToken);

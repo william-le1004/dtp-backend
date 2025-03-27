@@ -2,7 +2,7 @@
 
 namespace Domain.Entities;
 
-public partial class Payment : AuditEntity
+public class Payment : AuditEntity
 {
     public Guid BookingId { get; private set; }
 
@@ -10,8 +10,12 @@ public partial class Payment : AuditEntity
 
     public PaymentStatus Status { get; private set; }
 
-    public string? RefTransactionCode { get; private set; }
+    public string? RefExternalTransactionCode { get; private set; }
     
+    public decimal NetCost  { get; private set; }
+
+    public string? RefTransactionCode { get; private set; }
+
     public string? PaymentLinkId { get; private set; }
     public virtual TourBooking Booking { get; private set; } = null!;
 
@@ -19,14 +23,15 @@ public partial class Payment : AuditEntity
     {
     }
 
-    public Payment(Guid bookingId, string? paymentLinkId)
+    public Payment(Guid bookingId, string? paymentLinkId, decimal netCost)
     {
         BookingId = bookingId;
+        NetCost = netCost;
         Status = PaymentStatus.Pending;
         PaymentLinkId = paymentLinkId;
     }
 
-    public string PurchaseBooking(string transactionCode)
+    public void PurchaseBooking(string transactionCode, string? externalTransactionCode = null)
     {
         if (Status != PaymentStatus.Pending)
         {
@@ -34,10 +39,19 @@ public partial class Payment : AuditEntity
         }
 
         RefTransactionCode = transactionCode;
+        RefExternalTransactionCode = externalTransactionCode;
         Status = PaymentStatus.Completed;
 
         Booking.Purchase();
+    }
+
+    public void Refund()
+    {
+        if (Status != PaymentStatus.Completed)
+        {
+            throw new AggregateException($"Can't refund this tour booking. Status: {Status}");
+        }
         
-        return $"Thanh toan booking: {Booking.Code}";
+        Status = PaymentStatus.Refunded;
     }
 }

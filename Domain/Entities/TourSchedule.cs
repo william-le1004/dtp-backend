@@ -37,9 +37,9 @@ public class TourSchedule : AuditEntity
         return _tourScheduleTickets.Sum(x => x.AvailableTicket) > 0 && !IsStarted();
     }
 
-    public bool IsBeforeStartDate()
+    public bool IsBeforeStartDate(int date)
     {
-        var beforeStartDate = OpenDate.AddDays(-1);
+        var beforeStartDate = OpenDate.AddDays(-date);
         return DateTime.Now < beforeStartDate;
     }
     
