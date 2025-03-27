@@ -38,6 +38,15 @@ public class UserController : BaseController
 
         return HandleServiceResult(response);
     }
+    
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById([FromRoute] string id)
+    {
+        
+        var response = await _mediator.Send(new GetUserDetailQuery(id));
+
+        return HandleServiceResult(response);
+    }
 
     [HttpGet("all")]
     [Authorize(Policy = ApplicationConst.ManagementPermission)]
