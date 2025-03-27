@@ -56,7 +56,7 @@ public class UserController : BaseController
         return HandleServiceResult(response);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{userId}")]
     [Authorize(Policy = ApplicationConst.ManagementPermission)]
     public async Task<IActionResult> Inactive([FromRoute] string userId)
     {

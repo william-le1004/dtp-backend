@@ -52,7 +52,7 @@ public class CompanyController : BaseController
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Update([FromRoute] Guid id)
+    public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
         var response = await _mediator.Send(new DeleteCompanyCommand(id));
         return HandleServiceResult(response);
