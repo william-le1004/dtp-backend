@@ -13,7 +13,7 @@ public record PaymentProcessor : IRequest
     public Guid BookingId { get; init; }
     
     [JsonIgnore]
-    public string PaymentLinkId { get; set; }
+    public string? PaymentLinkId { get; set; }
     public UriResponse ResponseUrl { get; set; }
 
     [JsonIgnore] public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.PayOs;
