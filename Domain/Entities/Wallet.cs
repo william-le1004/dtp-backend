@@ -4,6 +4,7 @@ namespace Domain.Entities;
 
 public class Wallet(string userId, decimal balance = 0) : AuditEntity
 {
+    private static decimal MinimumWithdrawAmount => 100000;
     public string UserId { get; private set; } = userId;
     public decimal Balance { get; private set; } = balance;
 
@@ -27,6 +28,11 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
         if (Balance < amount)
         {
             throw new AggregateException($"Insufficient funds!. Balance: {Balance}.");
+        }
+
+        if (amount < MinimumWithdrawAmount)
+        {
+            throw new AggregateException($"The amount must be at least {MinimumWithdrawAmount}. Current Amount: {amount}.");
         }
 
         var transaction = new Transaction(Balance, amount, TransactionType.Withdraw, Id);

@@ -1,4 +1,5 @@
-﻿using Application.Contracts;
+﻿using System.ComponentModel.DataAnnotations;
+using Application.Contracts;
 using Application.Contracts.Persistence;
 using Domain.Entities;
 using Functional.Option;
@@ -9,6 +10,8 @@ namespace Application.Features.Wallet.Commands;
 
 public record WalletWithdraw : IRequest<Option<ExternalTransaction>>
 {
+    [Required]
+    [Range(100000, double.MaxValue, ErrorMessage = "The amount must be at least 10,000.")]
     public decimal Amount { get; set; }
 }
 
@@ -20,7 +23,7 @@ public class WalletWithdrawHandler(
     {
         var userId = service.GetCurrentUserId()!;
 
-        var user = await context.Users.Include(x => x.Basket)
+        var user = await context.Users.Include(x => x.Wallet)
             .SingleOrDefaultAsync(u => u.Id == userId, cancellationToken: cancellationToken);
 
         if (user is not null)
