@@ -67,6 +67,14 @@ public class UserRepository : IUserRepository
         return (await _userManager.GetRolesAsync(user)).FirstOrDefault();
     }
 
+    public async Task<User> GetAdmin()
+    {
+        var user = await _userManager.Users
+            .Include(x => x.Wallet)
+            .FirstAsync(user => _userManager.IsInRoleAsync(user, ApplicationRole.ADMIN).Result);
+        return user;
+    }
+
     public async Task<bool> CreateUserAsync(User user, string role, Guid companyId)
     {
         if (companyId != Guid.Empty)

@@ -9,6 +9,7 @@
     <ItemGroup>
         <Folder Include="Contracts\Persistence\"/>
         <Folder Include="Features\Order\Queries\"/>
+        <Folder Include="Features\Payment\Queries\" />
     </ItemGroup>
 
     <ItemGroup>

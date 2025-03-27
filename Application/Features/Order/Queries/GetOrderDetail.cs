@@ -28,7 +28,7 @@ public record OrderDetailResponse
     public decimal DiscountAmount { get; set; }
 
     public decimal GrossCost { get; set; }
-    public decimal FinalCost { get; set; }
+    public decimal NetCost { get; set; }
 };
 
 public record OrderTicketResponse
@@ -71,7 +71,7 @@ public class GetOrderByIdHandler(IDtpDbContext context, IUserContextService user
                 TourDate = x.TourSchedule.OpenDate,
                 DiscountAmount = x.DiscountAmount,
                 GrossCost = x.GrossCost,
-                FinalCost = x.FinalAmount(),
+                NetCost = x.NetCost(),
                 OrderTickets = x.Tickets.Select(t => new OrderTicketResponse()
                 {
                     Code = t.Code,

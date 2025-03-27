@@ -10,4 +10,5 @@ public interface IUserRepository
     Task<IEnumerable<User>> GetAllAsync();
     Task<User?> GetUserDetailAsync(string userId);
     Task<string> GetUserRole(string userId);
+    Task<User> GetAdmin();
 }

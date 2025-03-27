@@ -20,7 +20,10 @@ public class CancelOrderHandler(IDtpDbContext context, IUserContextService userS
 
         if (order is not null)
         {
-            order.CancelBooking(request.Remark);
+            order.Cancel(request.Remark);
+            
+            context.TourBookings.Update(order);
+            await context.SaveChangesAsync(cancellationToken);
             return Option.Some(order.Id);
         }
 

@@ -30,7 +30,7 @@ public partial class TourBooking : AuditEntity
         get { return _tickets.Sum(x => x.GrossCost * x.Quantity); }
     }
 
-    public decimal FinalAmount() => GrossCost - DiscountAmount;
+    public decimal NetCost() => GrossCost - DiscountAmount;
 
 
     public BookingStatus Status { get; private set; }
@@ -94,7 +94,7 @@ public partial class TourBooking : AuditEntity
         }
     }
 
-    public void CancelBooking(string? remark = null)
+    public void Cancel(string? remark = null)
     {
         if (TourSchedule.IsStarted())
         {
@@ -120,7 +120,7 @@ public partial class TourBooking : AuditEntity
         Remark = remark;
     }
 
-    public void CompleteBooking(string remark)
+    public void Complete(string remark)
     {
         if (Status != BookingStatus.Paid)
         {
@@ -131,7 +131,7 @@ public partial class TourBooking : AuditEntity
         Remark = remark;
     }
 
-    public void PurchaseBooking(string? remark = null)
+    public void Purchase(string? remark = null)
     {
         if (Status != BookingStatus.Pending)
         {

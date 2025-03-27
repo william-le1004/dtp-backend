@@ -1,6 +1,6 @@
-﻿using Api.Extensions;
-using Application.Features.Order.Commands;
+﻿using Application.Features.Order.Commands;
 using Application.Features.Order.Queries;
+using Application.Features.Payment.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,18 +15,20 @@ public class PaymentController(
     PayOS payOs, IMediator mediator) : ControllerBase
 {
     [Authorize]
-    [HttpPost("{id}")]
-    public async Task<ActionResult> Checkout(Guid id, UriResponse uriResponse)
+    [HttpPost]
+    public async Task<ActionResult> Checkout(PaymentProcessor request)
     {
-        var result = await mediator.Send(new GetOrderDetail(id));
-        var link = await CreatePaymentUri(result.Value, uriResponse);
+        var result = await mediator.Send(new GetOrderDetail(request.BookingId));
+        var link = await CreatePaymentUri(result.Value, request.ResponseUrl);
+        request.PaymentLinkId = link.paymentLinkId;
+        await mediator.Send(request);
         
         return result.Match<ActionResult>(
             Some: (value) => Ok(link),
-            None: () => NotFound($"Order ({id}) not found."));
+            None: () => NotFound($"Order ({request.BookingId}) not found."));
     }
 
-    private async Task<CreatePaymentResult> CreatePaymentUri(OrderDetailResponse order,UriResponse uriResponse)
+    private async Task<CreatePaymentResult> CreatePaymentUri(OrderDetailResponse order, UriResponse uriResponse)
     {
         var items = new List<ItemData>();
         foreach (var item in order.OrderTickets)
@@ -36,11 +38,11 @@ public class PaymentController(
 
         var paymentData = new PaymentData(
             order.RefCode,
-            (int)order.GrossCost,
+            (int)order.NetCost,
             $"DTP Payment",
             items,
-            uriResponse.FailUrl,
-            uriResponse.SuccessUrl,
+            uriResponse.CancelUrl,
+            uriResponse.ReturnUrl,
             null,
             order.Name,
             order.Email,
@@ -65,11 +67,9 @@ public class PaymentController(
 
         if (body.success)
         {
-            var orderCode = body.data.orderCode;
-            await mediator.Send(new PayOrder(orderCode));
+            var data = body.data;
+            await mediator.Send(new PayOrder(data.orderCode, data.amount, data.reference));
         }
         return Ok();
     }
 }
-
-public record UriResponse(string SuccessUrl, string FailUrl);
