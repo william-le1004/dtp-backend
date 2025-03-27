@@ -12,7 +12,10 @@ public class RedisCacheService(IDistributedCache redisCache, ILogger<RedisCacheS
     {
         var data = await redisCache.GetStringAsync(key);
         if (string.IsNullOrEmpty(data)) return null;
-
+        if (typeof(T) == typeof(string))
+        {
+            return data as T;
+        }
         return JsonSerializer.Deserialize<T>(data);
     }
 
