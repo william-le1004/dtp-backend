@@ -12,6 +12,7 @@ public record PaymentProcessor : IRequest
 {
     public Guid BookingId { get; init; }
     
+    [JsonIgnore]
     public string PaymentLinkId { get; set; }
     public UriResponse ResponseUrl { get; set; }
 
