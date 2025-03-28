@@ -68,7 +68,7 @@ public class AuthenticationService : IAuthenticationService
         await RevokeToken();
 
         var accessTokenResponse = await _jwtTokenService.GenerateTokens(user);
-        await StoreRefreshToken(user.Id, accessTokenResponse.AccessToken);
+        await StoreRefreshToken(user.Id, accessTokenResponse.RefreshToken);
 
         return accessTokenResponse;
     }
