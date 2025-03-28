@@ -92,7 +92,7 @@ appsettings.*.json
 .kube/
 
 # Ignore migrations
-Migrations/
+# Migrations/
 
 # Ignore local history & backup files
 .localhistory/
