@@ -18,7 +18,7 @@ public class OrderCanceledHandler(IDtpDbContext context, IPublisher publisher) :
 
         if (payment is not null)
         {
-            var refundAmount = 0m;
+            decimal refundAmount;
             if (payment.Booking.IsFreeCancellationPeriod())
             {
                 refundAmount = payment.NetCost;
@@ -30,7 +30,7 @@ public class OrderCanceledHandler(IDtpDbContext context, IPublisher publisher) :
             }
             else if (payment.Booking.TourSchedule.IsBeforeStartDate(4))
             {
-                refundAmount = payment.NetCost - payment.NetCost * 0.7m;
+                refundAmount = payment.NetCost * 0.7m;
                 await publisher.Publish(new PaymentRefunded(refundAmount, notification.UserId,
                     notification.OrderCode), cancellationToken);
                 payment.Refund();
