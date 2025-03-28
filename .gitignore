@@ -91,9 +91,6 @@ appsettings.*.json
 # Ignore Docker & Kubernetes files (if applicable)
 .kube/
 
-# Ignore migrations
-# Migrations/
-
 # Ignore local history & backup files
 .localhistory/
 Backup*/
@@ -113,4 +110,4 @@ FodyWeavers.xsd
 .env
 
 # Ignore migration folder
-Migrations/
+# Migrations/
