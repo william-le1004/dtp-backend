@@ -70,6 +70,7 @@ public class CreateUserCommandHandler
             var result = await _userRepository.CreateUserAsync(newUser, request.RoleName, request.CompanyId);
             await _eventBus.PublishAsync(new UserCreated
             {
+                Name = request.Name,
                 Email = request.Email,
                 UserName = request.UserName,
                 Password = $"{request.UserName}{ApplicationConst.DefaultPassword}"
