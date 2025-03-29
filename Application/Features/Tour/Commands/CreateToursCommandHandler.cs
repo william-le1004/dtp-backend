@@ -42,7 +42,6 @@ namespace Application.Features.Tour.Commands
         List<TicketToAdd>? Tickets,
         DateTime OpenDay,
         DateTime CloseDay,
-        int Duration,
         string ScheduleFrequency,
         string Img,
         string About
@@ -144,13 +143,13 @@ namespace Application.Features.Tour.Commands
                 "monthly" => d => d.AddMonths(1),
                 _ => d => d.AddDays(1)
             };
-
+            var largestSortOrder = tour.TourDestinations.Max(d => d.SortOrderByDate) ?? 0;
             while (currentDay <= request.CloseDay.Date)
             {
                 var schedule = new TourSchedule();
                 dbContext.Entry(schedule).Property("TourId").CurrentValue = tour.Id;
                 dbContext.Entry(schedule).Property("OpenDate").CurrentValue = currentDay;
-                dbContext.Entry(schedule).Property("CloseDate").CurrentValue = currentDay.AddDays(request.Duration);
+                dbContext.Entry(schedule).Property("CloseDate").CurrentValue = currentDay.AddDays(largestSortOrder);
 
                 foreach (var ticketType in tour.Tickets)
                 {
