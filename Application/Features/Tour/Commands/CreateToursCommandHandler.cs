@@ -44,7 +44,8 @@ namespace Application.Features.Tour.Commands
         DateTime CloseDay,
         int Duration,
         string ScheduleFrequency,
-        string Img
+        string Img,
+        string About
     ) : IRequest<ApiResponse<TourResponse>>;
 
     public class CreateTourHandler : IRequestHandler<CreateTourCommand, ApiResponse<TourResponse>>
@@ -91,7 +92,7 @@ namespace Application.Features.Tour.Commands
      
            
             // Tạo Tour mới và gán Code
-            var tour = new Domain.Entities.Tour(request.Title, companyId, request.Categoryid, request.Description,tourCode);
+            var tour = new Domain.Entities.Tour(request.Title, companyId, request.Categoryid, request.Description,tourCode,request.About);
             // Lưu hình ảnh của tour
             _context.ImageUrls.Add(new ImageUrl(tour.Id, request.Img));
 
