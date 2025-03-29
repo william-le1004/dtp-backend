@@ -42,9 +42,9 @@ namespace Application.Features.Tour.Commands
         List<TicketToAdd>? Tickets,
         DateTime OpenDay,
         DateTime CloseDay,
-        int Duration,
         string ScheduleFrequency,
-        string Img
+        string Img,
+        string About
     ) : IRequest<ApiResponse<TourResponse>>;
 
     public class CreateTourHandler : IRequestHandler<CreateTourCommand, ApiResponse<TourResponse>>
@@ -91,7 +91,7 @@ namespace Application.Features.Tour.Commands
      
            
             // Tạo Tour mới và gán Code
-            var tour = new Domain.Entities.Tour(request.Title, companyId, request.Categoryid, request.Description,tourCode);
+            var tour = new Domain.Entities.Tour(request.Title, companyId, request.Categoryid, request.Description,tourCode,request.About);
             // Lưu hình ảnh của tour
             _context.ImageUrls.Add(new ImageUrl(tour.Id, request.Img));
 
@@ -143,13 +143,13 @@ namespace Application.Features.Tour.Commands
                 "monthly" => d => d.AddMonths(1),
                 _ => d => d.AddDays(1)
             };
-
+            var largestSortOrder = tour.TourDestinations.Max(d => d.SortOrderByDate) ?? 0;
             while (currentDay <= request.CloseDay.Date)
             {
                 var schedule = new TourSchedule();
                 dbContext.Entry(schedule).Property("TourId").CurrentValue = tour.Id;
                 dbContext.Entry(schedule).Property("OpenDate").CurrentValue = currentDay;
-                dbContext.Entry(schedule).Property("CloseDate").CurrentValue = currentDay.AddDays(request.Duration);
+                dbContext.Entry(schedule).Property("CloseDate").CurrentValue = currentDay.AddDays(largestSortOrder);
 
                 foreach (var ticketType in tour.Tickets)
                 {

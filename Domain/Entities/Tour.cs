@@ -11,6 +11,7 @@ public partial class Tour : AuditEntity
     public Guid? CategoryId { get; private set; }
     public Category Category { get; private set; }
     public string? Description { get; private set; }
+    public string? About { get; private set; }
     public string? Code { get; private set; }
     public List<TicketType> Tickets { get; private set; } = new();
     public virtual Company Company { get; private set; } = null!;
@@ -27,13 +28,14 @@ public partial class Tour : AuditEntity
     {
     }
 
-    public Tour(string title, Guid? companyId, Guid? category, string? description,string? code )
+    public Tour(string title, Guid? companyId, Guid? category, string? description,string? code, string? about )
     {
         Id = Guid.NewGuid();
         Code= code;
         Title = title;
         CompanyId = companyId;
         CategoryId = category;
+        About = about;
         Description = description;
     }
 
