@@ -110,4 +110,4 @@ FodyWeavers.xsd
 .env
 
 # Ignore migration folder
-# Migrations/
+Migrations/
