@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Features.Company.Commands;
 
-public record CreateCompanyCommand(string Name, string Email, string Phone, string TaxCode)
+public record CreateCompanyCommand(string Name, string Email, string Phone, string TaxCode, double CommissionRate)
     : IRequest<ApiResponse<bool>>;
 
 public class CreateCompanyValidator : AbstractValidator<CreateCompanyCommand>
@@ -52,7 +52,7 @@ public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand,
 
         try
         {
-            var newCompany = new Domain.Entities.Company(request.Name, request.Email, request.Phone, request.TaxCode);
+            var newCompany = new Domain.Entities.Company(request.Name, request.Email, request.Phone, request.TaxCode, request.CommissionRate);
   
             await _companyRepository.UpsertCompanyAsync(newCompany);
 

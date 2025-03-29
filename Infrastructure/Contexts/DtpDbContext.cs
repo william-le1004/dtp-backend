@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Contexts;
 
-public class DtpDbContext(DbContextOptions<DtpDbContext> options, IUserContextService userContext)
+public class DtpDbContext(DbContextOptions<DtpDbContext> options, IUserContextService userContext, AuditableEntityInterceptor auditInterceptor)
     : IdentityDbContext<User>(options), IDtpDbContext
 {
     public virtual DbSet<Company> Companies { get; set; }
@@ -50,5 +50,16 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options, IUserContextSe
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DtpDbContext).Assembly);
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.AddInterceptors(auditInterceptor);
+        base.OnConfiguring(optionsBuilder);
+    }
+    
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return await base.SaveChangesAsync(cancellationToken);
     }
 }

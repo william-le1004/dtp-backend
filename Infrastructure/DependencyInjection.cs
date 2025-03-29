@@ -91,6 +91,7 @@ public static class DependencyInjection
         services.AddScoped<IUserContextService, UserContextService>();
         services.AddSingleton<ICloudinaryService,CloudinaryService>();
         services.AddTransient<IEventBus, EventBus>();
+        services.AddScoped<AuditableEntityInterceptor>();
 
         services.AddAuthentication(item =>
         {
