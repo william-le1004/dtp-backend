@@ -2,6 +2,7 @@ using Api;
 using Api.Middlewares;
 using Application;
 using Infrastructure;
+using Infrastructure.Common.Extensions;
 using Microsoft.AspNetCore.OData;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,7 +31,7 @@ app.UseMiddleware<JwtBlacklistMiddleware>();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-// app.ApplyMigrations();
+app.ApplyMigrations();
 
 app.UseCors("all");
 app.UseAuthentication();
