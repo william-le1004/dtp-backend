@@ -26,7 +26,7 @@ public sealed class User : IdentityUser
     }
 
     public DateTime CreatedAt { get; init; }
-    public string? CreatedBy { get; set; }
+    public string? CreatedBy { get; set; } = "System";
     public DateTime? LastModified { get; set; }
     public string? LastModifiedBy { get; set; }
 

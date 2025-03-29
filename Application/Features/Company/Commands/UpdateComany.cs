@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.Features.Company.Commands;
 
-public record UpdateCompanyCommand(Guid Id, string Name, string Email, string Phone, string TaxCode)
+public record UpdateCompanyCommand(Guid Id, string Name, string Email, string Phone, string TaxCode, double CommissionRate)
     : IRequest<ApiResponse<bool>>;
 
 public class UpdateCompanyValidator : AbstractValidator<UpdateCompanyCommand>
@@ -59,7 +59,7 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand,
 
         try
         {
-            company.UpdateDetails(request.Name, request.Email, request.Phone, request.TaxCode);
+            company.UpdateDetails(request.Name, request.Email, request.Phone, request.TaxCode, request.CommissionRate);
             await _companyRepository.UpsertCompanyAsync(company);
             return ApiResponse<bool>.SuccessResult(true, "Company updated successfully");
         }

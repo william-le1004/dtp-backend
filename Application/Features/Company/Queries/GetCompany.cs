@@ -57,6 +57,7 @@ public class GetCompanyQueryHandler : IRequestHandler<GetCompanyQuery, ApiRespon
             result.Email,
             result.TaxCode,
             result.Licensed,
+            result.CommissionRate,
             staffDto.ToList(),
             tourDto.ToList()
         ));
