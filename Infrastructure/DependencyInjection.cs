@@ -56,6 +56,7 @@ public static class DependencyInjection
                 EndPoints = { redisConnection["Endpoint"] },
                 Password = redisConnection["Password"],
                 User = redisConnection["User"],
+                Ssl = true,
                 ConnectTimeout = 10000,
                 SyncTimeout = 10000
             };
@@ -65,6 +66,7 @@ public static class DependencyInjection
         {
             var configuration = ConfigurationOptions.Parse(redisConnection["Endpoint"], true);
             configuration.Password = redisConnection["Password"];
+            configuration.Ssl = true;
             return ConnectionMultiplexer.Connect(configuration);
         });
 
