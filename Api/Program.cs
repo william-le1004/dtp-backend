@@ -31,7 +31,7 @@ app.UseMiddleware<JwtBlacklistMiddleware>();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-app.ApplyMigrations();
+// app.ApplyMigrations();
 
 app.UseCors("all");
 app.UseAuthentication();
