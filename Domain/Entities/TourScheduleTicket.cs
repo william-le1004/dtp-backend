@@ -1,8 +1,10 @@
 ﻿using Domain.DataModel;
 
+
 namespace Domain.Entities;
 
-public class TourScheduleTicket : SoftDeleteEntity
+public class TourScheduleTicket : AuditEntity
+
 {
     public decimal NetCost { get; private set; }
 

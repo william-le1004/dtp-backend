@@ -20,7 +20,7 @@ public class GetListTourHandler : IRequestHandler<GetListTour, ApiResponse<List<
     public async Task<ApiResponse<List<TourResponse>>> Handle(GetListTour request, CancellationToken cancellationToken)
     {
         var tours = await _context.Tours.ToListAsync(cancellationToken);
-        var tourDtos = tours.Select(t => new TourResponse(t.Id, t.Title, t.CompanyId, t.CategoryId, t.Description))
+        var tourDtos = tours.Select(t => new TourResponse(t.Id, t.Title, t.CompanyId, t.CategoryId, t.Description, t.About))
             .ToList();
 
         return ApiResponse<List<TourResponse>>.SuccessResult(tourDtos, "Tour list retrieved successfully");
