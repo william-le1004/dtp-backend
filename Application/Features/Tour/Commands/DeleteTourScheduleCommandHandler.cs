@@ -44,9 +44,9 @@ namespace Application.Features.Tour.Commands
             {
                 foreach (var ticket in schedule.TourScheduleTickets.ToList())
                 {
-                    _context.TourScheduleTicket.Remove(ticket);
+                    ticket.IsDeleted = true;
                 }
-                _context.TourSchedules.Remove(schedule);
+                schedule.IsDeleted = true;
             }
 
             await _context.SaveChangesAsync(cancellationToken);

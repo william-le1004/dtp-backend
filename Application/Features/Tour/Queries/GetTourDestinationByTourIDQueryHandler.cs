@@ -43,25 +43,33 @@ namespace Application.Features.Tour.Queries
 
         public async Task<ApiResponse<List<TourDestinationDto>>> Handle(GetTourDestinationByTourIDQuery request, CancellationToken cancellationToken)
         {
+            // Truy vấn TourDestinations bao gồm Destination và DestinationActivities
             var tourDestinations = await _context.TourDestinations
                 .Include(td => td.Destination)
+                .Include(td => td.DestinationActivities)
                 .Where(td => td.TourId == request.TourId)
                 .ToListAsync(cancellationToken);
+
+            // Chuyển đổi sang DTO
             var dtoList = tourDestinations.Select(td => new TourDestinationDto(
-                td.Id,
-                td.DestinationId,
-                td.DestinationActivities.Select(da => new DestinationActivity(
-                    da.Name,
-                    da.StartTime,
-                    da.EndTime,
-                    da.SortOrder
-                )).ToList(),
-                td.Destination.Name,
-                td.StartTime,
-                td.EndTime,
-                td.SortOrder,
-                td.SortOrderByDate,
-                Img: _context.ImageUrls.Any(i => i.RefId == td.Id) ? _context.ImageUrls.FirstOrDefault(i => i.RefId == td.Id).Url:null
+                Id: td.Id,
+                DestinationId: td.DestinationId,
+                DestinationActivities: td.DestinationActivities != null
+                    ? td.DestinationActivities.Select(da => new DestinationActivity(
+                        da.Name,
+                        da.StartTime,
+                        da.EndTime,
+                        da.SortOrder
+                    )).ToList()
+                    : new List<DestinationActivity>(),
+                DestinationName: td.Destination.Name,
+                StartTime: td.StartTime,
+                EndTime: td.EndTime,
+                SortOrder: td.SortOrder,
+                SortOrderByDate: td.SortOrderByDate,
+                Img: _context.ImageUrls.Any(i => i.RefId == td.Id)
+                        ? _context.ImageUrls.FirstOrDefault(i => i.RefId == td.Id)?.Url
+                        : null
             )).ToList();
 
             return ApiResponse<List<TourDestinationDto>>.SuccessResult(dtoList, "Tour destinations retrieved successfully");
