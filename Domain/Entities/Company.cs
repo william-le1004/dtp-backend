@@ -9,6 +9,8 @@ public partial class Company : AuditEntity
     public string Phone { get; set; } = null!;
 
     public string TaxCode { get; set; } = null!;
+    
+    public double CommissionRate { get; set; } = 0.1;
 
     public bool Licensed { get; set; } = false;
 
@@ -19,33 +21,30 @@ public partial class Company : AuditEntity
     {
     }
 
-    public Company(string name, string email, string phone, string taxCode)
+    public Company(string name, string email, string phone, string taxCode, double commissionRate)
     {
         Name = name;
         Email = email;
         Phone = phone;
         TaxCode = taxCode;
         Licensed = false;
+        CommissionRate = commissionRate;
     }
 
     public void AcceptLicense() => Licensed = true;
 
     public void Delete() => IsDeleted = true;
 
-    public void UpdateDetails(string name, string email, string phone, string taxCode)
+    public void UpdateDetails(string name, string email, string phone, string taxCode, double commissionRate)
     {
         Name = name;
         Email = email;
         Phone = phone;
         TaxCode = taxCode;
+        CommissionRate = commissionRate;
     }
 
     public void AddStaff(User staff) => Staffs.Add(staff);
-
-    public User FirstStaff()
-    {
-        return Staffs.FirstOrDefault();
-    }
 
     public int StaffCount() => Staffs.Count;
 

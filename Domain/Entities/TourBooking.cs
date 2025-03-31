@@ -6,9 +6,10 @@ namespace Domain.Entities;
 
 public partial class TourBooking : AuditEntity
 {
-    private static double Tax { get; } = 0.1;
     public string UserId { get; private set; }
     public string Code { get; private set; }
+    
+    public long RefCode { get; private set; }
     public string Name { get; private set; }
 
     public string PhoneNumber { get; private set; }
@@ -26,17 +27,17 @@ public partial class TourBooking : AuditEntity
 
     public decimal GrossCost
     {
-        get { return _tickets.Sum(x => x.GrossCost * x.Quantity) * (decimal)Tax; }
+        get { return _tickets.Sum(x => x.GrossCost * x.Quantity); }
     }
 
-    public decimal FinalAmount() => GrossCost - DiscountAmount;
+    public decimal NetCost() => GrossCost - DiscountAmount;
 
 
     public BookingStatus Status { get; private set; }
 
     public string? Remark { get; private set; }
 
-    public virtual TourSchedule TourSchedule { get; private set; } = null!;
+    public virtual TourSchedule TourSchedule { get; set; } = null!;
 
     public TourBooking()
     {
@@ -45,8 +46,9 @@ public partial class TourBooking : AuditEntity
     public TourBooking(string userId, Guid tourScheduleId, TourSchedule tourSchedule, string name, string phoneNumber,
         string email)
     {
-        Code = (userId.Substring(0, 4)
-                + tourScheduleId.ToString("N").Substring(0, 4)).Random();
+        Code = (userId.Substring(0, 6)
+                + tourScheduleId.ToString("N").Substring(0, 6)).Random();
+        RefCode = Code.ToLong();
         UserId = userId;
         TourScheduleId = tourScheduleId;
         Status = BookingStatus.Pending;
@@ -92,24 +94,14 @@ public partial class TourBooking : AuditEntity
         }
     }
 
-    public void CancelBooking(string remark)
+    public void Cancel(string? remark = null)
     {
         if (TourSchedule.IsStarted())
         {
             throw new AggregateException("Tour schedule is already started");
         }
         
-        if (!TourSchedule.IsBeforeStartDate())
-        {
-            throw new AggregateException("Cannot cancel booking before one date from start date");
-        }
-
-        if (!IsFreeCancellationPeriod())
-        {
-            throw new AggregateException("Cannot cancel booking after one date from booking date");
-        }
-
-        if (Status == BookingStatus.Completed)
+        if (Status == BookingStatus.Completed || Status == BookingStatus.Cancelled)
         {
             throw new AggregateException($"Can't cancel this tour booking. Status: {Status}.");
         }
@@ -118,7 +110,7 @@ public partial class TourBooking : AuditEntity
         Remark = remark;
     }
 
-    public void CompleteBooking(string remark)
+    public void Complete(string remark)
     {
         if (Status != BookingStatus.Paid)
         {
@@ -129,20 +121,24 @@ public partial class TourBooking : AuditEntity
         Remark = remark;
     }
 
-    public void PurchaseBooking(string remark)
+    public void Purchase(string? remark = null)
     {
         if (Status != BookingStatus.Pending)
         {
             throw new AggregateException($"Can't purchase this tour booking. Status: {Status}");
         }
 
-        Status = BookingStatus.Completed;
+        Status = BookingStatus.Paid;
         Remark = remark;
     }
 
-    private bool IsFreeCancellationPeriod()
+    public bool IsFreeCancellationPeriod()
     {
         var freeCancellationPeriod = CreatedAt.AddDays(1);
-        return freeCancellationPeriod < DateTime.Now;
+        return DateTime.Now < freeCancellationPeriod;
     }
+    
+    public bool IsCancelled() => Status == BookingStatus.Cancelled;
+    public bool IsPending() => Status == BookingStatus.Pending;
+    public bool IsPaid() => Status == BookingStatus.Paid;
 }

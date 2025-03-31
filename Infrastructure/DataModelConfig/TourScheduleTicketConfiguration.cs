@@ -8,6 +8,7 @@ public class TourScheduleTicketConfiguration : IEntityTypeConfiguration<TourSche
 {
     public void Configure(EntityTypeBuilder<TourScheduleTicket> builder)
     {
-        builder.HasKey(x => new { x.TourScheduleId, x.TicketTypeId });
+        builder.Ignore(e => e.AvailableTicket)
+            .HasKey(x => new { x.TourScheduleId, x.TicketTypeId });
     }
 }

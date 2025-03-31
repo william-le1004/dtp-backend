@@ -10,6 +10,8 @@ namespace Application.Features.Order.Queries;
 public record OrderDetailResponse
 {
     public string Code { get; set; }
+    
+    public long RefCode { get; set; }
     public string Name { get; set; }
 
     public string PhoneNumber { get; set; }
@@ -26,7 +28,7 @@ public record OrderDetailResponse
     public decimal DiscountAmount { get; set; }
 
     public decimal GrossCost { get; set; }
-    public decimal FinalCost { get; set; }
+    public decimal NetCost { get; set; }
 };
 
 public record OrderTicketResponse
@@ -57,6 +59,7 @@ public class GetOrderByIdHandler(IDtpDbContext context, IUserContextService user
             {
                 Code = x.Code,
                 Name = x.Name,
+                RefCode = x.RefCode,
                 PhoneNumber = x.PhoneNumber,
                 Email = x.Email,
                 TourName = x.TourSchedule.Tour.Title,
@@ -68,7 +71,7 @@ public class GetOrderByIdHandler(IDtpDbContext context, IUserContextService user
                 TourDate = x.TourSchedule.OpenDate,
                 DiscountAmount = x.DiscountAmount,
                 GrossCost = x.GrossCost,
-                FinalCost = x.FinalAmount(),
+                NetCost = x.NetCost(),
                 OrderTickets = x.Tickets.Select(t => new OrderTicketResponse()
                 {
                     Code = t.Code,

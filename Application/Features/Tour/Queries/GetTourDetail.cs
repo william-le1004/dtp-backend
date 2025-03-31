@@ -1,4 +1,5 @@
 ﻿using Application.Contracts.Persistence;
+using Application.Extensions;
 using Domain.Entities;
 using Functional.Option;
 using MediatR;
@@ -59,7 +60,7 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
 {
     public Task<Option<TourDetailResponse>> Handle(GetTourDetail request, CancellationToken cancellationToken)
     {
-        var tourDetailResponse = context.Tours
+        var tourDetailResponse = context.Tours.IsDeleted(false)
             .Include(t => t.Ratings)
             .Include(t => t.Company)
             .Include(t => t.Tickets)

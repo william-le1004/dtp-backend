@@ -6,9 +6,10 @@ public record CompanyDto(
     string Phone,
     string Email,
     string TaxCode,
-    bool Lisenced,
+    bool Licensed,
     int Staff,
-    int TourCount);
+    int TourCount,
+    double CommissionRate);
 
 public record CompanyDetailDto(
     Guid Id,
@@ -16,7 +17,8 @@ public record CompanyDetailDto(
     string Phone,
     string Email,
     string TaxCode,
-    bool Lisenced,
+    bool Licensed,
+    double CommissionRate,
     List<StaffDto> Staffs,
     List<Tours> Tours);
 

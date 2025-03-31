@@ -1,5 +1,6 @@
 using Application.Contracts;
 using Application.Contracts.Caching;
+using Domain.Constants;
 using Infrastructure.Common.Constants;
 using Infrastructure.Services;
 
@@ -28,7 +29,7 @@ public class JwtBlacklistMiddleware
             if (!string.IsNullOrEmpty(token))
             {
                 var tokenJti = jwtTokenService.GetJtiFromToken(token);
-                var isBlacklisted = await redisCache.GetDataAsync<string>($"{ApplicationConst.BLACKLIST}:{tokenJti}");
+                var isBlacklisted = await redisCache.GetDataAsync<string>($"{ApplicationConst.BlacklistPrefix}:{tokenJti}");
 
                 if (!string.IsNullOrEmpty(isBlacklisted))
                 {

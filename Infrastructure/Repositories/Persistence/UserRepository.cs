@@ -1,6 +1,7 @@
 using Application.Contracts;
 using Application.Contracts.Caching;
 using Application.Contracts.Persistence;
+using Domain.Constants;
 using Domain.Entities;
 using Infrastructure.Common.Constants;
 using Infrastructure.Contexts;
@@ -66,6 +67,14 @@ public class UserRepository : IUserRepository
         return (await _userManager.GetRolesAsync(user)).FirstOrDefault();
     }
 
+    public async Task<User> GetAdmin()
+    {
+        var user = await _userManager.Users
+            .Include(x => x.Wallet)
+            .FirstAsync(user => _userManager.IsInRoleAsync(user, ApplicationRole.ADMIN).Result);
+        return user;
+    }
+
     public async Task<bool> CreateUserAsync(User user, string role, Guid companyId)
     {
         if (companyId != Guid.Empty)
@@ -73,7 +82,7 @@ public class UserRepository : IUserRepository
             user.AssignCompany(companyId);
         }
 
-        var result = await _userManager.CreateAsync(user, $"{user.UserName}{ApplicationConst.DEFAULT_PASSWORD}");
+        var result = await _userManager.CreateAsync(user, $"{user.UserName}{ApplicationConst.DefaultPassword}");
         if (!result.Succeeded)
         {
             var errors = string.Join("; ", result.Errors.Select(e => e.Description));
@@ -81,7 +90,7 @@ public class UserRepository : IUserRepository
         }
 
         await AssignRole(user, role);
-        return await SaveChangesIfNeededAsync();
+        return true;
     }
 
     public async Task<bool> UpdateProfileAsync(User user, string role)
@@ -104,7 +113,7 @@ public class UserRepository : IUserRepository
             await AssignRole(user, role);
         }
 
-        return await SaveChangesIfNeededAsync();
+        return true;
     }
 
     private async Task AssignRole(User user, string role)

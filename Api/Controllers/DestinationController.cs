@@ -1,5 +1,7 @@
 using Domain.Entities;
+using Infrastructure.Common.Constants;
 using Infrastructure.Contexts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +10,7 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+//[Authorize(Roles = ApplicationRole.ADMIN)]
 public class DestinationController(DtpDbContext context) : BaseController
 {
     // GET: api/Destination
@@ -37,23 +40,18 @@ public class DestinationController(DtpDbContext context) : BaseController
     [HttpPut("{id}")]
     public async Task<IActionResult> PutDestination(Guid id, Destination destination)
     {
-        context.Entry(destination).State = EntityState.Modified;
+        var exitedDest = await context.Destinations.FirstOrDefaultAsync(x => x.Id == id);
 
-        try
+        if (exitedDest == null)
         {
-            await context.SaveChangesAsync();
+            return NotFound();
         }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!DestinationExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
+
+        exitedDest.Name = destination.Name;
+        exitedDest.Longitude = destination.Longitude;
+        exitedDest.Latitude = destination.Latitude;
+        context.Destinations.Update(exitedDest);
+        await context.SaveChangesAsync();
 
         return NoContent();
     }

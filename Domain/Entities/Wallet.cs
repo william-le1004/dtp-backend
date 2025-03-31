@@ -1,45 +1,106 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Enum;
 
-public partial class Wallet : AuditEntity
+namespace Domain.Entities;
+
+public class Wallet(string userId, decimal balance = 0) : AuditEntity
 {
-    public string UserId { get; private set; }
-    public decimal Balance { get; private set; }
+    private static decimal MinimumWithdrawAmount => 100000;
+    public string UserId { get; private set; } = userId;
+    public decimal Balance { get; private set; } = balance;
 
     private readonly List<Transaction> _transactions = new();
     public IReadOnlyCollection<Transaction> Transactions => _transactions.AsReadOnly();
 
-    public virtual User User { get; set; } = null!;
+    public User User { get; private set; }
 
-    public Wallet(string userId)
+    public Transaction Deposit(decimal amount)
     {
-        UserId = userId;
-        Balance = 0;
-    }
-
-    public Wallet(string userId, decimal balance)
-    {
-        UserId = userId;
-        Balance = balance;
-    }
-
-    public void AddFunds(decimal amount)
-    {
-        if (amount <= 0) throw new ArgumentException("Amount must be greater than zero.", nameof(amount));
-        Balance += amount;
-    }
-
-    public bool DeductFunds(decimal amount)
-    {
-        if (amount <= 0) throw new ArgumentException("Amount must be greater than zero.", nameof(amount));
-        if (Balance < amount) return false;
-
-        Balance -= amount;
-        return true;
-    }
-
-    public void AddTransaction(Transaction transaction)
-    {
-        if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+        var transaction = new Transaction(Balance, amount, TransactionType.Deposit, Id);
+        
         _transactions.Add(transaction);
+        Balance += amount;
+        
+        return transaction;
+    }
+
+    public Transaction Withdraw(decimal amount)
+    {
+        if (Balance < amount)
+        {
+            throw new AggregateException($"Insufficient funds!. Balance: {Balance}.");
+        }
+
+        if (amount < MinimumWithdrawAmount)
+        {
+            throw new AggregateException($"The amount must be at least {MinimumWithdrawAmount}. Current Amount: {amount}.");
+        }
+
+        var transaction = new Transaction(Balance, amount, TransactionType.Withdraw, Id);
+        _transactions.Add(transaction);
+        Balance -= amount;
+        
+        return transaction;
+    }
+
+    public void Transfer(Wallet receiveWallet, decimal amount, string description)
+    {
+        if (Balance < amount)
+        {
+            throw new AggregateException($"Insufficient funds!. Balance: {Balance}.");
+        }
+
+        var transaction = new Transaction(Balance, amount, TransactionType.Transfer, Id, description);
+        _transactions.Add(transaction);
+        transaction.Ref(receiveWallet.Receive(amount, description, transaction.TransactionCode));
+        
+        Balance -= amount;
+    }
+
+    private string Receive(decimal amount, string description, string refTransactionCode, TransactionType transactionType = TransactionType.Receive)
+    {
+        var transaction = new Transaction(Balance, amount, transactionType, Id, description);
+        transaction.Ref(refTransactionCode);
+        _transactions.Add(transaction);
+        
+        Balance += amount;
+        return transaction.TransactionCode;
+    }
+    
+    public string ThirdPartyPay(Wallet poolFund, decimal amount, string description)
+    {
+        var transaction = new Transaction(Balance, amount, TransactionType.ThirdPartyPayment, Id, description);
+        _transactions.Add(transaction);
+        transaction.Ref(poolFund.Receive(amount, description, transaction.TransactionCode));
+        
+        Balance -= amount;
+        return transaction.TransactionCode;
+    }
+    
+    public void PayInApp(Wallet poolFund, decimal amount, string description)
+    {
+        if (Balance < amount)
+        {
+            throw new AggregateException($"Insufficient funds!. Balance: {Balance}.");
+        }
+
+        var transaction = new Transaction(Balance, amount, TransactionType.Payment, Id, description);
+        _transactions.Add(transaction);
+        transaction.Ref(poolFund.Receive(amount, description, transaction.TransactionCode));
+        
+        Balance -= amount;
+    }
+    
+    public void Refund(Wallet receiveWallet, decimal amount, string description)
+    {
+        if (Balance < amount)
+        {
+            throw new AggregateException($"Insufficient funds!. Balance: {Balance}.");
+        }
+
+        var transaction = new Transaction(Balance, amount, TransactionType.Transfer, Id, description);
+        _transactions.Add(transaction);
+        transaction.Ref(receiveWallet.Receive(amount, description, transaction.TransactionCode, TransactionType.Refund));
+        
+        Balance -= amount;
     }
 }

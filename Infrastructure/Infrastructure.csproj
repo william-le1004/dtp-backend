@@ -7,6 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="CloudinaryDotNet" Version="1.27.4" />
+        <PackageReference Include="Hangfire.AspNetCore" Version="1.8.18" />
+        <PackageReference Include="Hangfire.Core" Version="1.8.18" />
+        <PackageReference Include="Hangfire.MySqlStorage" Version="2.0.3" />
+        <PackageReference Include="MassTransit.Abstractions" Version="8.4.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.13"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.13"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.13"/>
@@ -20,6 +25,8 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.13"/>
         <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.11"/>
+        <PackageReference Include="Otp.NET" Version="1.4.0" />
+        <PackageReference Include="QRCoder" Version="1.6.0" />
         <PackageReference Include="StackExchange.Redis" Version="2.8.24"/>
     </ItemGroup>
 
@@ -29,8 +36,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Migrations\"/>
-        <Folder Include="Repositories\"/>
+        <Folder Include="Migrations\" />
     </ItemGroup>
 
 </Project>

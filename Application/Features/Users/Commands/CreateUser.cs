@@ -1,8 +1,12 @@
 using Application.Common;
+using Application.Contracts.EventBus;
 using Application.Contracts.Persistence;
+using Application.Events;
+using Domain.Constants;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Features.Users.Commands;
 
@@ -42,10 +46,14 @@ public class CreateUserCommandHandler
     : IRequestHandler<CreateUserCommand, ApiResponse<bool>>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IEventBus _eventBus;
+    private readonly ILogger<CreateUserCommandHandler> _logger;
 
-    public CreateUserCommandHandler(IUserRepository userRepository)
+    public CreateUserCommandHandler(IUserRepository userRepository, IEventBus eventBus, ILogger<CreateUserCommandHandler> logger)
     {
         _userRepository = userRepository;
+        _eventBus = eventBus;
+        _logger = logger;
     }
 
     public async Task<ApiResponse<bool>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -63,6 +71,20 @@ public class CreateUserCommandHandler
         {
             var newUser = new User(request.UserName, request.Email, request.Name, request.Address, request.PhoneNumber);
             var result = await _userRepository.CreateUserAsync(newUser, request.RoleName, request.CompanyId);
+            await _eventBus.PublishAsync(new UserCreated
+            {
+                Name = request.Name,
+                Email = request.Email,
+                UserName = request.UserName,
+                Password = $"{request.UserName}{ApplicationConst.DefaultPassword}"
+            }, cancellationToken);
+            
+            _logger.LogInformation(
+                "Published UserCreated event to queue: Name={Name}, UserName={UserName}, Email={Email}",
+                request.Name,
+                request.UserName,
+                request.Email
+            );
             return result
                 ? ApiResponse<bool>.SuccessResult(true)
                 : ApiResponse<bool>.Failure("User creation failed");
