@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities;
 
-public class TourScheduleTicket
+public class TourScheduleTicket : AuditEntity
 {
     public decimal NetCost { get; private set; }
     public int AvailableTicket { get; private set; }
