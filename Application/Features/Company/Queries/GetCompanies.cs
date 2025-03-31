@@ -28,7 +28,8 @@ public class GetCompaniesQueryHandler : IRequestHandler<GetCompaniesQuery, ApiRe
             c.TaxCode,
             c.Licensed,
             c.StaffCount(),
-            c.TourCount()
+            c.TourCount(),
+            c.CommissionRate
         )).AsQueryable());
     }
 }

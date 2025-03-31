@@ -45,7 +45,7 @@ public class GetOrdersHandler(IDtpDbContext context, IUserContextService userSer
                     TicketKind = t.TicketType.TicketKind,
                     GrossCost = t.GrossCost
                 }).ToList(),
-                FinalCost = x.FinalAmount()
+                FinalCost = x.NetCost()
             }).ToListAsync(cancellationToken: cancellationToken);
         return orders;
     }

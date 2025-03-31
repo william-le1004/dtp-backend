@@ -89,14 +89,25 @@ appsettings.*.json
 !Api/appsettings.json # Keep this one tracked
 
 # Ignore Docker & Kubernetes files (if applicable)
-docker-compose.override.yml
-Dockerfile
 .kube/
-
-# Ignore migrations
-Migrations/
 
 # Ignore local history & backup files
 .localhistory/
 Backup*/
 MigrationBackup/
+
+
+# Ionide (cross platform F# VS Code tools) working folder
+.ionide/
+
+# Fody - auto-generated XML schema
+FodyWeavers.xsd
+
+# Idea file
+.idea
+
+# Ignore environment variables
+.env
+
+# Ignore migration folder
+# Migrations/

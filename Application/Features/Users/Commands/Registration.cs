@@ -1,6 +1,8 @@
 using Application.Common;
 using Application.Contracts.Authentication;
+using Application.Contracts.EventBus;
 using Application.Dtos;
+using Application.Events;
 using FluentValidation;
 using MediatR;
 
@@ -34,10 +36,12 @@ public class RegistrationHandler
     : IRequestHandler<RegistrationCommand, ApiResponse<bool>>
 {
     private readonly IAuthenticationService _authenticationService;
+    private readonly IEventBus _eventBus;
 
-    public RegistrationHandler(IAuthenticationService authenticationService)
+    public RegistrationHandler(IAuthenticationService authenticationService, IEventBus eventBus)
     {
         _authenticationService = authenticationService;
+        _eventBus = eventBus;
     }
 
     public async Task<ApiResponse<bool>> Handle(RegistrationCommand request, CancellationToken cancellationToken)

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Application.Contracts;
 using Application.Contracts.Persistence;
-using Application.Features.Order.Event;
+using Application.Features.Basket.Events;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +27,12 @@ public record TicketRequest
     [Required] public int Quantity { get; set; }
 }
 
-public class PlaceOrderCommandHandler(IDtpDbContext context, IPublisher publisher, IUserContextService userService)
+public class PlaceOrderCommandHandler(
+    IDtpDbContext context,
+    IPublisher publisher,
+    IUserContextService userService,
+    ITourScheduleRepository repository
+    )
     : IRequestHandler<PlaceOrderCommand, TourBooking>
 {
     public async Task<TourBooking> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
@@ -35,13 +40,11 @@ public class PlaceOrderCommandHandler(IDtpDbContext context, IPublisher publishe
         var userId = userService.GetCurrentUserId()!;
 
         var removeBasketEvent = new OrderSubmittedEvent(userId, request.TourScheduleId);
-        var touSchedule = context.TourSchedules.Include(x => x.TourScheduleTickets)
-            .AsSplitQuery()
-            .Single(t => t.Id == request.TourScheduleId);
+        var touSchedule = await repository.GetTourScheduleByIdAsync(request.TourScheduleId);
         var voucher = await context.Voucher.SingleOrDefaultAsync(x => x.Code == request.VoucherCode,
             cancellationToken: cancellationToken);
 
-        var booking = new TourBooking(userId, request.TourScheduleId, touSchedule,
+        var booking = new TourBooking(userId, request.TourScheduleId, touSchedule!,
             request.Name, request.PhoneNumber, request.Email);
 
         foreach (var ticket in request.Tickets)
@@ -53,10 +56,11 @@ public class PlaceOrderCommandHandler(IDtpDbContext context, IPublisher publishe
         {
             booking.ApplyVoucher(voucher);
         }
-
+        
+        context.TourSchedules.Attach(touSchedule!);
         context.TourBookings.Add(booking);
         await context.SaveChangesAsync(cancellationToken: cancellationToken);
-        // await publisher.Publish(removeBasketEvent, cancellationToken);
+        await publisher.Publish(removeBasketEvent, cancellationToken);
 
         return booking;
     }

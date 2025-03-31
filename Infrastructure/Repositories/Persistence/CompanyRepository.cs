@@ -1,3 +1,4 @@
+using Application.Contracts;
 using Application.Contracts.Persistence;
 using Domain.Entities;
 using Infrastructure.Common.Constants;
@@ -11,11 +12,13 @@ public class CompanyRepository : ICompanyRepository
 {
     private readonly DtpDbContext _dbContext;
     private readonly UserManager<User> _userManager;
+    private readonly IUserContextService _userContext;
 
-    public CompanyRepository(DtpDbContext dbContext, UserManager<User> userManager)
+    public CompanyRepository(DtpDbContext dbContext, UserManager<User> userManager, IUserContextService userContext)
     {
         _dbContext = dbContext;
         _userManager = userManager;
+        _userContext = userContext;
     }
 
     public async Task<bool> GrantCompanyAsync(Guid companyId)
@@ -23,7 +26,6 @@ public class CompanyRepository : ICompanyRepository
         var company = await _dbContext.Companies
             .Include(c => c.Staffs)
             .Include(c => c.Tours)
-            .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == companyId);
         company?.AcceptLicense();
 
@@ -55,30 +57,54 @@ public class CompanyRepository : ICompanyRepository
             .FirstOrDefaultAsync(c => c.Id == companyId);
     }
 
-    public async Task<bool> UpsertCompanyAsync(Company company, string userId)
+    public async Task<bool> UpsertCompanyAsync(Company company)
     {
         if (company.Id == Guid.Empty)
         {
-            var staff = await _dbContext.Users.FindAsync(userId);
-            if (!company.Staffs.Contains(staff))
-            {
-                company.Staffs.Add(staff);
-            }
-
-            await _dbContext.Companies.AddAsync(company);
+            return await CreateCompanyAsync(company);
         }
-        else
+    
+        return await UpdateCompanyAsync(company);
+    }
+
+    private async Task<bool> CreateCompanyAsync(Company company)
+    {
+        var userId = _userContext.GetCurrentUserId();
+        var userCompanyId = _dbContext.Users.Find(userId)?.CompanyId ?? Guid.Empty;
+
+        if (userCompanyId != Guid.Empty)
         {
-            var existingCompany = await GetCompanyAsync(company.Id);
-
-            if (existingCompany == null)
-            {
-                throw new KeyNotFoundException($"Company with ID {company.Id} not found.");
-            }
-
-            _dbContext.Entry(existingCompany).CurrentValues.SetValues(company);
+            throw new InvalidOperationException("User already belongs to a company.");
         }
 
+        var user = await _dbContext.Users.FindAsync(userId)
+                   ?? throw new KeyNotFoundException("User not found.");
+
+        if (!company.Staffs.Contains(user))
+        {
+            company.Staffs.Add(user);
+        }
+
+        await _dbContext.Companies.AddAsync(company);
+        return await SaveChangesAsync();
+    }
+
+    private async Task<bool> UpdateCompanyAsync(Company company)
+    {
+        var existingCompany = await GetCompanyAsync(company.Id)
+                              ?? throw new KeyNotFoundException($"Company with ID {company.Id} not found.");
+
+        if (existingCompany.Licensed)
+        {
+            throw new InvalidOperationException("Company is licensed and cannot be updated.");
+        }
+
+        _dbContext.Entry(existingCompany).CurrentValues.SetValues(company);
+        return await SaveChangesAsync();
+    }
+
+    private async Task<bool> SaveChangesAsync()
+    {
         return await _dbContext.SaveChangesAsync() > 0;
     }
 }

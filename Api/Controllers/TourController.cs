@@ -3,6 +3,7 @@ using Application.Features.Tour.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace Api.Controllers;
 
@@ -12,6 +13,7 @@ public class TourController(ILogger<TourController> logger, IMediator mediator)
     : BaseController
 {
     [HttpGet]
+    [OutputCache]
     [EnableQuery]
     public async Task<IQueryable<TourTemplateResponse>> Get()
     {
@@ -20,6 +22,7 @@ public class TourController(ILogger<TourController> logger, IMediator mediator)
 
     // GET: api/Tour/5
     [HttpGet("{id}")]
+    [OutputCache]
     public async Task<ActionResult<TourDetailResponse>> GetTours(Guid id)
     {
         var result = await mediator.Send(new GetTourDetail(id));

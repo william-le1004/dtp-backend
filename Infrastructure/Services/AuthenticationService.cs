@@ -2,6 +2,7 @@ using Application.Contracts;
 using Application.Contracts.Authentication;
 using Application.Contracts.Caching;
 using Application.Dtos;
+using Domain.Constants;
 using Domain.Entities;
 using Infrastructure.Common.Constants;
 using Microsoft.AspNetCore.Identity;
@@ -42,7 +43,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<AccessTokenResponse> LoginAsync(LoginRequestDto request)
     {
-        var user = await _userManager.FindByNameAsync(request.UserNameOrPassword) ?? await _userManager.FindByNameAsync(request.UserNameOrPassword);
+        var user = await _userManager.FindByNameAsync(request.UserNameOrPassword) ?? await _userManager.FindByEmailAsync(request.UserNameOrPassword);
         if (user == null || !(await _userManager.CheckPasswordAsync(user, request.Password)))
             throw new UnauthorizedAccessException("Invalid username or password.");
 
@@ -57,7 +58,7 @@ public class AuthenticationService : IAuthenticationService
         if (string.IsNullOrEmpty(userId))
             throw new UnauthorizedAccessException("Invalid refresh token.");
 
-        var storedToken = await _redisCache.GetDataAsync<string>($"{ApplicationConst.REFRESH_TOKEN}:{userId}");
+        var storedToken = await _redisCache.GetDataAsync<string>($"{ApplicationConst.RefreshTokenPrefix}:{userId}");
         if (storedToken == null || storedToken != refreshToken)
             throw new UnauthorizedAccessException("Refresh token expired or invalid.");
 
@@ -67,7 +68,7 @@ public class AuthenticationService : IAuthenticationService
         await RevokeToken();
 
         var accessTokenResponse = await _jwtTokenService.GenerateTokens(user);
-        await StoreRefreshToken(user.Id, accessTokenResponse.AccessToken);
+        await StoreRefreshToken(user.Id, accessTokenResponse.RefreshToken);
 
         return accessTokenResponse;
     }
@@ -81,13 +82,13 @@ public class AuthenticationService : IAuthenticationService
 
         if (expiryTime > TimeSpan.Zero)
         {
-            await _redisCache.SetDataAsync($"{ApplicationConst.BLACKLIST}:{tokenJti}", "revoked", expiryTime);
+            await _redisCache.SetDataAsync($"{ApplicationConst.BlacklistPrefix}:{tokenJti}", "revoked", expiryTime);
         }
     }
 
     public async Task<bool> LogoutAsync(string userId)
     {
-        await _redisCache.RemoveDataAsync($"{ApplicationConst.REFRESH_TOKEN}:{userId}");
+        await _redisCache.RemoveDataAsync($"{ApplicationConst.RefreshTokenPrefix}:{userId}");
 
         await RevokeToken();
 
@@ -96,7 +97,7 @@ public class AuthenticationService : IAuthenticationService
 
     private async Task StoreRefreshToken(string userId, string refreshToken)
     {
-        var refreshTokenKey = $"{ApplicationConst.REFRESH_TOKEN}:{userId}";
+        var refreshTokenKey = $"{ApplicationConst.RefreshTokenPrefix}:{userId}";
         await _redisCache.SetDataAsync(refreshTokenKey, refreshToken, TimeSpan.FromDays(7));
     }
 }

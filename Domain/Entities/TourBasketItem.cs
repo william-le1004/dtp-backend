@@ -1,3 +1,5 @@
+using Domain.DataModel;
+
 namespace Domain.Entities;
 
 public class TourBasketItem(Guid tourScheduleId, Guid ticketTypeId, int quantity)
@@ -9,7 +11,6 @@ public class TourBasketItem(Guid tourScheduleId, Guid ticketTypeId, int quantity
     public Guid TicketTypeId { get; private set; } = ticketTypeId;
     public int Quantity { get; private set; } = quantity;
     public virtual Basket Basket { get; private set; }
-
     public void AddUnits(int quantity, Guid ticketTypeId)
     {
         if (quantity < 0)
