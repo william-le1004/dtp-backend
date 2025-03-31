@@ -11,11 +11,10 @@ namespace Application.Features.Tour.Commands
     // Command cập nhật thông tin cơ bản của Tour
     public record UpdateTourInforCommand(
         Guid TourId,
-        string? Title,
+        string Title,
         Guid? Category,
         string? Description,
-        string? About,
-        string? img
+        string img
     ) : IRequest<ApiResponse<TourResponse>>;
 
     public class UpdateTourInforHandler : IRequestHandler<UpdateTourInforCommand, ApiResponse<TourResponse>>
@@ -46,7 +45,7 @@ namespace Application.Features.Tour.Commands
             await _context.SaveChangesAsync(cancellationToken);
 
             // Tạo DTO response
-            var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.CategoryId, tour.Description,tour.About);
+            var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.CategoryId, tour.Description);
             return ApiResponse<TourResponse>.SuccessResult(tourResponse, "Tour updated successfully");
         }
     }
