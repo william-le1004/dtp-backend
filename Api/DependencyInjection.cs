@@ -5,7 +5,6 @@ using Application.Features.Tour.Queries;
 using Application.Features.Users.Queries;
 using Domain.Entities;
 using Microsoft.AspNetCore.OData;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;

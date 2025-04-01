@@ -4,11 +4,12 @@ using Application.Contracts.Authentication;
 using Application.Contracts.Caching;
 using Application.Contracts.Cloudinary;
 using Application.Contracts.EventBus;
+using Application.Contracts.Job;
 using Application.Contracts.Persistence;
 using Domain.Constants;
 using Domain.Entities;
 using Hangfire;
-using Hangfire.MySql;
+using Hangfire.Redis.StackExchange;
 using Infrastructure.Common.Constants;
 using Infrastructure.Common.Settings;
 using Infrastructure.Contexts;
@@ -35,12 +36,13 @@ public static class DependencyInjection
 
         var connectionString = environmentSection.GetConnectionString("DefaultConnection");
         var jwtSettings = environmentSection.GetSection("JwtSettings");
-        var redisConnection = environmentSection.GetSection("Redis");
-        var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
-        var cloudinaryConnection = environmentSection.GetSection("CloudinarySettings");
+        var redisSettings = environmentSection.GetSection("Redis");
+        var cloudinarySettings = environmentSection.GetSection("CloudinarySettings");
 
+        var jwtKey  = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+        
         services.Configure<JwtSettings>(jwtSettings);
-        services.Configure<CloudinarySettings>(cloudinaryConnection);
+        services.Configure<CloudinarySettings>(cloudinarySettings);
         
         services.AddDbContext<DtpDbContext>((sp, options) =>
         {
@@ -48,27 +50,20 @@ public static class DependencyInjection
                 .AddInterceptors(sp.GetService<AuditableEntityInterceptor>());
         });
 
-        services.AddStackExchangeRedisCache(options =>
+        var redisConfig = new ConfigurationOptions
         {
-            options.Configuration = redisConnection["Endpoint"];
-            options.ConfigurationOptions = new ConfigurationOptions
-            {
-                EndPoints = { redisConnection["Endpoint"] },
-                Password = redisConnection["Password"],
-                User = redisConnection["User"],
-                Ssl = true,
-                ConnectTimeout = 10000,
-                SyncTimeout = 10000
-            };
-        });
+            EndPoints = { redisSettings["Endpoint"] },
+            Password = redisSettings["Password"],
+            User = redisSettings["User"],
+            AllowAdmin = true,
+            Ssl = true,
+            ConnectTimeout = 10000,
+            SyncTimeout = 10000
+        };
 
-        services.AddSingleton<IConnectionMultiplexer>(sp =>
-        {
-            var configuration = ConfigurationOptions.Parse(redisConnection["Endpoint"], true);
-            configuration.Password = redisConnection["Password"];
-            configuration.Ssl = true;
-            return ConnectionMultiplexer.Connect(configuration);
-        });
+        services.AddStackExchangeRedisCache(options => { options.ConfigurationOptions = redisConfig; });
+
+        services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConfig));
 
         services.AddIdentity<User, IdentityRole>(options =>
             {
@@ -94,6 +89,7 @@ public static class DependencyInjection
         services.AddSingleton<ICloudinaryService,CloudinaryService>();
         services.AddTransient<IEventBus, EventBus>();
         services.AddScoped<AuditableEntityInterceptor>();
+        services.AddScoped<IHangfireJobService, HangfireJobService>();
 
         services.AddAuthentication(item =>
         {
@@ -111,14 +107,16 @@ public static class DependencyInjection
                 ValidateIssuerSigningKey = true,
                 ValidAudience = jwtSettings["Audience"],
                 ValidIssuer = jwtSettings["Issuer"],
-                IssuerSigningKey = new SymmetricSecurityKey(key)
+                IssuerSigningKey = new SymmetricSecurityKey(jwtKey)
             };
         });
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(ApplicationConst.AuthenticatedUser, policy => policy.RequireAuthenticatedUser());
-            options.AddPolicy(ApplicationConst.AdminPermission, policy => policy.RequireRole(ApplicationRole.ADMIN));
+            options.AddPolicy(ApplicationConst.AuthenticatedUser, 
+                policy => policy.RequireAuthenticatedUser());
+            options.AddPolicy(ApplicationConst.AdminPermission, 
+                policy => policy.RequireRole(ApplicationRole.ADMIN));
             options.AddPolicy(ApplicationConst.ManagementPermission,
                 policy => policy.RequireRole(ApplicationRole.ADMIN, ApplicationRole.OPERATOR));
             options.AddPolicy(ApplicationConst.HighLevelPermission,
@@ -133,15 +131,22 @@ public static class DependencyInjection
                 .AllowAnyMethod());
         });
         
-        services.AddHangfire(ctg => ctg
+        services.AddHangfire(config => config
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
             .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
-            .UseStorage(new MySqlStorage(connectionString, new MySqlStorageOptions
+            .UseRedisStorage(ConnectionMultiplexer.Connect(redisConfig), new RedisStorageOptions
             {
-                TablesPrefix = "Hangfire",
-                QueuePollInterval = TimeSpan.FromSeconds(15)
-            })));
+                Prefix = ApplicationConst.HangfirePrefix,
+                InvisibilityTimeout = TimeSpan.FromMinutes(30),
+                FetchTimeout = TimeSpan.FromMinutes(1),
+                Db = 0,
+                ExpiryCheckInterval = TimeSpan.FromMinutes(30)
+            }));
+        
+        services.AddHangfireServer();
 
         return services;
     }
