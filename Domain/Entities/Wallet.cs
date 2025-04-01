@@ -72,7 +72,6 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
         _transactions.Add(transaction);
         transaction.Ref(poolFund.Receive(amount, description, transaction.TransactionCode));
         
-        Balance -= amount;
         return transaction.TransactionCode;
     }
     

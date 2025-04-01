@@ -6,9 +6,9 @@ namespace Domain.Entities;
 public class Transaction : AuditEntity
 {
     public Guid WalletId { get; init; }
-    
+
     public string TransactionCode { get; private set; }
-    
+
     public string? Description { get; private set; }
     public string RefTransactionCode { get; private set; }
 
@@ -33,44 +33,43 @@ public class Transaction : AuditEntity
                            + walletId.ToString("N").Substring(0, 8)).Random();
         Description = description;
         AfterTransactionBalance = currentBalance;
-        Amount = amount <= 0 ? amount :
-            throw new ArgumentException("Amount must be greater than zero.", nameof(amount));
+        Amount = amount > 0 ? amount : throw new ArgumentException("Amount must be greater than zero.", nameof(amount));
         Type = type;
         Status = TransactionStatus.Pending;
     }
 
     public void Ref(string refTransactionCode)
     {
-        if (Status != TransactionStatus.Pending)
+        if (Status is not TransactionStatus.Pending)
         {
             throw new ArgumentException("Status must be Pending.", nameof(Status));
         }
-        
-        if (Type != TransactionType.Payment || Type != TransactionType.Transfer)
+
+        if (Type is TransactionType.Withdraw or TransactionType.Deposit)
         {
-            throw new ArgumentException("Only payment transactions are supported.", nameof(refTransactionCode));
+            throw new ArgumentException("Only transfer transactions are supported.", nameof(refTransactionCode));
         }
-        
+
         RefTransactionCode = refTransactionCode;
     }
 
     public void TransactionCompleted()
     {
-        if (Status != TransactionStatus.Pending)
+        if (Status is not TransactionStatus.Pending)
         {
             throw new AggregateException($"Can't accept this transaction. Status: {Status}");
         }
-        
+
         Status = TransactionStatus.Completed;
     }
-    
+
     public void TransactionCancelled()
     {
-        if (Status != TransactionStatus.Pending)
+        if (Status is not TransactionStatus.Pending)
         {
             throw new AggregateException($"Can't cancel this transaction. Status: {Status}");
         }
-        
+
         Status = TransactionStatus.Canceled;
     }
 }
