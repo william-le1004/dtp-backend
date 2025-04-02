@@ -53,6 +53,19 @@ namespace Application.Features.Tour.Commands
                         dest.SortOrder,
                         dest.SortOrderByDate
                     );
+                    if(dest.DestinationActivities != null && dest.DestinationActivities.Any())
+                    {
+                        foreach (var activity in dest.DestinationActivities)
+                        {
+                            newTourDestination.DestinationActivities.Add(new DestinationActivity(
+                                newTourDestination.Id,
+                                activity.Name,
+                                activity.StartTime,
+                                activity.EndTime,
+                                activity.SortOrder
+                            ));
+                        }
+                    }
                     _context.ImageUrls.RemoveRange(_context.ImageUrls.Where(i => i.RefId == newTourDestination.Id));
                     _context.ImageUrls.Add(new ImageUrl(newTourDestination.Id, dest.Img));
                     tour.TourDestinations.Add(newTourDestination);
