@@ -4,6 +4,7 @@ public static class ApplicationConst
 {
     public const string RefreshTokenPrefix = "RF";
     public const string BlacklistPrefix = "BL";
+    public const string HangfirePrefix = "HF";
 
 
     public const string DefaultPassword = "1A@a";

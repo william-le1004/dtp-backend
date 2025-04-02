@@ -24,8 +24,11 @@ namespace Application.Features.Tour.Queries
 
         public async Task<ApiResponse<List<DateOnly>>> Handle(GetTourScheduleByTourIDQuery request, CancellationToken cancellationToken)
         {
+            var today = DateTime.Today;
             var openDaysDateTime = await _context.TourSchedules
-                .Where(ts => ts.TourId == request.TourId)
+                .Where(ts => ts.TourId == request.TourId
+                             && !ts.IsDeleted
+                             && ts.OpenDate.Date >= today)
                 .Select(ts => ts.OpenDate)
                 .Distinct()
                 .OrderBy(d => d)
@@ -35,6 +38,7 @@ namespace Application.Features.Tour.Queries
 
             return ApiResponse<List<DateOnly>>.SuccessResult(openDays, "Tour schedules open days retrieved successfully");
         }
+
 
     }
 }

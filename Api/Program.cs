@@ -1,8 +1,9 @@
 using Api;
 using Api.Middlewares;
 using Application;
+using Application.Contracts.Job;
+using Hangfire;
 using Infrastructure;
-using Infrastructure.Common.Extensions;
 using Microsoft.AspNetCore.OData;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,9 +26,11 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
 
+app.UseHangfireDashboard("/hangfire");
 app.UseMiddleware<JwtBlacklistMiddleware>();
 
-// Configure the HTTP request pipeline.
+RecurringJob.AddOrUpdate<IHangfireJobService>("HardDeleteJob",
+    job => job.HardDeleteExpiredEntities(), Cron.Monthly);
 
 app.UseSwagger();
 app.UseSwaggerUI();
