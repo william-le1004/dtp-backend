@@ -1,6 +1,6 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
-namespace Domain.DataModel;
+namespace Domain.Common;
 
 public class SoftDeleteEntity
 {
