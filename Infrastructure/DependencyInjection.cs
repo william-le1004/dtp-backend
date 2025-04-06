@@ -141,9 +141,12 @@ public static class DependencyInjection
             {
                 Prefix = ApplicationConst.HangfirePrefix,
                 InvisibilityTimeout = TimeSpan.FromMinutes(30),
-                FetchTimeout = TimeSpan.FromMinutes(1),
+                FetchTimeout = TimeSpan.FromMinutes(5),
                 Db = 0,
-                ExpiryCheckInterval = TimeSpan.FromMinutes(30)
+                ExpiryCheckInterval = TimeSpan.FromMinutes(30),
+                DeletedListSize = 6,
+                SucceededListSize = 6,
+                UseTransactions = false
             }));
         
         services.AddHangfireServer();
