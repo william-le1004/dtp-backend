@@ -28,9 +28,9 @@ namespace Application.Features.Tour.Queries
             var openDaysDateTime = await _context.TourSchedules
                 .Where(ts => ts.TourId == request.TourId
                              && !ts.IsDeleted
-                             && ts.OpenDate.Date >= today)
-                .Select(ts => ts.OpenDate)
-                .Distinct()
+                             && ts.OpenDate >= today)
+                .GroupBy(ts => new { ts.OpenDate.Year, ts.OpenDate.Month, ts.OpenDate.Day })
+                .Select(g => new DateTime(g.Key.Year, g.Key.Month, g.Key.Day))
                 .OrderBy(d => d)
                 .ToListAsync(cancellationToken);
 

@@ -3,12 +3,14 @@ using Application.Contracts.Persistence;
 using Domain.DataModel;
 using Domain.Entities;
 using Domain.ValueObject;
+using Infrastructure.Common.Extensions;
+using MediatR;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Contexts;
 
-public class DtpDbContext(DbContextOptions<DtpDbContext> options, IUserContextService userContext, AuditableEntityInterceptor auditInterceptor)
+public class DtpDbContext(DbContextOptions<DtpDbContext> options, IMediator mediator, IUserContextService userContext, AuditableEntityInterceptor auditInterceptor)
     : IdentityDbContext<User>(options), IDtpDbContext
 {
     public virtual DbSet<Company> Companies { get; set; }
@@ -60,6 +62,8 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options, IUserContextSe
     
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        await mediator.DispatchDomainEventsAsync(this);
+
         return await base.SaveChangesAsync(cancellationToken);
     }
 }

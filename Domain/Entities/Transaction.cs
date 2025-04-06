@@ -1,9 +1,10 @@
 ﻿using Domain.Enum;
+using Domain.Events;
 using Domain.Extensions;
 
 namespace Domain.Entities;
 
-public class Transaction : AuditEntity
+public class Transaction : Entity
 {
     public Guid WalletId { get; init; }
 
@@ -32,10 +33,11 @@ public class Transaction : AuditEntity
         TransactionCode = (int.Parse(DateTimeOffset.Now.ToString("fffd"))
                            + walletId.ToString("N").Substring(0, 8)).Random();
         Description = description;
-        AfterTransactionBalance = currentBalance;
+        AfterTransactionBalance = CalAfterTransactionBalance(currentBalance, amount, type);
         Amount = amount > 0 ? amount : throw new ArgumentException("Amount must be greater than zero.", nameof(amount));
         Type = type;
         Status = TransactionStatus.Pending;
+        AddTransactionRecordedDomainEvent(walletId, amount, description, type, CreatedAt, TransactionCode, AfterTransactionBalance);
     }
 
     public void Ref(string refTransactionCode)
@@ -71,5 +73,30 @@ public class Transaction : AuditEntity
         }
 
         Status = TransactionStatus.Canceled;
+    }
+
+    private void AddTransactionRecordedDomainEvent(Guid walletId,
+        decimal amount,
+        string? description,
+        TransactionType transactionType,
+        DateTime createdDate,
+        string transactionCode, decimal availableBalance)
+    {
+        var orderStartedDomainEvent = new TransactionRecorded(walletId, amount, description ?? string.Empty,
+            transactionType, createdDate,
+            transactionCode, availableBalance);
+
+        AddDomainEvent(orderStartedDomainEvent);
+    }
+
+    private decimal CalAfterTransactionBalance(decimal balance, decimal amount, TransactionType type)
+    {
+        return type switch
+        {
+            TransactionType.Transfer or TransactionType.Payment or TransactionType.Withdraw => balance - amount,
+            TransactionType.Receive or TransactionType.Refund or TransactionType.Deposit => balance + amount,
+            TransactionType.ThirdPartyPayment => balance,
+            _ => balance
+        };
     }
 }

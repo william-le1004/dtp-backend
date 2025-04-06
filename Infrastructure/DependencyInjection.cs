@@ -56,7 +56,6 @@ public static class DependencyInjection
             Password = redisSettings["Password"],
             User = redisSettings["User"],
             AllowAdmin = true,
-            Ssl = true,
             ConnectTimeout = 10000,
             SyncTimeout = 10000
         };
