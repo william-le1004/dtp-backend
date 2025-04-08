@@ -45,7 +45,7 @@ namespace Application.Features.Tour.Commands
             await _context.SaveChangesAsync(cancellationToken);
 
             // Tạo DTO response
-            var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.CategoryId, tour.Description,tour.About);
+            var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.CategoryId, tour.Description,tour.About,tour.Include,tour.PeekInfor,tour.IsDeleted);
             return ApiResponse<TourResponse>.SuccessResult(tourResponse, "Tour updated successfully");
         }
     }

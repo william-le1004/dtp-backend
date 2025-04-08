@@ -44,7 +44,10 @@ namespace Application.Features.Tour.Commands
         DateTime CloseDay,
         string ScheduleFrequency,
         string Img,
-        string About
+        string About,
+        string? Include = null,
+        string? PeekInfor = null
+        
     ) : IRequest<ApiResponse<TourResponse>>;
 
     public class CreateTourHandler : IRequestHandler<CreateTourCommand, ApiResponse<TourResponse>>
@@ -165,7 +168,7 @@ namespace Application.Features.Tour.Commands
             _context.Tours.Add(tour);
             await _context.SaveChangesAsync(cancellationToken);
 
-            var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.CategoryId, tour.Description,tour.About);
+            var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.CategoryId, tour.Description,tour.About, tour.Include,tour.PeekInfor,tour.IsDeleted);
             return ApiResponse<TourResponse>.SuccessResult(tourResponse,
                 "Tour created successfully with destinations, tickets, schedules and code: " + tourCode);
         }
