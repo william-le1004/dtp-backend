@@ -54,7 +54,7 @@ public static class DependencyInjection
         {
             EndPoints = { redisSettings["Endpoint"] },
             Password = redisSettings["Password"],
-            User = redisSettings["User"],
+            // User = redisSettings["User"],
             AllowAdmin = true,
             ConnectTimeout = 10000,
             SyncTimeout = 10000
@@ -71,6 +71,8 @@ public static class DependencyInjection
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = true;
+                options.User.RequireUniqueEmail = true;
+                options.SignIn.RequireConfirmedEmail = true;
             })
             .AddEntityFrameworkStores<DtpDbContext>()
             .AddDefaultTokenProviders();

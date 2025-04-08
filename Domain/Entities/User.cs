@@ -43,6 +43,7 @@ public sealed class User : IdentityUser
     
     private readonly List<ExternalTransaction> _transactions = new();
     public IReadOnlyCollection<ExternalTransaction> ExternalTransactions => _transactions.AsReadOnly();
+    public string? SecureToken { get; set; }
 
 
     public ExternalTransaction RequestWithdraw(string transactionCode,

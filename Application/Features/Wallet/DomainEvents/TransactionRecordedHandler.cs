@@ -1,6 +1,6 @@
 using Application.Contracts.EventBus;
 using Application.Contracts.Persistence;
-using Application.Events.Wallet;
+using Application.Messaging.Wallet;
 using Domain.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

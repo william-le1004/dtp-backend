@@ -35,6 +35,21 @@ services:
     networks:
       - backend
     command: [ "redis-server", "--requirepass", "${REDIS_PASSWORD}" ]
+    
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq_container
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - backend
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
 
 networks:
   backend:
@@ -42,3 +57,4 @@ networks:
 volumes:
   mysql_data:
   redis_data:
+  rabbitmq_data:

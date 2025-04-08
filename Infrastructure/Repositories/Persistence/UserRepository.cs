@@ -52,14 +52,12 @@ public class UserRepository : IUserRepository
         return await query.OrderBy(x => x.CreatedAt).ToListAsync();
     }
 
-    public async Task<User?> GetUserDetailAsync(string userId)
-    {
-        return await _dtpDbContext.Users
-            .Where(x => x.Id == userId)
-            .Include(x => x.Company)
-            .Include(x => x.Wallet)
-            .FirstOrDefaultAsync();
-    }
+    public async Task<User?> GetUserDetailAsync(string userId) =>
+           await _dtpDbContext.Users
+                .Where(x => x.Id == userId)
+                .Include(x => x.Company)
+                .Include(x => x.Wallet)
+                .FirstOrDefaultAsync();
 
     public async Task<string> GetUserRole(string userId)
     {

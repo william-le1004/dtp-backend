@@ -6,4 +6,5 @@ public record RegistrationRequestDto(
     string Email,
     string UserName,
     string PhoneNumber,
-    string Password);
+    string Password,
+    string ConfirmUrl);
