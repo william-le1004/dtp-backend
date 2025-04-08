@@ -59,6 +59,7 @@ namespace Infrastructure.Migrations
                     Email = table.Column<string>(type: "longtext", nullable: false),
                     Phone = table.Column<string>(type: "longtext", nullable: false),
                     TaxCode = table.Column<string>(type: "longtext", nullable: false),
+                    CommissionRate = table.Column<double>(type: "double", nullable: false),
                     Licensed = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -157,6 +158,7 @@ namespace Infrastructure.Migrations
                     IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     OtpKey = table.Column<string>(type: "longtext", nullable: true),
                     CompanyId = table.Column<Guid>(type: "char(36)", nullable: true),
+                    SecureToken = table.Column<string>(type: "longtext", nullable: true),
                     UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
@@ -192,6 +194,7 @@ namespace Infrastructure.Migrations
                     CompanyId = table.Column<Guid>(type: "char(36)", nullable: true),
                     CategoryId = table.Column<Guid>(type: "char(36)", nullable: true),
                     Description = table.Column<string>(type: "longtext", nullable: true),
+                    About = table.Column<string>(type: "longtext", nullable: true),
                     Code = table.Column<string>(type: "longtext", nullable: true),
                     IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -679,6 +682,8 @@ namespace Infrastructure.Migrations
                     BookingId = table.Column<Guid>(type: "char(36)", nullable: false),
                     Method = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    RefExternalTransactionCode = table.Column<string>(type: "longtext", nullable: true),
+                    NetCost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     RefTransactionCode = table.Column<string>(type: "longtext", nullable: true),
                     PaymentLinkId = table.Column<string>(type: "longtext", nullable: true),
                     IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
@@ -741,11 +746,11 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "Address", "CompanyId", "ConcurrencyStamp", "CreatedAt", "CreatedBy", "Email", "EmailConfirmed", "IsActive", "LastModified", "LastModifiedBy", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "OtpKey", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                columns: new[] { "Id", "AccessFailedCount", "Address", "CompanyId", "ConcurrencyStamp", "CreatedAt", "CreatedBy", "Email", "EmailConfirmed", "IsActive", "LastModified", "LastModifiedBy", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "OtpKey", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecureToken", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "8e445865-a24d-4543-a6c6-9443d048cdb9", 0, "123 Admin St", null, "892daabf-10ad-49a5-87b5-2d0a78804239", new DateTime(2025, 3, 27, 6, 38, 4, 165, DateTimeKind.Utc).AddTicks(5324), null, "dtpAdmin@gmail.com", true, true, null, null, false, null, "Admin User", "DTPADMIN@GMAIL.COM", "DTPADMIN", null, "AQAAAAIAAYagAAAAEGleKu/BKdcmmRjckss9E3xDlK+o9YmCHg7LRPfzJKnI24AWx28H0D3pNnsZVDKewg==", "1234567890", false, "11d5c6ef-fd32-4da5-9707-763b4f5de02e", false, "dtpAdmin" },
-                    { "9e224968-33e4-4652-b7b7-8574d048cdb9", 0, "456 Operator Rd", null, "f37dda2d-674a-40bb-b149-c7155a41c5cd", new DateTime(2025, 3, 27, 6, 38, 4, 241, DateTimeKind.Utc).AddTicks(4086), null, "operator@gmail.com", true, true, null, null, false, null, "Operator User", "OPERATOR@GMAIL.COM", "OPERATOR", null, "AQAAAAIAAYagAAAAEAZs/LL+uNPBKTFKzSy8ntoLEm1BKHDH9UQ+/bkXQTqtWCy3e3/A2KvWtm+2Aeih0A==", "0987654321", false, "0608c137-32b8-4c7a-b097-b31ae9785a27", false, "operator" }
+                    { "8e445865-a24d-4543-a6c6-9443d048cdb9", 0, "123 Admin St", null, "a9932c22-b04c-44ce-a8ae-07d63003f8f8", new DateTime(2025, 4, 8, 8, 53, 25, 911, DateTimeKind.Utc).AddTicks(4811), "System", "dtpAdmin@gmail.com", true, true, null, null, false, null, "Admin User", "DTPADMIN@GMAIL.COM", "DTPADMIN", null, "AQAAAAIAAYagAAAAEAalFQp9YY2Agf6y9jY6lKXRD5GOBw2QA3/FiQsylhWvat+CbBjh/S/G6J5jz8WjVw==", "1234567890", false, null, "fe33c221-2617-48f9-a55a-4e99bb7676cf", false, "dtpAdmin" },
+                    { "9e224968-33e4-4652-b7b7-8574d048cdb9", 0, "456 Operator Rd", null, "3e4b4ce4-c1b8-42f3-8c8b-044e6a7903c7", new DateTime(2025, 4, 8, 8, 53, 25, 954, DateTimeKind.Utc).AddTicks(2844), "System", "operator@gmail.com", true, true, null, null, false, null, "Operator User", "OPERATOR@GMAIL.COM", "OPERATOR", null, "AQAAAAIAAYagAAAAENEgPA5P8Q5Fwb5/dQJbotLowwa55jusigT0JCuhC4uVWb0YKyGnasH4uChurZVUlQ==", "0987654321", false, null, "7c2712b6-7b0b-4143-8bc6-bc1ada9be1e7", false, "operator" }
                 });
 
             migrationBuilder.InsertData(
@@ -762,8 +767,8 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "Balance", "CreatedAt", "CreatedBy", "IsDeleted", "LastModified", "LastModifiedBy", "UserId" },
                 values: new object[,]
                 {
-                    { new Guid("c9e16434-2373-43ba-bf87-162c60e10995"), 1000m, new DateTime(2025, 3, 27, 13, 38, 4, 243, DateTimeKind.Local).AddTicks(2849), null, false, null, null, "8e445865-a24d-4543-a6c6-9443d048cdb9" },
-                    { new Guid("fecd44ee-dadc-41f5-9d9d-75337b85ed52"), 500m, new DateTime(2025, 3, 27, 13, 38, 4, 243, DateTimeKind.Local).AddTicks(2953), null, false, null, null, "9e224968-33e4-4652-b7b7-8574d048cdb9" }
+                    { new Guid("9999568e-96b2-487f-a21b-573072148733"), 500m, new DateTime(2025, 4, 8, 15, 53, 25, 957, DateTimeKind.Local).AddTicks(7600), null, false, null, null, "9e224968-33e4-4652-b7b7-8574d048cdb9" },
+                    { new Guid("a8ac7d87-2f58-4bf8-a9bb-a8f8fe4dcc3e"), 1000m, new DateTime(2025, 4, 8, 15, 53, 25, 957, DateTimeKind.Local).AddTicks(7549), null, false, null, null, "8e445865-a24d-4543-a6c6-9443d048cdb9" }
                 });
 
             migrationBuilder.CreateIndex(

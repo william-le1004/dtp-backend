@@ -1,7 +1,7 @@
 using Application.Common;
 using Application.Contracts.EventBus;
 using Application.Contracts.Persistence;
-using Application.Events;
+using Application.Messaging;
 using Domain.Constants;
 using Domain.Entities;
 using FluentValidation;
@@ -91,7 +91,7 @@ public class CreateUserCommandHandler
         }
         catch (Exception ex)
         {
-            return ApiResponse<bool>.Failure($"An error occurred", 400, new List<string> { ex.Message });
+            return ApiResponse<bool>.Failure($"An error occurred", 400, [ex.Message]);
         }
     }
 }

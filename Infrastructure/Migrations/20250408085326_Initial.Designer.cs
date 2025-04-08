@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DtpDbContext))]
-    [Migration("20250327063804_Initial")]
+    [Migration("20250408085326_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -93,6 +93,9 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
+
+                    b.Property<double>("CommissionRate")
+                        .HasColumnType("double");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -319,7 +322,13 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Method")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("NetCost")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("PaymentLinkId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RefExternalTransactionCode")
                         .HasColumnType("longtext");
 
                     b.Property<string>("RefTransactionCode")
@@ -440,6 +449,9 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("About")
+                        .HasColumnType("longtext");
 
                     b.Property<Guid?>("CategoryId")
                         .HasColumnType("char(36)");
@@ -795,6 +807,9 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("SecureToken")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
 
@@ -824,8 +839,9 @@ namespace Infrastructure.Migrations
                             Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
                             AccessFailedCount = 0,
                             Address = "123 Admin St",
-                            ConcurrencyStamp = "892daabf-10ad-49a5-87b5-2d0a78804239",
-                            CreatedAt = new DateTime(2025, 3, 27, 6, 38, 4, 165, DateTimeKind.Utc).AddTicks(5324),
+                            ConcurrencyStamp = "a9932c22-b04c-44ce-a8ae-07d63003f8f8",
+                            CreatedAt = new DateTime(2025, 4, 8, 8, 53, 25, 911, DateTimeKind.Utc).AddTicks(4811),
+                            CreatedBy = "System",
                             Email = "dtpAdmin@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -833,10 +849,10 @@ namespace Infrastructure.Migrations
                             Name = "Admin User",
                             NormalizedEmail = "DTPADMIN@GMAIL.COM",
                             NormalizedUserName = "DTPADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGleKu/BKdcmmRjckss9E3xDlK+o9YmCHg7LRPfzJKnI24AWx28H0D3pNnsZVDKewg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAalFQp9YY2Agf6y9jY6lKXRD5GOBw2QA3/FiQsylhWvat+CbBjh/S/G6J5jz8WjVw==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "11d5c6ef-fd32-4da5-9707-763b4f5de02e",
+                            SecurityStamp = "fe33c221-2617-48f9-a55a-4e99bb7676cf",
                             TwoFactorEnabled = false,
                             UserName = "dtpAdmin"
                         },
@@ -845,8 +861,9 @@ namespace Infrastructure.Migrations
                             Id = "9e224968-33e4-4652-b7b7-8574d048cdb9",
                             AccessFailedCount = 0,
                             Address = "456 Operator Rd",
-                            ConcurrencyStamp = "f37dda2d-674a-40bb-b149-c7155a41c5cd",
-                            CreatedAt = new DateTime(2025, 3, 27, 6, 38, 4, 241, DateTimeKind.Utc).AddTicks(4086),
+                            ConcurrencyStamp = "3e4b4ce4-c1b8-42f3-8c8b-044e6a7903c7",
+                            CreatedAt = new DateTime(2025, 4, 8, 8, 53, 25, 954, DateTimeKind.Utc).AddTicks(2844),
+                            CreatedBy = "System",
                             Email = "operator@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -854,10 +871,10 @@ namespace Infrastructure.Migrations
                             Name = "Operator User",
                             NormalizedEmail = "OPERATOR@GMAIL.COM",
                             NormalizedUserName = "OPERATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAZs/LL+uNPBKTFKzSy8ntoLEm1BKHDH9UQ+/bkXQTqtWCy3e3/A2KvWtm+2Aeih0A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENEgPA5P8Q5Fwb5/dQJbotLowwa55jusigT0JCuhC4uVWb0YKyGnasH4uChurZVUlQ==",
                             PhoneNumber = "0987654321",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0608c137-32b8-4c7a-b097-b31ae9785a27",
+                            SecurityStamp = "7c2712b6-7b0b-4143-8bc6-bc1ada9be1e7",
                             TwoFactorEnabled = false,
                             UserName = "operator"
                         });
@@ -901,17 +918,17 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c9e16434-2373-43ba-bf87-162c60e10995"),
+                            Id = new Guid("a8ac7d87-2f58-4bf8-a9bb-a8f8fe4dcc3e"),
                             Balance = 1000m,
-                            CreatedAt = new DateTime(2025, 3, 27, 13, 38, 4, 243, DateTimeKind.Local).AddTicks(2849),
+                            CreatedAt = new DateTime(2025, 4, 8, 15, 53, 25, 957, DateTimeKind.Local).AddTicks(7549),
                             IsDeleted = false,
                             UserId = "8e445865-a24d-4543-a6c6-9443d048cdb9"
                         },
                         new
                         {
-                            Id = new Guid("fecd44ee-dadc-41f5-9d9d-75337b85ed52"),
+                            Id = new Guid("9999568e-96b2-487f-a21b-573072148733"),
                             Balance = 500m,
-                            CreatedAt = new DateTime(2025, 3, 27, 13, 38, 4, 243, DateTimeKind.Local).AddTicks(2953),
+                            CreatedAt = new DateTime(2025, 4, 8, 15, 53, 25, 957, DateTimeKind.Local).AddTicks(7600),
                             IsDeleted = false,
                             UserId = "9e224968-33e4-4652-b7b7-8574d048cdb9"
                         });
