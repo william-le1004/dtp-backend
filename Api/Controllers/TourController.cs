@@ -1,5 +1,6 @@
 ﻿using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;
+using MassTransit.Mediator;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -9,7 +10,7 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class TourController(ILogger<TourController> logger, IMediator mediator)
+public class TourController(ILogger<TourController> logger, MediatR.IMediator mediator)
     : BaseController
 {
     [HttpGet]
@@ -104,6 +105,12 @@ public class TourController(ILogger<TourController> logger, IMediator mediator)
     public async Task<IActionResult> GetListTicketScheduleByTourID(Guid id)
     {
         var response = await mediator.Send(new GetListTicketScheduleByTourIDQuery(id));
+        return HandleServiceResult(response);
+    }
+    [HttpPut("closetour/{id}")]
+    public async Task<IActionResult> CloseTour(Guid id)
+    {
+        var response = await mediator.Send(new CloseTourCommand(id));
         return HandleServiceResult(response);
     }
     [HttpGet("schedule/{id}")]

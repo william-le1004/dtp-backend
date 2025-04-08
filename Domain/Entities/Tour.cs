@@ -12,10 +12,11 @@ public partial class Tour : AuditEntity
     public Category Category { get; private set; }
     public string? Description { get; private set; }
     public string? About { get; private set; }
+    public string? Include { get; private set; }
+    public string? PeekInfor { get; private set; }
     public string? Code { get; private set; }
     public List<TicketType> Tickets { get; private set; } = new();
     public virtual Company Company { get; private set; } = null!;
-
     public virtual ICollection<Feedback> Feedbacks { get; private set; } = new List<Feedback>();
 
     public virtual ICollection<Rating> Ratings { get; private set; } = new List<Rating>();
