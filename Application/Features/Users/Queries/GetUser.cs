@@ -24,9 +24,9 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, ApiResponse<IQu
             user.UserName,
             user.Email,
             user.Company?.Name ?? "N/A",
-            _userRepository.GetUserRole(user.Id).Result, // Get role asynchronously
+            _userRepository.GetUserRole(user.Id).Result,
             user.IsActive
-        )).AsQueryable(); // ✅ Make it IQueryable for OData
+        )).AsQueryable();
 
         return ApiResponse<IQueryable<UserDto>>.SuccessResult(userDtos);
     }

@@ -35,29 +35,32 @@ public class UserRepository : IUserRepository
     public async Task<IEnumerable<User>> GetAllAsync()
     {
         IQueryable<User> query = _dtpDbContext.Users
-            .OrderBy(u => u.Name)
+            .AsSplitQuery()
             .Include(x => x.Company)
             .Include(x => x.Wallet)
             .AsNoTracking();
 
         if (!_userContextService.IsAdminRole())
         {
-            var managerCompanyIds = (await _userManager.GetUsersInRoleAsync(ApplicationRole.MANAGER))
-                .Select(m => m.CompanyId)
-                .ToList();
+            var managerCompanyIds = await _dtpDbContext.Users
+                .Where(u => _userManager.IsInRoleAsync(u, ApplicationRole.MANAGER).Result)
+                .Select(u => u.CompanyId)
+                .Distinct()
+                .ToListAsync();
 
             query = query.Where(x => managerCompanyIds.Contains(x.CompanyId));
         }
 
-        return await query.OrderBy(x => x.CreatedAt).ToListAsync();
+        return await query.ToListAsync();
     }
 
     public async Task<User?> GetUserDetailAsync(string userId) =>
-           await _dtpDbContext.Users
-                .Where(x => x.Id == userId)
-                .Include(x => x.Company)
-                .Include(x => x.Wallet)
-                .FirstOrDefaultAsync();
+        await _dtpDbContext.Users
+            .AsSplitQuery()
+            .Where(x => x.Id == userId)
+            .Include(x => x.Company)
+            .Include(x => x.Wallet)
+            .FirstOrDefaultAsync();
 
     public async Task<string> GetUserRole(string userId)
     {

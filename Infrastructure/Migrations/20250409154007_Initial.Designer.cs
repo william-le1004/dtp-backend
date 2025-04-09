@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DtpDbContext))]
-    [Migration("20250408085326_Initial")]
+    [Migration("20250409154007_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -471,6 +471,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Include")
+                        .HasColumnType("longtext");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
@@ -478,6 +481,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PeekInfor")
                         .HasColumnType("longtext");
 
                     b.Property<string>("Title")
@@ -839,8 +845,8 @@ namespace Infrastructure.Migrations
                             Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
                             AccessFailedCount = 0,
                             Address = "123 Admin St",
-                            ConcurrencyStamp = "a9932c22-b04c-44ce-a8ae-07d63003f8f8",
-                            CreatedAt = new DateTime(2025, 4, 8, 8, 53, 25, 911, DateTimeKind.Utc).AddTicks(4811),
+                            ConcurrencyStamp = "a4ce4463-d34b-438f-bee8-778d94e5ef6b",
+                            CreatedAt = new DateTime(2025, 4, 9, 15, 40, 6, 280, DateTimeKind.Utc).AddTicks(6264),
                             CreatedBy = "System",
                             Email = "dtpAdmin@gmail.com",
                             EmailConfirmed = true,
@@ -849,10 +855,10 @@ namespace Infrastructure.Migrations
                             Name = "Admin User",
                             NormalizedEmail = "DTPADMIN@GMAIL.COM",
                             NormalizedUserName = "DTPADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAalFQp9YY2Agf6y9jY6lKXRD5GOBw2QA3/FiQsylhWvat+CbBjh/S/G6J5jz8WjVw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKhcxlUVjAtbKJR3oKAgrez4cB1RoxR6F24hAmx+n1uQLrWu3RMn7arioVz1ehIC8A==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "fe33c221-2617-48f9-a55a-4e99bb7676cf",
+                            SecurityStamp = "6337cb98-d0fc-47b2-8654-b6370921f467",
                             TwoFactorEnabled = false,
                             UserName = "dtpAdmin"
                         },
@@ -861,8 +867,8 @@ namespace Infrastructure.Migrations
                             Id = "9e224968-33e4-4652-b7b7-8574d048cdb9",
                             AccessFailedCount = 0,
                             Address = "456 Operator Rd",
-                            ConcurrencyStamp = "3e4b4ce4-c1b8-42f3-8c8b-044e6a7903c7",
-                            CreatedAt = new DateTime(2025, 4, 8, 8, 53, 25, 954, DateTimeKind.Utc).AddTicks(2844),
+                            ConcurrencyStamp = "f26098b1-e0a9-4f40-a22d-c3319b0b580e",
+                            CreatedAt = new DateTime(2025, 4, 9, 15, 40, 6, 329, DateTimeKind.Utc).AddTicks(3475),
                             CreatedBy = "System",
                             Email = "operator@gmail.com",
                             EmailConfirmed = true,
@@ -871,10 +877,10 @@ namespace Infrastructure.Migrations
                             Name = "Operator User",
                             NormalizedEmail = "OPERATOR@GMAIL.COM",
                             NormalizedUserName = "OPERATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAENEgPA5P8Q5Fwb5/dQJbotLowwa55jusigT0JCuhC4uVWb0YKyGnasH4uChurZVUlQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECGcomJjxn8OaF7o4b8soVS2dRNOFmY3t/rrMm9ehBmH3QF3hlmSmE+9R7fcGb/l4A==",
                             PhoneNumber = "0987654321",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "7c2712b6-7b0b-4143-8bc6-bc1ada9be1e7",
+                            SecurityStamp = "e402bdc8-2d65-45a6-a561-12198f410581",
                             TwoFactorEnabled = false,
                             UserName = "operator"
                         });
@@ -918,17 +924,17 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a8ac7d87-2f58-4bf8-a9bb-a8f8fe4dcc3e"),
+                            Id = new Guid("f55717f5-3fc1-429b-a6a7-c4ff65190c7b"),
                             Balance = 1000m,
-                            CreatedAt = new DateTime(2025, 4, 8, 15, 53, 25, 957, DateTimeKind.Local).AddTicks(7549),
+                            CreatedAt = new DateTime(2025, 4, 9, 22, 40, 6, 332, DateTimeKind.Local).AddTicks(4274),
                             IsDeleted = false,
                             UserId = "8e445865-a24d-4543-a6c6-9443d048cdb9"
                         },
                         new
                         {
-                            Id = new Guid("9999568e-96b2-487f-a21b-573072148733"),
+                            Id = new Guid("43fb22bd-ca86-4a93-ad07-d66ecc7ede8c"),
                             Balance = 500m,
-                            CreatedAt = new DateTime(2025, 4, 8, 15, 53, 25, 957, DateTimeKind.Local).AddTicks(7600),
+                            CreatedAt = new DateTime(2025, 4, 9, 22, 40, 6, 332, DateTimeKind.Local).AddTicks(4340),
                             IsDeleted = false,
                             UserId = "9e224968-33e4-4652-b7b7-8574d048cdb9"
                         });
