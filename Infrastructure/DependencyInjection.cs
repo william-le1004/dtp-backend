@@ -54,7 +54,7 @@ public static class DependencyInjection
         {
             EndPoints = { redisSettings["Endpoint"] },
             Password = redisSettings["Password"],
-            // User = redisSettings["User"],
+            User = redisSettings["User"],
             AllowAdmin = true,
             ConnectTimeout = 10000,
             SyncTimeout = 10000
