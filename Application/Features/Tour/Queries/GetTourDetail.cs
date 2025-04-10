@@ -49,6 +49,7 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
                     {
                         Name = td.Destination.Name,
                         SortOrder = td.SortOrder,
+                        SortOrderByDate = td.SortOrderByDate,
                         StartTime = td.StartTime,
                         EndTime = td.EndTime,
                         ImageUrls = context.ImageUrls
@@ -120,6 +121,8 @@ public record TourDestinationResponse
     public TimeSpan EndTime { get; set; }
 
     public int? SortOrder { get; set; }
+    
+    public int? SortOrderByDate { get; set; }
 
     public List<TourActivity> Activities { get; set; } = new();
 }
