@@ -29,6 +29,8 @@ public record OrderDetailResponse
 
     public decimal GrossCost { get; set; }
     public decimal NetCost { get; set; }
+    
+    public BookingStatus Status { get; set; }
 };
 
 public record OrderTicketResponse
@@ -72,6 +74,7 @@ public class GetOrderByIdHandler(IDtpDbContext context, IUserContextService user
                 DiscountAmount = x.DiscountAmount,
                 GrossCost = x.GrossCost,
                 NetCost = x.NetCost(),
+                Status = x.Status,
                 OrderTickets = x.Tickets.Select(t => new OrderTicketResponse()
                 {
                     Code = t.Code,

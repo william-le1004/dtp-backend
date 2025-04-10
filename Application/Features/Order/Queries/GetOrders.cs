@@ -1,5 +1,6 @@
 ﻿using Application.Contracts;
 using Application.Contracts.Persistence;
+using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,8 @@ public record OrderResponses
     public DateTime TourDate { get; set; }
     public List<OrderTicketResponse> OrderTickets { get; init; } = new ();
     public decimal FinalCost { get; set; }
+    
+    public BookingStatus Status { get; set; }
 }
 
 public record GetOrders : IRequest<IEnumerable<OrderResponses>>;
@@ -45,7 +48,8 @@ public class GetOrdersHandler(IDtpDbContext context, IUserContextService userSer
                     TicketKind = t.TicketType.TicketKind,
                     GrossCost = t.GrossCost
                 }).ToList(),
-                FinalCost = x.NetCost()
+                FinalCost = x.NetCost(),
+                Status = x.Status,
             }).ToListAsync(cancellationToken: cancellationToken);
         return orders;
     }
