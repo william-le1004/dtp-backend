@@ -67,6 +67,11 @@ public class CompanyRepository : ICompanyRepository
         return await UpdateCompanyAsync(company);
     }
 
+    public Task<bool> IsCompanyExist(string name)
+    {
+        return _dbContext.Companies.AnyAsync(c => c.Name == name);
+    }
+
     private async Task<bool> CreateCompanyAsync(Company company)
     {
         var userId = _userContext.GetCurrentUserId();
