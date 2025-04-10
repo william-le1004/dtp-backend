@@ -50,7 +50,12 @@ public class GetCompanyQueryHandler : IRequestHandler<GetCompanyQuery, ApiRespon
             .Select(t => new Tours(t.Id, t.Title))
             .ToList();
 
-        return ApiResponse<CompanyDetailDto>.SuccessResult(new CompanyDetailDto(
+        return ApiResponse<CompanyDetailDto>.SuccessResult(MappingCompanyDetailDto(result, staffDto, tourDto));
+    }
+
+    private static CompanyDetailDto MappingCompanyDetailDto(Domain.Entities.Company result, List<StaffDto> staffDto,
+        List<Tours> tourDto) =>
+        new(
             result.Id,
             result.Name,
             result.Phone,
@@ -60,6 +65,5 @@ public class GetCompanyQueryHandler : IRequestHandler<GetCompanyQuery, ApiRespon
             result.CommissionRate,
             staffDto.ToList(),
             tourDto.ToList()
-        ));
-    }
+        );
 }

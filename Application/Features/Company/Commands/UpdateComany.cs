@@ -1,3 +1,4 @@
+using System.Net;
 using Application.Common;
 using Application.Contracts.Persistence;
 using FluentValidation;
@@ -74,7 +75,7 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand,
         }
         catch (Exception ex)
         {
-            return ApiResponse<bool>.Failure($"An error occurred", 400, new List<string> { ex.Message });
+            return ApiResponse<bool>.Failure($"An error occurred", (int)HttpStatusCode.BadRequest, new List<string> { ex.Message });
         }
     }
 }

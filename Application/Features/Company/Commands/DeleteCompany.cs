@@ -1,3 +1,4 @@
+using System.Net;
 using Application.Common;
 using Application.Contracts.Persistence;
 using MediatR;
@@ -30,7 +31,7 @@ public class DeleteCompanyCommandHandler : IRequestHandler<DeleteCompanyCommand,
         }
         catch (Exception ex)
         {
-            return ApiResponse<bool>.Failure($"An error occurred", 400, new List<string> { ex.Message });
+            return ApiResponse<bool>.Failure($"An error occurred", (int)HttpStatusCode.BadRequest, new List<string> { ex.Message });
         }
     }
 }
