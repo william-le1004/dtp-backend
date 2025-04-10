@@ -1,5 +1,4 @@
 ﻿using Application.Features.Order.Commands;
-using Application.Features.Order.Queries;
 using Application.Features.Payment.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -12,19 +11,20 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class PaymentController(
-    PayOS payOs, IMediator mediator) : ControllerBase
+    PayOS payOs,
+    IMediator mediator) : ControllerBase
 {
     [Authorize]
     [HttpPost]
     public async Task<ActionResult> Checkout(PaymentProcessor request)
     {
         var result = await mediator.Send(request);
-        
+
         return result.Match<ActionResult>(
             Some: Ok,
             None: () => NotFound($"Order ({request.BookingId}) not found."));
     }
-    
+
     [HttpPost("callback")]
     public async Task<IActionResult> PayOsTransferHandler(WebhookType body)
     {
@@ -43,5 +43,13 @@ public class PaymentController(
             await mediator.Send(new PayOrder(data.orderCode, data.amount, data.reference));
         }
         return Ok();
+    }
+
+    [Authorize]
+    [HttpPut("{id}")]
+    public async Task<ActionResult> PayOsPaymentHandler(string id)
+    {
+        await mediator.Send(new CancelPayment(id));
+        return NoContent();
     }
 }

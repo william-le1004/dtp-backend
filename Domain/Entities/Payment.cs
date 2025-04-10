@@ -54,4 +54,14 @@ public class Payment : AuditEntity
         
         Status = PaymentStatus.Refunded;
     }
+
+    public void Cancel()
+    {
+        if (Status == PaymentStatus.Refunded || Status == PaymentStatus.Failed)
+        {
+            throw new AggregateException($"Can't cancel this payment. Status: {Status}");
+        }
+        
+        Status = PaymentStatus.Canceled;
+    }
 }
