@@ -10,8 +10,17 @@ public record UpdateCompanyCommand(Guid Id, string Name, string Email, string Ph
 
 public class UpdateCompanyValidator : AbstractValidator<UpdateCompanyCommand>
 {
-    public UpdateCompanyValidator()
+    public UpdateCompanyValidator(ICompanyRepository companyRepository)
     {
+        var repository = companyRepository;
+        
+        RuleFor(x => x)
+            .MustAsync(async (command, cancellation) =>
+            {
+                var company = await repository.IsCompanyExist(command.Name);
+                return company;
+            }).WithMessage("Company with this name already exists.");
+        
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required.")
             .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
@@ -41,7 +50,7 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand,
 
     public async Task<ApiResponse<bool>> Handle(UpdateCompanyCommand request, CancellationToken cancellationToken)
     {
-        var validator = new UpdateCompanyValidator();
+        var validator = new UpdateCompanyValidator(_companyRepository);
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)

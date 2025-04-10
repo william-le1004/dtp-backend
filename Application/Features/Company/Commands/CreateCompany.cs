@@ -10,8 +10,20 @@ public record CreateCompanyCommand(string Name, string Email, string Phone, stri
 
 public class CreateCompanyValidator : AbstractValidator<CreateCompanyCommand>
 {
-    public CreateCompanyValidator()
+    public CreateCompanyValidator(ICompanyRepository companyRepository)
     {
+        var repository = companyRepository;
+        
+        RuleFor(x => x)
+            .MustAsync(async (command, cancellation) =>
+            {
+                var company = await repository.IsCompanyExist(command.Name);
+                return company;
+            }).WithMessage("Company with this name already exists.");
+        
+        RuleFor(x => x.CommissionRate)
+            .NotEmpty().WithMessage("Commission Rate is required.")
+            .InclusiveBetween(0, 100).WithMessage("Commission Rate must be between 0 and 100.");
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required.")
             .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
@@ -41,7 +53,7 @@ public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand,
 
     public async Task<ApiResponse<bool>> Handle(CreateCompanyCommand request, CancellationToken cancellationToken)
     {
-        var validator = new CreateCompanyValidator();
+        var validator = new CreateCompanyValidator(_companyRepository);
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
