@@ -55,7 +55,7 @@ namespace Application.Features.Tour.Commands
             while (currentDay <= request.CloseDay.Date)
             {
                 // Kiểm tra nếu trong tour đã có schedule cho ngày currentDay (với IsDeleted == false)
-                bool exists = tour.TourSchedules.Any(s => s.OpenDate.Date == currentDay && !s.IsDeleted);
+                bool exists = tour.TourSchedules.Any(s => s.OpenDate.HasValue && s.OpenDate.Value.Date == currentDay && !s.IsDeleted);
                 if (!exists)
                 {
                     var schedule = new TourSchedule();
@@ -79,6 +79,7 @@ namespace Application.Features.Tour.Commands
 
                 currentDay = stepFunc(currentDay);
             }
+
 
             await _context.SaveChangesAsync(cancellationToken);
 

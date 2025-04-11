@@ -34,7 +34,7 @@ namespace Application.Features.Tour.Queries
                 .ToListAsync(cancellationToken);
 
             var tourResponses = tours
-                .Select(t => new TourResponse(t.Id, t.Title, t.CompanyId, t.CategoryId, t.Description, t.About,t.PeekInfor,t.Include,t.IsDeleted))
+                .Select(t => new TourResponse(t.Id, t.Title, t.CompanyId, t.CategoryId, t.Description, t.About,t.Pickinfor,t.Include,t.IsDeleted))
                 .ToList();
 
             return ApiResponse<List<TourResponse>>.SuccessResult(tourResponses, "Tours retrieved successfully");

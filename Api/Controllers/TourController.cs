@@ -1,4 +1,6 @@
-﻿using Application.Features.Tour.Commands;
+﻿using Application.Features.Feedback.Commands;
+using Application.Features.Rating.Commands;
+using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;
 using MassTransit.Mediator;
 using MediatR;
@@ -83,7 +85,7 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
     }
 
     [HttpPut("ticketschedule/{id}")]
-    public async Task<IActionResult> UpdateTicketSchedule(Guid id,[FromBody] UpdateTicketScheduleCommand command)
+    public async Task<IActionResult> UpdateTicketSchedule(Guid id,[FromBody] UpdateTicketScheduleByTicketKindCommand command)
     {
         var updatedCommand = command with { TourId = id };
         var response = await mediator.Send(updatedCommand);
@@ -119,5 +121,28 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
         var response = await mediator.Send(new GetTourScheduleByTourIDQuery(id));
         return HandleServiceResult(response);
     }
-
+    [HttpPost("feedback")]
+    public async Task<IActionResult> CreateFeedback([FromBody] CreateFeedbackCommand command)
+    {
+        var response = await mediator.Send(command);
+        return HandleServiceResult(response);
+    }
+    [HttpGet("feedback/{id}")]
+    public async Task<IActionResult> GetFeedbackByTourID(Guid id)
+    {
+        var response = await mediator.Send(new GetListFeedbackByTourQuery(id));
+        return HandleServiceResult(response);
+    }
+    [HttpPost("rating")]
+    public async Task<IActionResult> CreateRating([FromBody] CreateRatingCommand command)
+    {
+        var response = await mediator.Send(command);
+        return HandleServiceResult(response);
+    }
+    [HttpGet("rating/{id}")]
+    public async Task<IActionResult> GetRatingByTourID(Guid id)
+    {
+        var response = await mediator.Send(new GetListRatingByTourQuery(id));
+        return HandleServiceResult(response);
+    }
 }
