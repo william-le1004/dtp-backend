@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Order.Commands;
 
-public record CancelOrder(Guid Id, string Remark) : IRequest<Option<Guid>>;
+public record CancelOrder(Guid Id, string? Remark) : IRequest<Option<Guid>>;
 
 public class CancelOrderHandler(
     IDtpDbContext context,

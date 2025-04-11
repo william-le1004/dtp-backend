@@ -41,7 +41,7 @@ public class OrderController(IMediator mediator) : ControllerBase
 
     // DELETE: api/Oder/5
     [HttpPut("{id}")]
-    public async Task<ActionResult<Guid>> CancelBooking(Guid id,[FromBody] string remake)
+    public async Task<ActionResult<Guid>> CancelBooking(Guid id,[FromBody] string? remake)
     {
         var order = await mediator.Send(new CancelOrder(id, remake));
 
