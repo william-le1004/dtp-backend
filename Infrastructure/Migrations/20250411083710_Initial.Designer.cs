@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DtpDbContext))]
-    [Migration("20250409154007_Initial")]
+    [Migration("20250411083710_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -279,7 +279,7 @@ namespace Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("TourId")
+                    b.Property<Guid>("TourScheduleId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("UserId")
@@ -288,7 +288,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TourId");
+                    b.HasIndex("TourScheduleId");
 
                     b.HasIndex("UserId");
 
@@ -360,6 +360,10 @@ namespace Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Images")
+                        .IsRequired()
+                        .HasColumnType("json");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
@@ -372,7 +376,10 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Star")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("TourId")
+                    b.Property<Guid?>("TourId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("TourScheduleId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("UserId")
@@ -382,6 +389,8 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("TourId");
+
+                    b.HasIndex("TourScheduleId");
 
                     b.HasIndex("UserId");
 
@@ -483,7 +492,7 @@ namespace Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("PeekInfor")
+                    b.Property<string>("Pickinfor")
                         .HasColumnType("longtext");
 
                     b.Property<string>("Title")
@@ -627,7 +636,7 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("CloseDate")
+                    b.Property<DateTime?>("CloseDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -645,7 +654,7 @@ namespace Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("longtext");
 
-                    b.Property<DateTime>("OpenDate")
+                    b.Property<DateTime?>("OpenDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<double>("PriceChangeRate")
@@ -845,8 +854,8 @@ namespace Infrastructure.Migrations
                             Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
                             AccessFailedCount = 0,
                             Address = "123 Admin St",
-                            ConcurrencyStamp = "a4ce4463-d34b-438f-bee8-778d94e5ef6b",
-                            CreatedAt = new DateTime(2025, 4, 9, 15, 40, 6, 280, DateTimeKind.Utc).AddTicks(6264),
+                            ConcurrencyStamp = "7d2f99b5-835e-4bb7-8d5d-fe1ce95d94c3",
+                            CreatedAt = new DateTime(2025, 4, 11, 8, 37, 10, 88, DateTimeKind.Utc).AddTicks(5845),
                             CreatedBy = "System",
                             Email = "dtpAdmin@gmail.com",
                             EmailConfirmed = true,
@@ -855,10 +864,10 @@ namespace Infrastructure.Migrations
                             Name = "Admin User",
                             NormalizedEmail = "DTPADMIN@GMAIL.COM",
                             NormalizedUserName = "DTPADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKhcxlUVjAtbKJR3oKAgrez4cB1RoxR6F24hAmx+n1uQLrWu3RMn7arioVz1ehIC8A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDYPfklLzV/kIXgzHtb2erBhpC6KRCUvlRy8wvAs5ccvG2mxa76tOeldZ8MEjjxQLQ==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6337cb98-d0fc-47b2-8654-b6370921f467",
+                            SecurityStamp = "68d12d95-d9c2-4459-8950-1954aa2a0e33",
                             TwoFactorEnabled = false,
                             UserName = "dtpAdmin"
                         },
@@ -867,8 +876,8 @@ namespace Infrastructure.Migrations
                             Id = "9e224968-33e4-4652-b7b7-8574d048cdb9",
                             AccessFailedCount = 0,
                             Address = "456 Operator Rd",
-                            ConcurrencyStamp = "f26098b1-e0a9-4f40-a22d-c3319b0b580e",
-                            CreatedAt = new DateTime(2025, 4, 9, 15, 40, 6, 329, DateTimeKind.Utc).AddTicks(3475),
+                            ConcurrencyStamp = "d2124890-9fd7-412c-bdac-89d70a8d3673",
+                            CreatedAt = new DateTime(2025, 4, 11, 8, 37, 10, 133, DateTimeKind.Utc).AddTicks(674),
                             CreatedBy = "System",
                             Email = "operator@gmail.com",
                             EmailConfirmed = true,
@@ -877,10 +886,10 @@ namespace Infrastructure.Migrations
                             Name = "Operator User",
                             NormalizedEmail = "OPERATOR@GMAIL.COM",
                             NormalizedUserName = "OPERATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAECGcomJjxn8OaF7o4b8soVS2dRNOFmY3t/rrMm9ehBmH3QF3hlmSmE+9R7fcGb/l4A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBdRysi6BEPVHAJzs/Ooh+Kq03NaqQTxU3Vch0CPoM/dpyAPvQDjMloaaxEvLgPFDQ==",
                             PhoneNumber = "0987654321",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e402bdc8-2d65-45a6-a561-12198f410581",
+                            SecurityStamp = "98ffd136-ab51-4eaa-b961-64625f9c89d5",
                             TwoFactorEnabled = false,
                             UserName = "operator"
                         });
@@ -924,17 +933,17 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f55717f5-3fc1-429b-a6a7-c4ff65190c7b"),
+                            Id = new Guid("f8b51077-f26f-4086-b220-fd48376cbc58"),
                             Balance = 1000m,
-                            CreatedAt = new DateTime(2025, 4, 9, 22, 40, 6, 332, DateTimeKind.Local).AddTicks(4274),
+                            CreatedAt = new DateTime(2025, 4, 11, 15, 37, 10, 134, DateTimeKind.Local).AddTicks(2599),
                             IsDeleted = false,
                             UserId = "8e445865-a24d-4543-a6c6-9443d048cdb9"
                         },
                         new
                         {
-                            Id = new Guid("43fb22bd-ca86-4a93-ad07-d66ecc7ede8c"),
+                            Id = new Guid("fbde1438-ac45-4a4a-ab7b-d6358bd5eda4"),
                             Balance = 500m,
-                            CreatedAt = new DateTime(2025, 4, 9, 22, 40, 6, 332, DateTimeKind.Local).AddTicks(4340),
+                            CreatedAt = new DateTime(2025, 4, 11, 15, 37, 10, 134, DateTimeKind.Local).AddTicks(2644),
                             IsDeleted = false,
                             UserId = "9e224968-33e4-4652-b7b7-8574d048cdb9"
                         });
@@ -1158,9 +1167,9 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Feedback", b =>
                 {
-                    b.HasOne("Domain.Entities.Tour", "Tour")
+                    b.HasOne("Domain.Entities.TourSchedule", "TourSchedule")
                         .WithMany("Feedbacks")
-                        .HasForeignKey("TourId")
+                        .HasForeignKey("TourScheduleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1170,7 +1179,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Tour");
+                    b.Navigation("TourSchedule");
 
                     b.Navigation("User");
                 });
@@ -1188,9 +1197,13 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Rating", b =>
                 {
-                    b.HasOne("Domain.Entities.Tour", "Tour")
+                    b.HasOne("Domain.Entities.Tour", null)
                         .WithMany("Ratings")
-                        .HasForeignKey("TourId")
+                        .HasForeignKey("TourId");
+
+                    b.HasOne("Domain.Entities.TourSchedule", "Tour")
+                        .WithMany()
+                        .HasForeignKey("TourScheduleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1434,8 +1447,6 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Tour", b =>
                 {
-                    b.Navigation("Feedbacks");
-
                     b.Navigation("Ratings");
 
                     b.Navigation("Tickets");
@@ -1457,6 +1468,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.TourSchedule", b =>
                 {
+                    b.Navigation("Feedbacks");
+
                     b.Navigation("TourBookings");
 
                     b.Navigation("TourScheduleTickets");
