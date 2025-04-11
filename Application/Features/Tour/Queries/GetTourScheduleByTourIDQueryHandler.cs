@@ -28,9 +28,9 @@ namespace Application.Features.Tour.Queries
             var openDaysDateTime = await _context.TourSchedules
                 .Where(ts => ts.TourId == request.TourId
                              && !ts.IsDeleted
-                             && ts.OpenDate >= today)
-                .Select(ts => ts.OpenDate.Date) // lấy phần Date của OpenDate
-                .Distinct() // loại bỏ những ngày bị trùng lặp
+                             && ts.OpenDate.HasValue && ts.OpenDate.Value >= today)
+                .Select(ts => ts.OpenDate.Value.Date)
+                .Distinct() // loại bỏ các ngày trùng lặp
                 .OrderBy(d => d)
                 .ToListAsync(cancellationToken);
 
@@ -38,6 +38,7 @@ namespace Application.Features.Tour.Queries
 
             return ApiResponse<List<DateOnly>>.SuccessResult(openDays, "Tour schedules open days retrieved successfully");
         }
+
     }
 
 }

@@ -3,15 +3,17 @@
 public class TourSchedule : AuditEntity
 {
     public Guid TourId { get; private set; }
-    public DateTime OpenDate { get; private set; }
+    public DateTime? OpenDate { get; private set; }
 
-    public DateTime CloseDate { get; private set; }
+    public DateTime? CloseDate { get; private set; }
 
     public double PriceChangeRate { get; private set; } = 1.0;
 
     public string? Remark { get; private set; }
 
     public virtual Tour Tour { get; private set; } = null!;
+    public virtual ICollection<Feedback> Feedbacks { get; private set; } = new List<Feedback>();
+
 
     private readonly List<TourScheduleTicket> _tourScheduleTickets = new();
     public IReadOnlyCollection<TourScheduleTicket> TourScheduleTickets => _tourScheduleTickets.AsReadOnly();
@@ -36,13 +38,15 @@ public class TourSchedule : AuditEntity
     {
         return _tourScheduleTickets.Sum(x => x.AvailableTicket) > 0 && !IsStarted();
     }
-
     public bool IsBeforeStartDate(int date)
     {
-        var beforeStartDate = OpenDate.AddDays(-date);
-        return DateTime.Now < beforeStartDate;
+        var beforeStartDate = OpenDate?.AddDays(-date);
+        if (beforeStartDate.HasValue)
+            return DateTime.Now < beforeStartDate.Value;
+        return false;
     }
-    
+
+
     public bool IsAvailableTicket(Guid ticketTypeId)
     {
         return _tourScheduleTickets.Single(x => x.TicketTypeId == ticketTypeId).IsAvailable();
