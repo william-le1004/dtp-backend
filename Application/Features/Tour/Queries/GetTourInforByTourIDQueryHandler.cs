@@ -14,7 +14,10 @@ namespace Application.Features.Tour.Queries
         Guid TourId,
         string Title,
         string? Description,
-        string? Category,
+        Guid? Category,
+        string? About,
+        string? Include,
+        string? Pickinfor,
         string? Img
     );
     // Query nhận vào TourId
@@ -46,7 +49,10 @@ namespace Application.Features.Tour.Queries
                 TourId: tour.Id,
                 Title: tour.Title,
                 Description: tour.Description,
-                Category: tour.Category?.Name,
+                Category: tour.CategoryId,
+                About: tour.About,
+                Include: tour.Include,
+                Pickinfor: tour.Pickinfor,
                 Img: _context.ImageUrls.Any(i => i.RefId == tour.Id) ? _context.ImageUrls.FirstOrDefault(i => i.RefId == tour.Id).Url : null
             );
 
