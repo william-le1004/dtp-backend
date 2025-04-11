@@ -19,7 +19,7 @@ namespace Application.Features.Tour.Queries
         string UserEmail,
         int Star,
         string Comment,
-        List<string> Images
+        List<string>? Images = null
     );
 
     // Query: nhận TourId và trả về danh sách RatingDto được bọc trong ApiResponse
@@ -51,8 +51,7 @@ namespace Application.Features.Tour.Queries
                 UserName: r.User.Name,
                 UserEmail: r.User.Email,
                 Star: r.Star,
-                Comment: r.Comment,
-                Images: r.Images  // Giả sử r.Images là List<string>
+                Comment: r.Comment
             )).ToList();
 
             return ApiResponse<List<RatingDto>>.SuccessResult(ratingDtos, "Ratings retrieved successfully");
