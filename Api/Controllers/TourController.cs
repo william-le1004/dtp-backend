@@ -84,7 +84,7 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
         return HandleServiceResult(response);
     }
 
-    [HttpPut("ticketschedule/{id}")]
+    [HttpPut("scheduleticket/{id}")]
     public async Task<IActionResult> UpdateTicketSchedule(Guid id,[FromBody] UpdateTicketScheduleByTicketKindCommand command)
     {
         var updatedCommand = command with { TourId = id };
