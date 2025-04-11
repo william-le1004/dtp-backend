@@ -59,11 +59,12 @@ public class GetToursHandler(IDtpDbContext context) : IRequestHandler<GetTours, 
                 IsDeleted = tour.IsDeleted,
                 CreatedAt = tour.CreatedAt,
                 TourScheduleResponses =
-                    tour.TourSchedules.Select(schedule => new TourScheduleResponse
-                    {
-                        Id = schedule.Id,
-                        OpenDate = schedule.OpenDate
-                    })
+    tour.TourSchedules.Select(schedule => new TourScheduleResponse
+    {
+        Id = schedule.Id,
+        OpenDate = schedule.OpenDate.HasValue ? schedule.OpenDate.Value : DateTime.MinValue
+    })
+
             });
 
         return Task.FromResult(tours.AsQueryable());

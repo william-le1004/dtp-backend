@@ -14,7 +14,10 @@ namespace Application.Features.Tour.Commands
         string Title,
         Guid? Category,
         string? Description,
-        string img
+        string? About,
+        string? Include,
+        string? Pickinfor,
+        string? img
     ) : IRequest<ApiResponse<TourResponse>>;
 
     public class UpdateTourInforHandler : IRequestHandler<UpdateTourInforCommand, ApiResponse<TourResponse>>
@@ -37,7 +40,7 @@ namespace Application.Features.Tour.Commands
             }
 
             // Cập nhật thông tin của Tour
-            tour.Update(request.Title, request.Category, request.Description);
+            tour.Update(request.Title, request.Category, request.Description,request.About,request.Include,request.Pickinfor);
             _context.ImageUrls.RemoveRange(_context.ImageUrls.Where(i => i.RefId == tour.Id));
             _context.ImageUrls.Add(new ImageUrl(tour.Id,request.img));
             // Cập nhật lại vào DbContext
@@ -45,7 +48,7 @@ namespace Application.Features.Tour.Commands
             await _context.SaveChangesAsync(cancellationToken);
 
             // Tạo DTO response
-            var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.CategoryId, tour.Description,tour.About,tour.Include,tour.PeekInfor,tour.IsDeleted);
+            var tourResponse = new TourResponse(tour.Id, tour.Title, tour.CompanyId, tour.CategoryId, tour.Description,tour.About,tour.Include,tour.Pickinfor,tour.IsDeleted);
             return ApiResponse<TourResponse>.SuccessResult(tourResponse, "Tour updated successfully");
         }
     }
