@@ -1,5 +1,6 @@
 using Application.Common;
 using Application.Contracts.Persistence;
+using Application.Features.Users.MappingObject;
 using MediatR;
 
 namespace Application.Features.Users.Queries;
@@ -24,17 +25,7 @@ public class GetUserDetailQueryHandler : IRequestHandler<GetUserDetailQuery, Api
         if (result == null)
             return ApiResponse<UserDetailDto>.Failure("User not found");
 
-        return ApiResponse<UserDetailDto>.SuccessResult(new UserDetailDto(
-            result.Id,
-            result.UserName,
-            result.Wallet.Balance,
-            result.Name,
-            result.Email,
-            result.PhoneNumber,
-            result.Address,
-            result.Company?.Name,
-            role,
-            result.IsActive
-        ));
+        return ApiResponse<UserDetailDto>.SuccessResult(result.MapToUserDetailDto(role)
+        );
     }
 }

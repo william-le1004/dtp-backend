@@ -384,6 +384,40 @@ namespace Infrastructure.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Ratings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    TourId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Star = table.Column<int>(type: "int", nullable: false),
+                    Images = table.Column<string>(type: "json", nullable: false),
+                    Comment = table.Column<string>(type: "longtext", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "longtext", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ratings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Ratings_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Ratings_Tours_TourId",
+                        column: x => x.TourId,
+                        principalTable: "Tours",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "TicketTypes",
                 columns: table => new
                 {
@@ -546,46 +580,6 @@ namespace Infrastructure.Migrations
                         principalTable: "TourSchedules",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Ratings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    TourScheduleId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false),
-                    Star = table.Column<int>(type: "int", nullable: false),
-                    Images = table.Column<string>(type: "json", nullable: false),
-                    Comment = table.Column<string>(type: "longtext", nullable: false),
-                    TourId = table.Column<Guid>(type: "char(36)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: true),
-                    LastModified = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "longtext", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Ratings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Ratings_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Ratings_TourSchedules_TourScheduleId",
-                        column: x => x.TourScheduleId,
-                        principalTable: "TourSchedules",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Ratings_Tours_TourId",
-                        column: x => x.TourId,
-                        principalTable: "Tours",
-                        principalColumn: "Id");
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -758,8 +752,8 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "Address", "CompanyId", "ConcurrencyStamp", "CreatedAt", "CreatedBy", "Email", "EmailConfirmed", "IsActive", "LastModified", "LastModifiedBy", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "OtpKey", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecureToken", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "8e445865-a24d-4543-a6c6-9443d048cdb9", 0, "123 Admin St", null, "7d2f99b5-835e-4bb7-8d5d-fe1ce95d94c3", new DateTime(2025, 4, 11, 8, 37, 10, 88, DateTimeKind.Utc).AddTicks(5845), "System", "dtpAdmin@gmail.com", true, true, null, null, false, null, "Admin User", "DTPADMIN@GMAIL.COM", "DTPADMIN", null, "AQAAAAIAAYagAAAAEDYPfklLzV/kIXgzHtb2erBhpC6KRCUvlRy8wvAs5ccvG2mxa76tOeldZ8MEjjxQLQ==", "1234567890", false, null, "68d12d95-d9c2-4459-8950-1954aa2a0e33", false, "dtpAdmin" },
-                    { "9e224968-33e4-4652-b7b7-8574d048cdb9", 0, "456 Operator Rd", null, "d2124890-9fd7-412c-bdac-89d70a8d3673", new DateTime(2025, 4, 11, 8, 37, 10, 133, DateTimeKind.Utc).AddTicks(674), "System", "operator@gmail.com", true, true, null, null, false, null, "Operator User", "OPERATOR@GMAIL.COM", "OPERATOR", null, "AQAAAAIAAYagAAAAEBdRysi6BEPVHAJzs/Ooh+Kq03NaqQTxU3Vch0CPoM/dpyAPvQDjMloaaxEvLgPFDQ==", "0987654321", false, null, "98ffd136-ab51-4eaa-b961-64625f9c89d5", false, "operator" }
+                    { "8e445865-a24d-4543-a6c6-9443d048cdb9", 0, "123 Admin St", null, "454b2235-a233-4a47-8dac-3cc9d0dcee78", new DateTime(2025, 4, 11, 14, 3, 12, 429, DateTimeKind.Utc).AddTicks(6621), "System", "dtpAdmin@gmail.com", true, true, null, null, false, null, "Admin User", "DTPADMIN@GMAIL.COM", "DTPADMIN", null, "AQAAAAIAAYagAAAAEEcg3u8BA2EjnFe4tXjji7EKAXH30ueF8Wca3lC3Eyt4wWs1a+yw6riFgDUEQJY+Bg==", "1234567890", false, null, "09dd41bb-ebc9-4be8-8f09-f12ae0644767", false, "dtpAdmin" },
+                    { "9e224968-33e4-4652-b7b7-8574d048cdb9", 0, "456 Operator Rd", null, "d6a0cb43-d181-416d-8297-82dca3072acd", new DateTime(2025, 4, 11, 14, 3, 12, 478, DateTimeKind.Utc).AddTicks(3364), "System", "operator@gmail.com", true, true, null, null, false, null, "Operator User", "OPERATOR@GMAIL.COM", "OPERATOR", null, "AQAAAAIAAYagAAAAEFei5km+iv65RxGIGBNWLFFJ4AAlefxqcFY11jk0CyjbPg3AQhvl0Cu0Luw0nbE1lQ==", "0987654321", false, null, "83c8aed1-6171-4a33-a951-49e4f1842122", false, "operator" }
                 });
 
             migrationBuilder.InsertData(
@@ -776,8 +770,8 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "Balance", "CreatedAt", "CreatedBy", "IsDeleted", "LastModified", "LastModifiedBy", "UserId" },
                 values: new object[,]
                 {
-                    { new Guid("f8b51077-f26f-4086-b220-fd48376cbc58"), 1000m, new DateTime(2025, 4, 11, 15, 37, 10, 134, DateTimeKind.Local).AddTicks(2599), null, false, null, null, "8e445865-a24d-4543-a6c6-9443d048cdb9" },
-                    { new Guid("fbde1438-ac45-4a4a-ab7b-d6358bd5eda4"), 500m, new DateTime(2025, 4, 11, 15, 37, 10, 134, DateTimeKind.Local).AddTicks(2644), null, false, null, null, "9e224968-33e4-4652-b7b7-8574d048cdb9" }
+                    { new Guid("7ab5c9b3-3b5f-4a5a-b609-55f965cd76b0"), 1000m, new DateTime(2025, 4, 11, 21, 3, 12, 482, DateTimeKind.Local).AddTicks(4513), null, false, null, null, "8e445865-a24d-4543-a6c6-9443d048cdb9" },
+                    { new Guid("b55a8915-0fef-4df5-999d-3cafb9785108"), 500m, new DateTime(2025, 4, 11, 21, 3, 12, 482, DateTimeKind.Local).AddTicks(4579), null, false, null, null, "9e224968-33e4-4652-b7b7-8574d048cdb9" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -857,11 +851,6 @@ namespace Infrastructure.Migrations
                 name: "IX_Ratings_TourId",
                 table: "Ratings",
                 column: "TourId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Ratings_TourScheduleId",
-                table: "Ratings",
-                column: "TourScheduleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_UserId",

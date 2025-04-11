@@ -3,7 +3,6 @@ using Application.Contracts;
 using Application.Features.Users.Commands;
 using Application.Features.Users.Queries;
 using Domain.Constants;
-using Infrastructure.Common.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,27 +13,18 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(Policy = ApplicationConst.AuthenticatedUser)]
-public class UserController : BaseController
+public class UserController(IMediator mediator, IUserContextService userContextService) : BaseController
 {
-    private readonly IMediator _mediator;
-    private readonly IUserContextService _userContextService;
-
-    public UserController(IMediator mediator, IUserContextService userContextService)
-    {
-        _mediator = mediator;
-        _userContextService = userContextService;
-    }
-
     [HttpGet("me")]
     public async Task<IActionResult> GetById()
     {
-        var userId = _userContextService.GetCurrentUserId();
+        var userId = userContextService.GetCurrentUserId();
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized(ApiResponse<bool>.Failure("User not authenticated", 401));
         }
 
-        var response = await _mediator.Send(new GetUserDetailQuery(userId));
+        var response = await mediator.Send(new GetUserDetailQuery(userId));
 
         return HandleServiceResult(response);
     }
@@ -42,9 +32,7 @@ public class UserController : BaseController
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromRoute] string id)
     {
-        
-        var response = await _mediator.Send(new GetUserDetailQuery(id));
-
+        var response = await mediator.Send(new GetUserDetailQuery(id));
         return HandleServiceResult(response);
     }
 
@@ -53,15 +41,15 @@ public class UserController : BaseController
     [EnableQuery]
     public async Task<IActionResult> Get()
     {
-        var response = await _mediator.Send(new GetUserQuery());
-        return ReturnList(response);
+        var response = await mediator.Send(new GetUserQuery());
+        return Ok(response);
     }
 
     [HttpPost]
     [Authorize(Policy = ApplicationConst.ManagementPermission)]
     public async Task<IActionResult> Create([FromBody] CreateUserCommand createUserCommand)
     {
-        var response = await _mediator.Send(createUserCommand);
+        var response = await mediator.Send(createUserCommand);
         return HandleServiceResult(response);
     }
 
@@ -69,14 +57,14 @@ public class UserController : BaseController
     [Authorize(Policy = ApplicationConst.ManagementPermission)]
     public async Task<IActionResult> Inactive([FromRoute] string id)
     {
-        var response = await _mediator.Send(new DeleteUserCommand(id));
+        var response = await mediator.Send(new DeleteUserCommand(id));
         return HandleServiceResult(response);
     }
 
     [HttpPut]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileCommand profileCommand)
     {
-        var response = await _mediator.Send(profileCommand);
+        var response = await mediator.Send(profileCommand);
         return HandleServiceResult(response);
     }
 }

@@ -1,5 +1,4 @@
 using Application.Contracts;
-using Application.Contracts.Caching;
 using Application.Contracts.Persistence;
 using Domain.Constants;
 using Domain.Entities;
@@ -15,15 +14,13 @@ public class UserRepository : IUserRepository
     private readonly UserManager<User> _userManager;
     private readonly DtpDbContext _dtpDbContext;
     private readonly IUserContextService _userContextService;
-    private readonly IRedisCacheService _redisCache;
 
     public UserRepository(DtpDbContext dtpDbContext, UserManager<User> userManager,
-        IUserContextService userContextService, IRedisCacheService redisCache)
+        IUserContextService userContextService)
     {
         _dtpDbContext = dtpDbContext;
         _userManager = userManager;
         _userContextService = userContextService;
-        _redisCache = redisCache;
     }
 
     public async Task<bool> InactiveUserAsync(User user)
@@ -50,7 +47,7 @@ public class UserRepository : IUserRepository
 
             query = query.Where(x => managerCompanyIds.Contains(x.CompanyId));
         }
-
+        
         return await query.ToListAsync();
     }
 

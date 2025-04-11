@@ -1,8 +1,11 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Application.Contracts.Caching;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Infrastructure.Services;
 
@@ -16,7 +19,8 @@ public class RedisCacheService(IDistributedCache redisCache, ILogger<RedisCacheS
         {
             return data as T;
         }
-        return JsonSerializer.Deserialize<T>(data);
+
+        return JsonConvert.DeserializeObject<T>(data);
     }
 
     public async Task SetDataAsync<T>(string key, T data, TimeSpan? expiration = null) where T : class
@@ -25,7 +29,8 @@ public class RedisCacheService(IDistributedCache redisCache, ILogger<RedisCacheS
         {
             AbsoluteExpirationRelativeToNow = expiration ?? TimeSpan.FromMinutes(1)
         };
-        string storedValue = data is string str ? str : JsonSerializer.Serialize(data);
+        
+        var storedValue = data as string ?? JsonConvert.SerializeObject(data);
         await redisCache.SetStringAsync(key, storedValue, options);
     }
 

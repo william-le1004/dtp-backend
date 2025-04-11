@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DtpDbContext))]
-    [Migration("20250411083710_Initial")]
+    [Migration("20250411140314_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -376,10 +376,7 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Star")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("TourId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("TourScheduleId")
+                    b.Property<Guid>("TourId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("UserId")
@@ -389,8 +386,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("TourId");
-
-                    b.HasIndex("TourScheduleId");
 
                     b.HasIndex("UserId");
 
@@ -854,8 +849,8 @@ namespace Infrastructure.Migrations
                             Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
                             AccessFailedCount = 0,
                             Address = "123 Admin St",
-                            ConcurrencyStamp = "7d2f99b5-835e-4bb7-8d5d-fe1ce95d94c3",
-                            CreatedAt = new DateTime(2025, 4, 11, 8, 37, 10, 88, DateTimeKind.Utc).AddTicks(5845),
+                            ConcurrencyStamp = "454b2235-a233-4a47-8dac-3cc9d0dcee78",
+                            CreatedAt = new DateTime(2025, 4, 11, 14, 3, 12, 429, DateTimeKind.Utc).AddTicks(6621),
                             CreatedBy = "System",
                             Email = "dtpAdmin@gmail.com",
                             EmailConfirmed = true,
@@ -864,10 +859,10 @@ namespace Infrastructure.Migrations
                             Name = "Admin User",
                             NormalizedEmail = "DTPADMIN@GMAIL.COM",
                             NormalizedUserName = "DTPADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDYPfklLzV/kIXgzHtb2erBhpC6KRCUvlRy8wvAs5ccvG2mxa76tOeldZ8MEjjxQLQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEcg3u8BA2EjnFe4tXjji7EKAXH30ueF8Wca3lC3Eyt4wWs1a+yw6riFgDUEQJY+Bg==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "68d12d95-d9c2-4459-8950-1954aa2a0e33",
+                            SecurityStamp = "09dd41bb-ebc9-4be8-8f09-f12ae0644767",
                             TwoFactorEnabled = false,
                             UserName = "dtpAdmin"
                         },
@@ -876,8 +871,8 @@ namespace Infrastructure.Migrations
                             Id = "9e224968-33e4-4652-b7b7-8574d048cdb9",
                             AccessFailedCount = 0,
                             Address = "456 Operator Rd",
-                            ConcurrencyStamp = "d2124890-9fd7-412c-bdac-89d70a8d3673",
-                            CreatedAt = new DateTime(2025, 4, 11, 8, 37, 10, 133, DateTimeKind.Utc).AddTicks(674),
+                            ConcurrencyStamp = "d6a0cb43-d181-416d-8297-82dca3072acd",
+                            CreatedAt = new DateTime(2025, 4, 11, 14, 3, 12, 478, DateTimeKind.Utc).AddTicks(3364),
                             CreatedBy = "System",
                             Email = "operator@gmail.com",
                             EmailConfirmed = true,
@@ -886,10 +881,10 @@ namespace Infrastructure.Migrations
                             Name = "Operator User",
                             NormalizedEmail = "OPERATOR@GMAIL.COM",
                             NormalizedUserName = "OPERATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBdRysi6BEPVHAJzs/Ooh+Kq03NaqQTxU3Vch0CPoM/dpyAPvQDjMloaaxEvLgPFDQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFei5km+iv65RxGIGBNWLFFJ4AAlefxqcFY11jk0CyjbPg3AQhvl0Cu0Luw0nbE1lQ==",
                             PhoneNumber = "0987654321",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "98ffd136-ab51-4eaa-b961-64625f9c89d5",
+                            SecurityStamp = "83c8aed1-6171-4a33-a951-49e4f1842122",
                             TwoFactorEnabled = false,
                             UserName = "operator"
                         });
@@ -933,17 +928,17 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f8b51077-f26f-4086-b220-fd48376cbc58"),
+                            Id = new Guid("7ab5c9b3-3b5f-4a5a-b609-55f965cd76b0"),
                             Balance = 1000m,
-                            CreatedAt = new DateTime(2025, 4, 11, 15, 37, 10, 134, DateTimeKind.Local).AddTicks(2599),
+                            CreatedAt = new DateTime(2025, 4, 11, 21, 3, 12, 482, DateTimeKind.Local).AddTicks(4513),
                             IsDeleted = false,
                             UserId = "8e445865-a24d-4543-a6c6-9443d048cdb9"
                         },
                         new
                         {
-                            Id = new Guid("fbde1438-ac45-4a4a-ab7b-d6358bd5eda4"),
+                            Id = new Guid("b55a8915-0fef-4df5-999d-3cafb9785108"),
                             Balance = 500m,
-                            CreatedAt = new DateTime(2025, 4, 11, 15, 37, 10, 134, DateTimeKind.Local).AddTicks(2644),
+                            CreatedAt = new DateTime(2025, 4, 11, 21, 3, 12, 482, DateTimeKind.Local).AddTicks(4579),
                             IsDeleted = false,
                             UserId = "9e224968-33e4-4652-b7b7-8574d048cdb9"
                         });
@@ -1197,13 +1192,9 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Rating", b =>
                 {
-                    b.HasOne("Domain.Entities.Tour", null)
+                    b.HasOne("Domain.Entities.Tour", "Tour")
                         .WithMany("Ratings")
-                        .HasForeignKey("TourId");
-
-                    b.HasOne("Domain.Entities.TourSchedule", "Tour")
-                        .WithMany()
-                        .HasForeignKey("TourScheduleId")
+                        .HasForeignKey("TourId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
