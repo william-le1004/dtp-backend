@@ -80,11 +80,10 @@ namespace Application.Features.Tour.Commands
                     }
                     if (updateInfo.NewAvailableTicket.HasValue)
                     {
-                        dbContext.Entry(scheduleTicket).Property("AvailableTicket").CurrentValue = updateInfo.NewAvailableTicket.Value;
+                        dbContext.Entry(scheduleTicket).Property("Capacity").CurrentValue = updateInfo.NewAvailableTicket.Value;
                     }
                 }
 
-                // Cập nhật mặc định giá (DefaultNetCost) cho các TicketType của tour có TicketKind tương ứng
                 foreach (var ticketType in ticketTypes.Where(tt => tt.TicketKind == updateInfo.TicketKind))
                 {
                     if (updateInfo.NewNetCost.HasValue)
