@@ -15,8 +15,7 @@ namespace Application.Features.Rating.Commands
         Guid TourId,
         string UserId,
         int Star,
-        string Comment,
-        List<string> Images
+        string Comment       
     );
 
     // Command tạo Rating; client gửi TourId, UserId, Star, Comment và danh sách Images (có thể null)
@@ -25,7 +24,7 @@ namespace Application.Features.Rating.Commands
         string UserId,
         int Star,
         string Comment,
-        List<string>? Images
+        List<string>? Images = null
     ) : IRequest<ApiResponse<RatingResponse>>;
 
     public class CreateRatingHandler : IRequestHandler<CreateRatingCommand, ApiResponse<RatingResponse>>
@@ -46,7 +45,6 @@ namespace Application.Features.Rating.Commands
                 UserId = request.UserId,
                 Star = request.Star,
                 Comment = request.Comment,
-                Images = request.Images ?? new List<string>()
             };
 
             _context.Ratings.Add(rating);
@@ -58,9 +56,8 @@ namespace Application.Features.Rating.Commands
                 TourId: rating.TourId,
                 UserId: rating.UserId,
                 Star: rating.Star,
-                Comment: rating.Comment,
-                Images: rating.Images
-            );
+                Comment: rating.Comment
+                );
 
             return ApiResponse<RatingResponse>.SuccessResult(responseDto, "Rating created successfully");
         }
