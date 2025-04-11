@@ -70,7 +70,7 @@ public class GetOrderByIdHandler(IDtpDbContext context, IUserContextService user
                     ? context.ImageUrls.FirstOrDefault(image => image.RefId == x.TourSchedule.Tour.Id).Url
                     : null,
                 OrderDate = x.CreatedAt,
-                TourDate = x.TourSchedule.OpenDate,
+                TourDate = x.TourSchedule.OpenDate.HasValue ? x.TourSchedule.OpenDate.Value : DateTime.MinValue,
                 DiscountAmount = x.DiscountAmount,
                 GrossCost = x.GrossCost,
                 NetCost = x.NetCost(),
