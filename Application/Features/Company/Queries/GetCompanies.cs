@@ -1,35 +1,30 @@
 using Application.Common;
+using Application.Contracts.Caching;
 using Application.Contracts.Persistence;
+using Application.Features.Company.Mapping;
 using MediatR;
 
 namespace Application.Features.Company.Queries;
 
 public record GetCompaniesQuery : IRequest<ApiResponse<IQueryable<CompanyDto>>>;
 
-public class GetCompaniesQueryHandler : IRequestHandler<GetCompaniesQuery, ApiResponse<IQueryable<CompanyDto>>>
+public class GetCompaniesQueryHandler(ICompanyRepository companyRepository, IRedisCacheService redisCache)
+    : IRequestHandler<GetCompaniesQuery, ApiResponse<IQueryable<CompanyDto>>>
 {
-    private readonly ICompanyRepository _companyRepository;
-
-    public GetCompaniesQueryHandler(ICompanyRepository companyRepository)
-    {
-        _companyRepository = companyRepository;
-    }
-
     public async Task<ApiResponse<IQueryable<CompanyDto>>> Handle(GetCompaniesQuery request,
         CancellationToken cancellationToken)
     {
-        var companies = await _companyRepository.GetCompaniesAsync();
+        const string cacheKey = "GetAllCompanies";
+        var cachedCompanyList = await redisCache.GetDataAsync<List<CompanyDto>>(cacheKey);
+        if (cachedCompanyList != null)
+        {
+            return ApiResponse<IQueryable<CompanyDto>>.SuccessResult(cachedCompanyList.AsQueryable());
+        }
 
-        return ApiResponse<IQueryable<CompanyDto>>.SuccessResult(companies.Select(c => new CompanyDto(
-            c.Id,
-            c.Name,
-            c.Phone,
-            c.Email,
-            c.TaxCode,
-            c.Licensed,
-            c.StaffCount(),
-            c.TourCount(),
-            c.CommissionRate
-        )).AsQueryable());
+        var companies = await companyRepository.GetCompaniesAsync();
+        var companyDtos = companies.Select(x => x.MapToCompanyDto()).ToList();
+
+        await redisCache.SetDataAsync(cacheKey, companyDtos, TimeSpan.FromMinutes(10));
+        return ApiResponse<IQueryable<CompanyDto>>.SuccessResult(companyDtos.AsQueryable());
     }
 }

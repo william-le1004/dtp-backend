@@ -40,18 +40,12 @@ public class UpdateCompanyValidator : AbstractValidator<UpdateCompanyCommand>
     }
 }
 
-public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand, ApiResponse<bool>>
+public class UpdateCompanyCommandHandler(ICompanyRepository companyRepository)
+    : IRequestHandler<UpdateCompanyCommand, ApiResponse<bool>>
 {
-    private readonly ICompanyRepository _companyRepository;
-
-    public UpdateCompanyCommandHandler(ICompanyRepository companyRepository)
-    {
-        _companyRepository = companyRepository;
-    }
-
     public async Task<ApiResponse<bool>> Handle(UpdateCompanyCommand request, CancellationToken cancellationToken)
     {
-        var validator = new UpdateCompanyValidator(_companyRepository);
+        var validator = new UpdateCompanyValidator(companyRepository);
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
@@ -60,7 +54,7 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand,
             return ApiResponse<bool>.Failure("Validation failed", 400, errors);
         }
 
-        var company = await _companyRepository.GetCompanyAsync(request.Id);
+        var company = await companyRepository.GetCompanyAsync(request.Id);
 
         if (company == null)
         {
@@ -70,7 +64,7 @@ public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand,
         try
         {
             company.UpdateDetails(request.Name, request.Email, request.Phone, request.TaxCode, request.CommissionRate);
-            await _companyRepository.UpsertCompanyAsync(company);
+            await companyRepository.UpsertCompanyAsync(company);
             return ApiResponse<bool>.SuccessResult(true, "Company updated successfully");
         }
         catch (Exception ex)

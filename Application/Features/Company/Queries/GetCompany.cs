@@ -1,5 +1,6 @@
 using Application.Common;
 using Application.Contracts.Persistence;
+using Application.Features.Company.Mapping;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -36,34 +37,6 @@ public class GetCompanyQueryHandler : IRequestHandler<GetCompanyQuery, ApiRespon
             staffRoles[staff.Id] = roles.FirstOrDefault();
         }
 
-        var staffDto = result.Staffs
-            .Select(staff => new StaffDto(
-                staff.Id,
-                staff.Name,
-                staff.PhoneNumber,
-                staff.Email,
-                staffRoles.GetValueOrDefault(staff.Id)
-            ))
-            .ToList();
-
-        var tourDto = result.Tours
-            .Select(t => new Tours(t.Id, t.Title))
-            .ToList();
-
-        return ApiResponse<CompanyDetailDto>.SuccessResult(MappingCompanyDetailDto(result, staffDto, tourDto));
+        return ApiResponse<CompanyDetailDto>.SuccessResult(result.MapToCompanyDetailDto(staffRoles));
     }
-
-    private static CompanyDetailDto MappingCompanyDetailDto(Domain.Entities.Company result, List<StaffDto> staffDto,
-        List<Tours> tourDto) =>
-        new(
-            result.Id,
-            result.Name,
-            result.Phone,
-            result.Email,
-            result.TaxCode,
-            result.Licensed,
-            result.CommissionRate,
-            staffDto.ToList(),
-            tourDto.ToList()
-        );
 }

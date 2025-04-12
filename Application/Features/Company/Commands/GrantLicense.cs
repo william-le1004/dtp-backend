@@ -10,15 +10,9 @@ public record GrantLicenseCommand(Guid CompanyId, bool Accept = true)
     : IRequest<ApiResponse<bool>>;
 
 
-public class GrantLicenseCommandHandler : IRequestHandler<GrantLicenseCommand, ApiResponse<bool>>
+public class GrantLicenseCommandHandler(ICompanyRepository companyRepository)
+    : IRequestHandler<GrantLicenseCommand, ApiResponse<bool>>
 {
-    private readonly ICompanyRepository _companyRepository;
-
-    public GrantLicenseCommandHandler(ICompanyRepository companyRepository)
-    {
-        _companyRepository = companyRepository;
-    }
-
     public async Task<ApiResponse<bool>> Handle(GrantLicenseCommand request, CancellationToken cancellationToken)
     {
         if (!request.Accept)
@@ -28,7 +22,7 @@ public class GrantLicenseCommandHandler : IRequestHandler<GrantLicenseCommand, A
 
         try
         {
-            await _companyRepository.GrantCompanyAsync(request.CompanyId);
+            await companyRepository.GrantCompanyAsync(request.CompanyId);
             return ApiResponse<bool>.SuccessResult(true, "Company Already Granted License");
         }
         catch (Exception ex)

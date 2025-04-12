@@ -25,12 +25,15 @@ public class CreateUserValidator : AbstractValidator<CreateUserCommand>
     public CreateUserValidator()
     {
         RuleFor(x => x.UserName)
+            .MaximumLength(100).WithMessage("UserName must not exceed 100 characters")
             .NotEmpty().WithMessage("UserName is required");
 
         RuleFor(x => x.Name)
+            .MaximumLength(100).WithMessage("Name must not exceed 100 characters")
             .NotEmpty().WithMessage("Name is required");
 
         RuleFor(x => x.Email)
+            .MaximumLength(100).WithMessage("Email must not exceed 100 characters")
             .NotEmpty().EmailAddress().WithMessage("Email is required");
 
         RuleFor(x => x.PhoneNumber)
@@ -38,6 +41,7 @@ public class CreateUserValidator : AbstractValidator<CreateUserCommand>
             .Matches(@"^(0|\+84)(3|5|7|8|9)[0-9]{8}$").WithMessage("A valid Vietnamese phone number is required.");
 
         RuleFor(x => x.Address)
+            .MaximumLength(100).WithMessage("Address must not exceed 100 characters")
             .NotEmpty().WithMessage("Address is required");
     }
 }

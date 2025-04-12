@@ -1,7 +1,7 @@
 using Application.Features.Users.Queries;
 using Domain.Entities;
 
-namespace Application.Features.Users.MappingObject;
+namespace Application.Features.Users.Mapping;
 
 public static class UserMappingExtensions
 {

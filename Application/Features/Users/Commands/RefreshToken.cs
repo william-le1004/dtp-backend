@@ -7,22 +7,15 @@ namespace Application.Features.Users.Commands;
 
 public record RefreshTokenCommand(string RefreshToken) : IRequest<ApiResponse<AccessTokenResponse>>;
 
-public class RefreshTokenCommandHandler
+public class RefreshTokenCommandHandler(IAuthenticationService authenticationService)
     : IRequestHandler<RefreshTokenCommand, ApiResponse<AccessTokenResponse>>
 {
-    private readonly IAuthenticationService _authenticationService;
-
-    public RefreshTokenCommandHandler(IAuthenticationService authenticationService)
-    {
-        _authenticationService = authenticationService;
-    }
-
     public async Task<ApiResponse<AccessTokenResponse>> Handle(RefreshTokenCommand request,
         CancellationToken cancellationToken)
     {
         try
         {
-            var newToken = await _authenticationService.RefreshTokenAsync(request.RefreshToken);
+            var newToken = await authenticationService.RefreshTokenAsync(request.RefreshToken);
             return ApiResponse<AccessTokenResponse>.SuccessResult(newToken);
         }
         catch (Exception ex)

@@ -7,18 +7,12 @@ namespace Application.Features.Company.Commands;
 
 public record DeleteCompanyCommand(Guid Id) : IRequest<ApiResponse<bool>>;
 
-public class DeleteCompanyCommandHandler : IRequestHandler<DeleteCompanyCommand, ApiResponse<bool>>
+public class DeleteCompanyCommandHandler(ICompanyRepository companyRepository)
+    : IRequestHandler<DeleteCompanyCommand, ApiResponse<bool>>
 {
-    private readonly ICompanyRepository _companyRepository;
-
-    public DeleteCompanyCommandHandler(ICompanyRepository companyRepository)
-    {
-        _companyRepository = companyRepository;
-    }
-
     public async Task<ApiResponse<bool>> Handle(DeleteCompanyCommand request, CancellationToken cancellationToken)
     {
-        var company = await _companyRepository.GetCompanyAsync(request.Id);
+        var company = await companyRepository.GetCompanyAsync(request.Id);
 
         if (company is null)
             return ApiResponse<bool>.Failure("Company not found");
@@ -26,7 +20,7 @@ public class DeleteCompanyCommandHandler : IRequestHandler<DeleteCompanyCommand,
         try
         {
             company.Delete();
-            await _companyRepository.UpsertCompanyAsync(company);
+            await companyRepository.UpsertCompanyAsync(company);
             return ApiResponse<bool>.SuccessResult(true);
         }
         catch (Exception ex)

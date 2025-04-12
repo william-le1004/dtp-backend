@@ -43,18 +43,12 @@ public class CreateCompanyValidator : AbstractValidator<CreateCompanyCommand>
     }
 }
 
-public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand, ApiResponse<bool>>
+public class CreateCompanyCommandHandler(ICompanyRepository companyRepository)
+    : IRequestHandler<CreateCompanyCommand, ApiResponse<bool>>
 {
-    private readonly ICompanyRepository _companyRepository;
-
-    public CreateCompanyCommandHandler(ICompanyRepository companyRepository)
-    {
-        _companyRepository = companyRepository;
-    }
-
     public async Task<ApiResponse<bool>> Handle(CreateCompanyCommand request, CancellationToken cancellationToken)
     {
-        var validator = new CreateCompanyValidator(_companyRepository);
+        var validator = new CreateCompanyValidator(companyRepository);
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
@@ -67,7 +61,7 @@ public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand,
         {
             var newCompany = new Domain.Entities.Company(request.Name, request.Email, request.Phone, request.TaxCode, request.CommissionRate);
   
-            await _companyRepository.UpsertCompanyAsync(newCompany);
+            await companyRepository.UpsertCompanyAsync(newCompany);
 
             return ApiResponse<bool>.SuccessResult(true, "Company created successfully");
         }
