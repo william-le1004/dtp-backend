@@ -7,7 +7,7 @@ namespace Domain.Entities;
 public partial class TourBooking : AuditEntity
 {
     public string UserId { get; private set; }
-    public string Code { get; private set; }
+    public string Code { get; init; }
     
     public long RefCode { get; private set; }
     public string Name { get; private set; }
@@ -51,7 +51,7 @@ public partial class TourBooking : AuditEntity
         RefCode = Code.ToLong();
         UserId = userId;
         TourScheduleId = tourScheduleId;
-        Status = BookingStatus.Pending;
+        Status = BookingStatus.Submitted;
         TourSchedule = tourSchedule;
         Name = name;
         PhoneNumber = phoneNumber;
@@ -110,6 +110,16 @@ public partial class TourBooking : AuditEntity
         Remark = remark;
     }
 
+    public void WaitingForPayment()
+    {
+        if (Status != BookingStatus.Submitted)
+        {
+            throw new AggregateException($"Can't payment processing this tour booking. Status: {Status}.");
+        }
+
+        Status = BookingStatus.AwaitingPayment;
+    }
+    
     public void Complete(string remark)
     {
         if (Status != BookingStatus.Paid)
@@ -123,7 +133,7 @@ public partial class TourBooking : AuditEntity
 
     public void Purchase(string? remark = null)
     {
-        if (Status != BookingStatus.Pending)
+        if (Status != BookingStatus.AwaitingPayment)
         {
             throw new AggregateException($"Can't purchase this tour booking. Status: {Status}");
         }
@@ -137,8 +147,16 @@ public partial class TourBooking : AuditEntity
         var freeCancellationPeriod = CreatedAt.AddDays(1);
         return DateTime.Now < freeCancellationPeriod;
     }
+
+    public bool IsOverdue()
+    {
+        return CreatedAt.AddHours(1) > DateTime.Now;
+    }
+    
+    public DateTime OverBookingTime() => CreatedAt.AddHours(1);
     
     public bool IsCancelled() => Status == BookingStatus.Cancelled;
-    public bool IsPending() => Status == BookingStatus.Pending;
+    public bool IsPending() => Status == BookingStatus.AwaitingPayment;
     public bool IsPaid() => Status == BookingStatus.Paid;
+    public bool IsPaymentProcessing() => Status == BookingStatus.AwaitingPayment;
 }

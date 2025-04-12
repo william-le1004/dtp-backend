@@ -35,7 +35,7 @@ RecurringJob.AddOrUpdate<IHangfireJobService>("HardDeleteJob",
 app.UseSwagger();
 app.UseSwaggerUI();
 // app.ApplyMigrations();
-
+app.UseHangfireDashboard(); // Dashboard Hangfire (tuỳ chọn)
 app.UseCors("all");
 app.UseAuthentication();
 app.UseAuthorization();

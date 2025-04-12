@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Application.Contracts;
+using Application.Contracts.Job;
 using Application.Contracts.Persistence;
 using Application.Features.Basket.Events;
 using Domain.Entities;
@@ -31,7 +32,8 @@ public class PlaceOrderCommandHandler(
     IDtpDbContext context,
     IPublisher publisher,
     IUserContextService userService,
-    ITourScheduleRepository repository
+    ITourScheduleRepository repository,
+    IOrderJobService backgroundJob
     )
     : IRequestHandler<PlaceOrderCommand, TourBooking>
 {
@@ -60,8 +62,9 @@ public class PlaceOrderCommandHandler(
         context.TourSchedules.Attach(touSchedule!);
         context.TourBookings.Add(booking);
         await context.SaveChangesAsync(cancellationToken: cancellationToken);
-        await publisher.Publish(removeBasketEvent, cancellationToken);
-
+        await publisher.Publish(removeBasketEvent, cancellationToken); 
+        backgroundJob.ScheduleCancelOrder(booking.Id);
+        
         return booking;
     }
 }

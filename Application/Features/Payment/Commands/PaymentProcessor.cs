@@ -41,7 +41,9 @@ public class PaymentProcessorHandler(IDtpDbContext context, IUserContextService 
         {
             var link = await CreatePaymentUri(order, request.ResponseUrl);
             var payment = new PaymentEntity(order.Id, link.paymentLinkId, link.amount);
+            order.WaitingForPayment();
             context.Payments.Add(payment);
+            context.TourBookings.Update(order);
             await context.SaveChangesAsync(cancellationToken);
 
             return link.checkoutUrl;
@@ -58,6 +60,9 @@ public class PaymentProcessorHandler(IDtpDbContext context, IUserContextService 
             items.Add(new ItemData(item.TicketType.ToString() ?? string.Empty, item.Quantity, (int)item.GrossCost));
         }
 
+        var paymentOverTime = DateTime.Now.AddMinutes(30);
+        var orderOverTime = order.OverBookingTime();
+        
         var paymentData = new PaymentData(
             order.RefCode,
             (int)order.NetCost(),
@@ -68,7 +73,11 @@ public class PaymentProcessorHandler(IDtpDbContext context, IUserContextService 
             null,
             order.Name,
             order.Email,
-            order.PhoneNumber
+            order.PhoneNumber,
+            null,
+            paymentOverTime > orderOverTime 
+                ? ((DateTimeOffset)orderOverTime).ToUnixTimeSeconds() 
+                : ((DateTimeOffset)paymentOverTime).ToUnixTimeSeconds()
         );
 
         var createPayment = await payOs.createPaymentLink(paymentData);

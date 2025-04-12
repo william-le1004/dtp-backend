@@ -16,4 +16,6 @@ public static class ApplicationConst
 
     public const string XOtp = "X-OTP";
     public const string AppName = "Binh Dinh Tour";
+    
+    public const string CancelOrderQueue = "cancel-order";
 }

@@ -91,6 +91,8 @@ public static class DependencyInjection
         services.AddTransient<IEventBus, EventBus>();
         services.AddScoped<AuditableEntityInterceptor>();
         services.AddScoped<IHangfireJobService, HangfireJobService>();
+        services.AddScoped<IOrderJobService, OrderJobService>();
+        services.AddScoped<IHangfireStorageService, HangfireStorageService>();
 
         services.AddAuthentication(item =>
         {

@@ -31,6 +31,8 @@ public record OrderDetailResponse
     public decimal NetCost { get; set; }
     
     public BookingStatus Status { get; set; }
+
+    public string? PaymentLinkId { get; init; }
 };
 
 public record OrderTicketResponse
@@ -49,6 +51,8 @@ public class GetOrderByIdHandler(IDtpDbContext context, IUserContextService user
     public async Task<Option<OrderDetailResponse>> Handle(GetOrderDetail request, CancellationToken cancellationToken)
     {
         var userId = userService.GetCurrentUserId()!;
+
+        var payment = await context.Payments.FirstOrDefaultAsync(x => x.BookingId == request.Id, cancellationToken: cancellationToken);
         var order = await context.TourBookings
             .Include(x => x.TourSchedule)
             .ThenInclude(x => x.Tour)
@@ -59,6 +63,7 @@ public class GetOrderByIdHandler(IDtpDbContext context, IUserContextService user
             .Where(x => x.Id == request.Id && x.UserId == userId)
             .Select(x => new OrderDetailResponse
             {
+                PaymentLinkId = payment != null ? payment.PaymentLinkId : string.Empty,
                 Code = x.Code,
                 Name = x.Name,
                 RefCode = x.RefCode,
@@ -70,7 +75,7 @@ public class GetOrderByIdHandler(IDtpDbContext context, IUserContextService user
                     ? context.ImageUrls.FirstOrDefault(image => image.RefId == x.TourSchedule.Tour.Id).Url
                     : null,
                 OrderDate = x.CreatedAt,
-                TourDate = x.TourSchedule.OpenDate.HasValue ? x.TourSchedule.OpenDate.Value : DateTime.MinValue,
+                TourDate = x.TourSchedule.OpenDate ?? DateTime.MinValue,
                 DiscountAmount = x.DiscountAmount,
                 GrossCost = x.GrossCost,
                 NetCost = x.NetCost(),

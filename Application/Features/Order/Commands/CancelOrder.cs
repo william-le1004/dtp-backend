@@ -24,7 +24,7 @@ public class CancelOrderHandler(
 
         if (order is not null)
         {
-            if (order.IsPaid())
+            if (order.IsPaid() || order.IsPaymentProcessing())
             {
                 await publisher.Publish(new OrderCanceled(userId, order.Id, order.Code), cancellationToken);
             }
