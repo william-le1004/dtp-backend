@@ -1,10 +1,8 @@
-﻿using Application.Contracts;
+﻿using Application.Contracts.Job;
 using Application.Contracts.Persistence;
-using Domain.Entities;
+using Domain.Constants;
 using Domain.Enum;
-using Functional.Option;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Order.Commands;
@@ -13,7 +11,9 @@ public record PayOrder(long OrderCode, int Amount, string RefCode) : IRequest;
 
 public class PayOrderHandler(
     IDtpDbContext context,
-    IUserRepository repository) : IRequestHandler<PayOrder>
+    IUserRepository repository,
+    IHangfireStorageService storageService,
+    IOrderJobService jobService) : IRequestHandler<PayOrder>
 {
     public async Task Handle(PayOrder request, CancellationToken cancellationToken)
     {
@@ -48,5 +48,9 @@ public class PayOrderHandler(
         context.Payments.Update(payment);
         context.Wallets.UpdateRange(wallet, poolFund);
         await context.SaveChangesAsync(cancellationToken);
+        var jobId = storageService.GetScheduleJobIdByArgId(nameof(IOrderJobService.CancelOrder),
+            ApplicationConst.CancelOrderQueue,
+            payment.BookingId);
+        jobService.PaidCheck(jobId);
     }
 }

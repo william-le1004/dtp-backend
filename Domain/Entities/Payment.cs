@@ -64,4 +64,9 @@ public class Payment : AuditEntity
         
         Status = PaymentStatus.Canceled;
     }
+
+    public bool IsPaid()
+    {
+        return Status == PaymentStatus.Completed;
+    }
 }

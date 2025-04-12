@@ -18,22 +18,31 @@ public class OrderCanceledHandler(IDtpDbContext context, IPublisher publisher) :
 
         if (payment is not null)
         {
-            decimal refundAmount;
-            if (payment.Booking.IsFreeCancellationPeriod())
+            if (payment.IsPaid())
             {
-                refundAmount = payment.NetCost;
-                await publisher.Publish(new PaymentRefunded(refundAmount, notification.UserId,
-                    notification.OrderCode), cancellationToken);
-                payment.Refund();
-                context.Payments.Update(payment);
-                await context.SaveChangesAsync(cancellationToken);
+                decimal refundAmount;
+                if (payment.Booking.IsFreeCancellationPeriod())
+                {
+                    refundAmount = payment.NetCost;
+                    await publisher.Publish(new PaymentRefunded(refundAmount, notification.UserId,
+                        notification.OrderCode), cancellationToken);
+                    payment.Refund();
+                    context.Payments.Update(payment);
+                    await context.SaveChangesAsync(cancellationToken);
+                }
+                else if (payment.Booking.TourSchedule.IsBeforeStartDate(4))
+                {
+                    refundAmount = payment.NetCost * 0.7m;
+                    await publisher.Publish(new PaymentRefunded(refundAmount, notification.UserId,
+                        notification.OrderCode), cancellationToken);
+                    payment.Refund();
+                    context.Payments.Update(payment);
+                    await context.SaveChangesAsync(cancellationToken);
+                }
             }
-            else if (payment.Booking.TourSchedule.IsBeforeStartDate(4))
+            else
             {
-                refundAmount = payment.NetCost * 0.7m;
-                await publisher.Publish(new PaymentRefunded(refundAmount, notification.UserId,
-                    notification.OrderCode), cancellationToken);
-                payment.Refund();
+                payment.Cancel();
                 context.Payments.Update(payment);
                 await context.SaveChangesAsync(cancellationToken);
             }
