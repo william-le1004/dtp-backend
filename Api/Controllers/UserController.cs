@@ -42,7 +42,7 @@ public class UserController(IMediator mediator, IUserContextService userContextS
     public async Task<IActionResult> Get()
     {
         var response = await mediator.Send(new GetUserQuery());
-        return Ok(response);
+        return ReturnList(response);
     }
 
     [HttpPost]

@@ -11,16 +11,9 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(Policy = ApplicationConst.AuthenticatedUser)]
-public class MediaController : BaseController
+public class MediaController(ICloudinaryService cloudinaryService) : BaseController
 {
-     private readonly ICloudinaryService _cloudinaryService;
-
-     public MediaController(ICloudinaryService cloudinaryService)
-     {
-          _cloudinaryService = cloudinaryService;
-     }
-
-     [HttpPost]
+    [HttpPost]
      public async Task<IActionResult> UploadMedia([FromForm] List<IFormFile> files, [FromForm] List<ImageType> types, [FromForm] List<ResourceType> resourceType)
      {
          try
@@ -38,7 +31,7 @@ public class MediaController : BaseController
                  ResourceType = resourceType.ElementAtOrDefault(index)
              }).ToList();
 
-             var uploadedUrls = await _cloudinaryService.UploadMediaAsync(fileDtos);
+             var uploadedUrls = await cloudinaryService.UploadMediaAsync(fileDtos);
              return Ok(new { urls = uploadedUrls });
          }
          catch (Exception ex)
