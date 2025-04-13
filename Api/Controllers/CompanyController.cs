@@ -11,50 +11,44 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Policy = ApplicationConst.AuthenticatedUser)]
-public class CompanyController : BaseController
+public class CompanyController(IMediator mediator) : BaseController
 {
-    private readonly IMediator _mediator;
-
-    public CompanyController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     [HttpGet]
     [Authorize(Policy = ApplicationConst.AdminPermission)]
     [EnableQuery]
     public async Task<IActionResult> Get()
     {
-        var response = await _mediator.Send(new GetCompaniesQuery());
+        var response = await mediator.Send(new GetCompaniesQuery());
         return ReturnList(response);
     }
     
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById([FromRoute] Guid id)
     {
-        var response = await _mediator.Send(new GetCompanyQuery(id));
+        var response = await mediator.Send(new GetCompanyQuery(id));
         return HandleServiceResult(response);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateCompanyCommand command)
     {
-        var response = await _mediator.Send(command);
+        var response = await mediator.Send(command);
         return HandleServiceResult(response);
     }
 
     [HttpPut]
+    [Authorize(Policy = ApplicationConst.AuthenticatedUser)]
     public async Task<IActionResult> Update([FromBody] UpdateCompanyCommand command)
     {
-        var response = await _mediator.Send(command);
+        var response = await mediator.Send(command);
         return HandleServiceResult(response);
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = ApplicationConst.AuthenticatedUser)]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        var response = await _mediator.Send(new DeleteCompanyCommand(id));
+        var response = await mediator.Send(new DeleteCompanyCommand(id));
         return HandleServiceResult(response);
     }
 
@@ -62,7 +56,7 @@ public class CompanyController : BaseController
     [Authorize(Policy = ApplicationConst.AdminPermission)]
     public async Task<IActionResult> Grant(GrantLicenseCommand command)
     {
-        var response = await _mediator.Send(command);
+        var response = await mediator.Send(command);
         return HandleServiceResult(response);
     }
 }
