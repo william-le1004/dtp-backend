@@ -1,4 +1,4 @@
-namespace Infrastructure.Common.Constants;
+namespace Domain.Constants;
 
 public static class ApplicationRole
 {

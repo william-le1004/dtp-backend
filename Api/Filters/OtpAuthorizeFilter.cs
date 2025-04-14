@@ -1,7 +1,6 @@
 ﻿using Application.Contracts;
 using Domain.Constants;
 using Domain.Entities;
-using Infrastructure.Common.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;

@@ -11,6 +11,7 @@ public static class CompanyMappingExtensions
             entity.Phone,
             entity.Email,
             entity.TaxCode,
+            entity.Address,
             entity.Licensed,
             entity.StaffCount(),
             entity.TourCount(),
@@ -25,6 +26,7 @@ public static class CompanyMappingExtensions
             entity.Phone,
             entity.Email,
             entity.TaxCode,
+            entity.Address,
             entity.Licensed,
             entity.CommissionRate,
             entity.Staffs.Select(s => new StaffDto(

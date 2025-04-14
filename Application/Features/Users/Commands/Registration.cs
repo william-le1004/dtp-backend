@@ -1,7 +1,6 @@
 using Application.Common;
 using Application.Contracts.Authentication;
 using Application.Contracts.EventBus;
-using Application.Contracts.Persistence;
 using Application.Dtos;
 using Application.Messaging;
 using FluentValidation;
@@ -71,19 +70,21 @@ public class RegistrationHandler(
             var registrationRequest = new RegistrationRequestDto(
                 request.Name, request.Address, request.Email, request.UserName, request.PhoneNumber, request.Password, request.ConfirmUrl);
             await authenticationService.RegisterAsync(registrationRequest);
-            await eventBus.PublishAsync(new EmailConfirmed
-            {
-                ConfirmUrl = await authenticationService.GenerateConfirmUrl(request.Email, request.ConfirmUrl),
-                Email = request.Email,
-                Name = request.Name,
-            }, cancellationToken);
+            await eventBus.PublishAsync(
+                new EmailConfirmed(
+                    request.Name,
+                    request.Email,
+                    await authenticationService.GenerateConfirmUrl(request.Email, request.ConfirmUrl)
+                ),
+                cancellationToken
+            );
             
-            logger.LogInformation("User {UserName} registered successfully", request.UserName);
+            logger.LogInformation("User {UserName} with {Email} registered successfully", request.UserName, request.Email);
             return ApiResponse<bool>.SuccessResult(true);
         }
         catch (Exception ex)
         {
-            return ApiResponse<bool>.Failure($"An error occurred", 400, new List<string> { ex.Message });
+            return ApiResponse<bool>.Failure($"An error occurred", 400, [ex.Message]);
         }
     }
 }

@@ -18,16 +18,9 @@ public class LoginValidator : AbstractValidator<LoginCommand>
     }
 }
 
-public class LoginHandler
+public class LoginHandler(IAuthenticationService authenticationService)
     : IRequestHandler<LoginCommand, ApiResponse<AccessTokenResponse>>
 {
-    private readonly IAuthenticationService _authenticationService;
-
-    public LoginHandler(IAuthenticationService authenticationService)
-    {
-        _authenticationService = authenticationService;
-    }
-
     public async Task<ApiResponse<AccessTokenResponse>> Handle(LoginCommand request,
         CancellationToken cancellationToken)
     {
@@ -42,13 +35,13 @@ public class LoginHandler
         try
         {
             var user = new LoginRequestDto(request.UserName, request.Password);
-            var tokenResponse = await _authenticationService.LoginAsync(user);
+            var tokenResponse = await authenticationService.LoginAsync(user);
 
             return ApiResponse<AccessTokenResponse>.SuccessResult(tokenResponse);
         }
         catch (Exception ex)
         {
-            return ApiResponse<AccessTokenResponse>.Failure($"An error occurred", 400, new List<string> { ex.Message });
+            return ApiResponse<AccessTokenResponse>.Failure($"An error occurred", 400, [ex.Message]);
         }
     }
 }

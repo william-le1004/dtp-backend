@@ -1,7 +1,6 @@
 using Application.Contracts;
 using Application.Contracts.Caching;
 using Domain.Constants;
-using Infrastructure.Common.Constants;
 using Infrastructure.Services;
 
 namespace Api.Middlewares;

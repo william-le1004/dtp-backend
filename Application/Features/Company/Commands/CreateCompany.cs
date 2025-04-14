@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.Company.Commands;
 
-public record CreateCompanyCommand(string Name, string Email, string Phone, string TaxCode, double CommissionRate)
+public record CreateCompanyCommand(string Name, string Email, string Phone, string Address, string TaxCode, double CommissionRate)
     : IRequest<ApiResponse<bool>>;
 
 public class CreateCompanyValidator : AbstractValidator<CreateCompanyCommand>
@@ -14,22 +14,30 @@ public class CreateCompanyValidator : AbstractValidator<CreateCompanyCommand>
     public CreateCompanyValidator(ICompanyRepository companyRepository)
     {
         var repository = companyRepository;
-        
-        RuleFor(x => x)
-            .MustAsync(async (command, cancellation) =>
+
+        RuleFor(x => x.Name)
+            .MustAsync(async (name, cancellation) =>
             {
-                var company = await repository.IsCompanyExist(command.Name);
-                return company;
-            }).WithMessage("Company with this name already exists.");
+                var companyExists = await repository.IsCompanyExist(name);
+                return !companyExists;
+            }).WithMessage("Company with this name already exists.")
+            .NotEmpty().WithMessage("Name is required.")
+            .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
         
         RuleFor(x => x.CommissionRate)
             .NotEmpty().WithMessage("Commission Rate is required.")
             .InclusiveBetween(0, 100).WithMessage("Commission Rate must be between 0 and 100.");
-        RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Name is required.")
-            .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
+        
+        RuleFor(x => x.Address)
+            .NotEmpty().WithMessage("Address is required.")
+            .MaximumLength(100).WithMessage("Address must not exceed 100 characters.");
 
         RuleFor(x => x.Email)
+            .MustAsync(async (name, cancellation) =>
+            {
+                var phoneNumberExists = await repository.IsEmailCompanyExist(name);
+                return !phoneNumberExists;
+            })
             .NotEmpty().WithMessage("Email is required.")
             .EmailAddress().WithMessage("A valid email is required.");
 
@@ -59,7 +67,7 @@ public class CreateCompanyCommandHandler(ICompanyRepository companyRepository)
 
         try
         {
-            var newCompany = new Domain.Entities.Company(request.Name, request.Email, request.Phone, request.TaxCode, request.CommissionRate);
+            var newCompany = new Domain.Entities.Company(request.Name, request.Email, request.Phone, request.TaxCode, request.Address, request.CommissionRate);
   
             await companyRepository.UpsertCompanyAsync(newCompany);
 
@@ -67,7 +75,7 @@ public class CreateCompanyCommandHandler(ICompanyRepository companyRepository)
         }
         catch (Exception ex)
         {
-            return ApiResponse<bool>.Failure($"An error occurred", (int)HttpStatusCode.BadRequest, new List<string> { ex.Message });
+            return ApiResponse<bool>.Failure($"An error occurred", (int)HttpStatusCode.BadRequest, [ex.Message]);
         }
     }
 }

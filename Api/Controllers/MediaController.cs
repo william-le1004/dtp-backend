@@ -1,8 +1,6 @@
 using Application.Contracts.Cloudinary;
 using Application.Dtos;
 using Domain.Constants;
-using Domain.Enum;
-using Infrastructure.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

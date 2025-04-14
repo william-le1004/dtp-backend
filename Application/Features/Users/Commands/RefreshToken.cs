@@ -20,7 +20,7 @@ public class RefreshTokenCommandHandler(IAuthenticationService authenticationSer
         }
         catch (Exception ex)
         {
-            return ApiResponse<AccessTokenResponse>.Failure($"An error occurred", 400, new List<string> { ex.Message });
+            return ApiResponse<AccessTokenResponse>.Failure($"An error occurred", 400, [ex.Message]);
         }
     }
 }
