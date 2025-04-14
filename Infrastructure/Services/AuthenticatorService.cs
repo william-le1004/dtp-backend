@@ -1,6 +1,5 @@
 ﻿using Application.Contracts.Authentication;
 using Domain.Constants;
-using Infrastructure.Common.Constants;
 using OtpNet;
 using QRCoder;
 

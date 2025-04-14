@@ -19,4 +19,12 @@ public static class StringExtensions
     {
         return Convert.ToInt64(input, 16);
     }
+    
+    public static string RemoveSubstring(this string source, string toRemove)
+    {
+        if (string.IsNullOrEmpty(source) || string.IsNullOrEmpty(toRemove))
+            return source;
+
+        return source.Replace(toRemove, string.Empty);
+    }
 }

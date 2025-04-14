@@ -1,9 +1,9 @@
 namespace Application.Messaging;
 
-public record UserCreated
-{
-    public string Name { get; init; }
-    public string Email { get; init; }
-    public string UserName { get; init; }
-    public string Password { get; init; }
-}
+public record UserCreated(
+    string Name,
+    string Email,
+    string UserName,
+    string DefaultPassword,
+    string CompanyName,
+    string ConfirmUrl);

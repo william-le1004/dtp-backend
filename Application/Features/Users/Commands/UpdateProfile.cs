@@ -41,15 +41,9 @@ public class UpdateProfileValidator : AbstractValidator<UpdateProfileCommand>
     }
 }
 
-public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand, ApiResponse<bool>>
+public class UpdateProfileCommandHandler(IUserRepository userRepository)
+    : IRequestHandler<UpdateProfileCommand, ApiResponse<bool>>
 {
-    private readonly IUserRepository _userRepository;
-
-    public UpdateProfileCommandHandler(IUserRepository userRepository)
-    {
-        _userRepository = userRepository;
-    }
-
     public async Task<ApiResponse<bool>> Handle(UpdateProfileCommand request, CancellationToken cancellationToken)
     {
         var validator = new UpdateProfileValidator();
@@ -63,17 +57,17 @@ public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand,
 
         try
         {
-            var user = await _userRepository.GetUserDetailAsync(request.Id);
+            var user = await userRepository.GetUserDetailAsync(request.Id);
             if (user is null) return ApiResponse<bool>.Failure("User not found", 404);
 
             user.UpdateProfile(request.Name, request.Address, request.PhoneNumber, request.Email, request.UserName);
 
-            var result = await _userRepository.UpdateProfileAsync(user, request.RoleName);
+            var result = await userRepository.UpdateProfileAsync(user, request.RoleName);
             return result ? ApiResponse<bool>.SuccessResult(true) : ApiResponse<bool>.Failure("Profile update failed");
         }
         catch (Exception ex)
         {
-            return ApiResponse<bool>.Failure($"An error occurred", 400, new List<string> { ex.Message });
+            return ApiResponse<bool>.Failure($"An error occurred", 400, [ex.Message]);
         }
     }
 }

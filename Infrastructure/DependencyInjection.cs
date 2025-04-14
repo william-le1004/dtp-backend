@@ -10,7 +10,6 @@ using Domain.Constants;
 using Domain.Entities;
 using Hangfire;
 using Hangfire.Redis.StackExchange;
-using Infrastructure.Common.Constants;
 using Infrastructure.Common.Settings;
 using Infrastructure.Contexts;
 using Infrastructure.Repositories;

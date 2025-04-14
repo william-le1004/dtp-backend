@@ -1,61 +1,70 @@
 using Application.Contracts;
 using Application.Contracts.Persistence;
+using Domain.Constants;
 using Domain.Entities;
-using Infrastructure.Common.Constants;
+using Domain.Extensions;
 using Infrastructure.Contexts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.Persistence;
 
-public class CompanyRepository : ICompanyRepository
+public class CompanyRepository(DtpDbContext dbContext, UserManager<User> userManager) : ICompanyRepository
 {
-    private readonly DtpDbContext _dbContext;
-    private readonly UserManager<User> _userManager;
-    private readonly IUserContextService _userContext;
-
-    public CompanyRepository(DtpDbContext dbContext, UserManager<User> userManager, IUserContextService userContext)
+    public async Task<bool> GrantCompanyAsync(Company company)
     {
-        _dbContext = dbContext;
-        _userManager = userManager;
-        _userContext = userContext;
-    }
+        if (string.IsNullOrWhiteSpace(company.Email))
+            throw new InvalidOperationException("Company email is missing or invalid.");
 
-    public async Task<bool> GrantCompanyAsync(Guid companyId)
-    {
-        var company = await _dbContext.Companies
-            .Include(c => c.Staffs)
-            .Include(c => c.Tours)
-            .FirstOrDefaultAsync(c => c.Id == companyId);
-        company?.AcceptLicense();
+        company.AcceptLicense();
 
-        var staff = company?.Staffs.FirstOrDefault();
-        if (staff == null) return false;
+        await CreateUserForCompanyAsync(company);
 
-        await _userManager.RemoveFromRoleAsync(staff, ApplicationRole.TOURIST);
-        await _userManager.AddToRoleAsync(staff, ApplicationRole.OPERATOR);
-
-        await _dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
         return true;
     }
 
-    public async Task<IEnumerable<Company>> GetCompaniesAsync()
+    private async Task CreateUserForCompanyAsync(Company company)
     {
-        return await _dbContext.Companies
+        var userName = company.Email.RemoveSubstring(ApplicationConst.GmailDomain).Trim();
+
+        if (string.IsNullOrWhiteSpace(userName))
+            throw new InvalidOperationException("Derived username from company email is invalid.");
+
+        var user = new User(
+            userName: userName,
+            email: company.Email,
+            name: company.Name,
+            address: company.Address,
+            phoneNumber: company.Phone
+        );
+
+        var defaultPassword = $"{userName}{ApplicationConst.DefaultPassword}";
+
+        var creationResult = await userManager.CreateAsync(user, defaultPassword);
+        if (!creationResult.Succeeded)
+        {
+            var errorDetails = string.Join("; ", creationResult.Errors.Select(e => e.Description));
+            throw new InvalidOperationException($"Failed to create user account: {errorDetails}");
+        }
+
+        await userManager.AddToRoleAsync(user, ApplicationRole.OPERATOR);
+        company.AddStaff(user);
+    }
+
+    public async Task<IEnumerable<Company>> GetCompaniesAsync() =>
+        await dbContext.Companies
             .OrderBy(c => c.Name)
             .Include(x => x.Staffs)
             .Include(x => x.Tours)
             .AsNoTracking()
             .ToListAsync();
-    }
 
-    public async Task<Company?> GetCompanyAsync(Guid companyId)
-    {
-        return await _dbContext.Companies
+    public async Task<Company?> GetCompanyAsync(Guid companyId) =>
+        await dbContext.Companies
             .Include(c => c.Staffs)
             .Include(c => c.Tours)
             .FirstOrDefaultAsync(c => c.Id == companyId);
-    }
 
     public async Task<bool> UpsertCompanyAsync(Company company)
     {
@@ -67,30 +76,20 @@ public class CompanyRepository : ICompanyRepository
         return await UpdateCompanyAsync(company);
     }
 
-    public Task<bool> IsCompanyExist(string name)
-    {
-        return _dbContext.Companies.AnyAsync(c => c.Name == name);
-    }
+    public async Task<bool> IsCompanyExist(string name) => 
+        !await dbContext.Companies.AnyAsync(c => c.Name == name);
+    
+    public async Task<bool> IsEmailCompanyExist(string gmail) => 
+        !await dbContext.Companies.AnyAsync(c => c.Email == gmail);
+
+    public async Task<string> GetCompanyName(Guid id) =>
+        await dbContext.Companies
+            .Where(c => c.Id == id)
+            .Select(c => c.Name).FirstOrDefaultAsync() ?? string.Empty;
 
     private async Task<bool> CreateCompanyAsync(Company company)
     {
-        var userId = _userContext.GetCurrentUserId();
-        var userCompanyId = _dbContext.Users.Find(userId)?.CompanyId ?? Guid.Empty;
-
-        if (userCompanyId != Guid.Empty)
-        {
-            throw new InvalidOperationException("User already belongs to a company.");
-        }
-
-        var user = await _dbContext.Users.FindAsync(userId)
-                   ?? throw new KeyNotFoundException("User not found.");
-
-        if (!company.Staffs.Contains(user))
-        {
-            company.Staffs.Add(user);
-        }
-
-        await _dbContext.Companies.AddAsync(company);
+        await dbContext.Companies.AddAsync(company);
         return await SaveChangesAsync();
     }
 
@@ -104,12 +103,12 @@ public class CompanyRepository : ICompanyRepository
             throw new InvalidOperationException("Company is licensed and cannot be updated.");
         }
 
-        _dbContext.Entry(existingCompany).CurrentValues.SetValues(company);
+        dbContext.Entry(existingCompany).CurrentValues.SetValues(company);
         return await SaveChangesAsync();
     }
 
     private async Task<bool> SaveChangesAsync()
     {
-        return await _dbContext.SaveChangesAsync() > 0;
+        return await dbContext.SaveChangesAsync() > 0;
     }
 }

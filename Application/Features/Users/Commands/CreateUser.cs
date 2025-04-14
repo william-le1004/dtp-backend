@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Contracts.Authentication;
 using Application.Contracts.EventBus;
 using Application.Contracts.Persistence;
 using Application.Messaging;
@@ -17,7 +18,8 @@ public record CreateUserCommand(
     string Address,
     string RoleName,
     string PhoneNumber,
-    Guid CompanyId)
+    Guid CompanyId,
+    string ConfirmUrl)
     : IRequest<ApiResponse<bool>>;
 
 public class CreateUserValidator : AbstractValidator<CreateUserCommand>
@@ -43,23 +45,20 @@ public class CreateUserValidator : AbstractValidator<CreateUserCommand>
         RuleFor(x => x.Address)
             .MaximumLength(100).WithMessage("Address must not exceed 100 characters")
             .NotEmpty().WithMessage("Address is required");
+
+        RuleFor(x => x.CompanyId)
+            .NotEmpty().WithMessage("Company Name is required");
     }
 }
 
-public class CreateUserCommandHandler
+public class CreateUserCommandHandler(
+    IUserRepository userRepository,
+    IEventBus eventBus,
+    ILogger<CreateUserCommandHandler> logger,
+    ICompanyRepository companyRepository,
+    IAuthenticationService authenticationService)
     : IRequestHandler<CreateUserCommand, ApiResponse<bool>>
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IEventBus _eventBus;
-    private readonly ILogger<CreateUserCommandHandler> _logger;
-
-    public CreateUserCommandHandler(IUserRepository userRepository, IEventBus eventBus, ILogger<CreateUserCommandHandler> logger)
-    {
-        _userRepository = userRepository;
-        _eventBus = eventBus;
-        _logger = logger;
-    }
-
     public async Task<ApiResponse<bool>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var validator = new CreateUserValidator();
@@ -74,16 +73,18 @@ public class CreateUserCommandHandler
         try
         {
             var newUser = new User(request.UserName, request.Email, request.Name, request.Address, request.PhoneNumber);
-            var result = await _userRepository.CreateUserAsync(newUser, request.RoleName, request.CompanyId);
-            await _eventBus.PublishAsync(new UserCreated
-            {
-                Name = request.Name,
-                Email = request.Email,
-                UserName = request.UserName,
-                Password = $"{request.UserName}{ApplicationConst.DefaultPassword}"
-            }, cancellationToken);
+            var result = await userRepository.CreateUserAsync(newUser, request.RoleName, request.CompanyId);
+
+            await eventBus.PublishAsync(new UserCreated(
+                request.Name,
+                request.Email,
+                request.UserName,
+                $"{request.UserName}{ApplicationConst.DefaultPassword}",
+                await companyRepository.GetCompanyName(request.CompanyId),
+                await authenticationService.GenerateConfirmUrl(request.Email, request.ConfirmUrl)
+            ), cancellationToken);
             
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Published UserCreated event to queue: Name={Name}, UserName={UserName}, Email={Email}",
                 request.Name,
                 request.UserName,

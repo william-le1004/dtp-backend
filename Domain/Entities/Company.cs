@@ -7,6 +7,7 @@ public partial class Company : AuditEntity
     public string Email { get; set; } = null!;
 
     public string Phone { get; set; } = null!;
+    public string Address { get; set; } = null!;
 
     public string TaxCode { get; set; } = null!;
     
@@ -21,12 +22,13 @@ public partial class Company : AuditEntity
     {
     }
 
-    public Company(string name, string email, string phone, string taxCode, double commissionRate)
+    public Company(string name, string email, string phone, string taxCode, string address, double commissionRate)
     {
         Name = name;
         Email = email;
         Phone = phone;
         TaxCode = taxCode;
+        Address = address;
         Licensed = false;
         CommissionRate = commissionRate;
     }
