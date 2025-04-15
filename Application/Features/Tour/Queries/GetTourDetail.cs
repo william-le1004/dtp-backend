@@ -48,6 +48,8 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
                     .Select(td => new TourDestinationResponse
                     {
                         Name = td.Destination.Name,
+                        Longitude = td.Destination.Longitude,
+                        Latitude = td.Destination.Latitude,
                         SortOrder = td.SortOrder,
                         SortOrderByDate = td.SortOrderByDate,
                         StartTime = td.StartTime,
@@ -123,6 +125,10 @@ public record TourDestinationResponse
     public int? SortOrder { get; set; }
     
     public int? SortOrderByDate { get; set; }
+    
+    public string Latitude { get; set; } = null!;
+
+    public string Longitude { get; set; } = null!;
 
     public List<TourActivity> Activities { get; set; } = new();
 }

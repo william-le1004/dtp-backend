@@ -22,7 +22,16 @@ public record TourTemplateResponse : AuditResponse
 
     public decimal OnlyFromCost { get; set; }
 
+    public LocationFirstDestination? FirstDestination { get; set; }
+
     public IEnumerable<TourScheduleResponse> TourScheduleResponses { get; set; }
+}
+
+public record LocationFirstDestination
+{
+    public string Latitude { get; set; } = null!;
+
+    public string Longitude { get; set; } = null!;
 }
 
 public record TourScheduleResponse
@@ -42,6 +51,8 @@ public class GetToursHandler(IDtpDbContext context) : IRequestHandler<GetTours, 
             .Include(tour => tour.TourSchedules)
             .Include(tour => tour.Ratings)
             .Include(tour => tour.Tickets)
+            .Include(tour => tour.TourDestinations)
+            .ThenInclude(tourDestination => tourDestination.Destination)
             .AsSingleQuery()
             .AsNoTracking()
             .Select(tour => new TourTemplateResponse()
@@ -59,12 +70,17 @@ public class GetToursHandler(IDtpDbContext context) : IRequestHandler<GetTours, 
                 IsDeleted = tour.IsDeleted,
                 CreatedAt = tour.CreatedAt,
                 TourScheduleResponses =
-    tour.TourSchedules.Select(schedule => new TourScheduleResponse
-    {
-        Id = schedule.Id,
-        OpenDate = schedule.OpenDate.HasValue ? schedule.OpenDate.Value : DateTime.MinValue
-    })
-
+                    tour.TourSchedules.Select(schedule => new TourScheduleResponse
+                    {
+                        Id = schedule.Id,
+                        OpenDate = schedule.OpenDate.HasValue ? schedule.OpenDate.Value : DateTime.MinValue
+                    }),
+                FirstDestination = tour.TourDestinations.OrderBy(x => x.SortOrder).Select(td =>
+                    new LocationFirstDestination()
+                    {
+                        Latitude = td.Destination.Latitude,
+                        Longitude = td.Destination.Longitude
+                    }).FirstOrDefault()
             });
 
         return Task.FromResult(tours.AsQueryable());
