@@ -72,7 +72,10 @@ namespace Application.Features.Tour.Commands
                     // Cập nhật ImageUrls: Xóa những ảnh cũ và thêm ảnh mới nếu cần
                     var existingImages = _context.ImageUrls.Where(i => i.RefId == existing.Id).ToList();
                     _context.ImageUrls.RemoveRange(existingImages);
-                    _context.ImageUrls.Add(new ImageUrl(existing.Id, newDest.Img));
+                    foreach (var img in newDest.Img)
+                    {
+                        _context.ImageUrls.Add(new ImageUrl(existing.Id, img));
+                    }
 
                     // Xử lý DestinationActivities
                     var newActivities = newDest.DestinationActivities ?? new List<DestinationActivityToAdd>();
@@ -123,8 +126,10 @@ namespace Application.Features.Tour.Commands
                         newDest.SortOrderByDate
                     );
                     // Thêm image cho TourDestination
-                    _context.ImageUrls.Add(new ImageUrl(tourDestination.Id, newDest.Img));
-
+                    foreach (var img in newDest.Img)
+                    {
+                        _context.ImageUrls.Add(new ImageUrl(tourDestination.Id, img));
+                    }
                     // Thêm các DestinationActivity nếu có
                     if (newDest.DestinationActivities != null)
                     {

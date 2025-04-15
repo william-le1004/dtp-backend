@@ -22,7 +22,7 @@ namespace Application.Features.Tour.Commands
         TimeSpan? EndTime,
         int? SortOrder = null,
         int? SortOrderByDate = null,
-        string Img = null
+        List<string>? Img = null
     );
 
     public record TicketToAdd(
@@ -47,7 +47,7 @@ namespace Application.Features.Tour.Commands
         DateTime OpenDay,
         DateTime CloseDay,
         string ScheduleFrequency,
-        string Img,
+        List<string>? Img,
         string About,
         string? Include = null,
         string? Pickinfor = null
@@ -94,8 +94,11 @@ namespace Application.Features.Tour.Commands
 
             // Tạo Tour mới và gán Code
             var tour = new Domain.Entities.Tour(request.Title, companyId, request.Categoryid, request.Description, tourCode, request.About, request.Pickinfor, request.Include);
-            _context.ImageUrls.Add(new ImageUrl(tour.Id, request.Img));
-
+            foreach ( var img in request.Img)
+            {
+                _context.ImageUrls.Add(new ImageUrl(tour.Id,img));
+            }
+           
             if (request.Destinations is not null)
             {
                 foreach (var dest in request.Destinations)
@@ -110,8 +113,10 @@ namespace Application.Features.Tour.Commands
                         dest.SortOrderByDate
                     );
                     tour.TourDestinations.Add(tourDestination);
-
-                    _context.ImageUrls.Add(new ImageUrl(tourDestination.Id, dest.Img));
+                    foreach (var img in dest.Img)
+                    {
+                        _context.ImageUrls.Add(new ImageUrl(tourDestination.Id, img));
+                    }
 
                     if (dest.DestinationActivities is not null)
                     {
