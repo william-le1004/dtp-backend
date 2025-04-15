@@ -14,6 +14,7 @@ public class CancelPaymentHandler(IDtpDbContext context, IUserContextService ser
         var userId = service.GetCurrentUserId()!;
         
         var payment = await context.Payments.Include(x=> x.Booking)
+            .ThenInclude(x=> x.TourSchedule)
             .FirstOrDefaultAsync(x=> x.PaymentLinkId == request.Id 
                                      && x.Booking.UserId == userId,
                 cancellationToken: cancellationToken);

@@ -57,7 +57,7 @@ public class PaymentProcessorHandler(IDtpDbContext context, IUserContextService 
         var items = new List<ItemData>();
         foreach (var item in order.Tickets)
         {
-            items.Add(new ItemData(item.TicketType.ToString() ?? string.Empty, item.Quantity, (int)item.GrossCost));
+            items.Add(new ItemData(item.TicketType.TicketKind.ToString() ?? string.Empty, item.Quantity, (int)item.GrossCost));
         }
 
         var paymentOverTime = DateTime.Now.AddMinutes(30);
