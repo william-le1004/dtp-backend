@@ -7,7 +7,6 @@ public partial class Rating : AuditEntity
     public string UserId { get; set; }
 
     public int Star { get; set; }
-    public List<string> Images { get; set; } = new List<string>();
 
     public string Comment { get; set; }
 
