@@ -4,6 +4,7 @@ using Application;
 using Application.Contracts.Job;
 using Hangfire;
 using Infrastructure;
+using Infrastructure.Common.Extensions;
 using Microsoft.AspNetCore.OData;
 
 var builder = WebApplication.CreateBuilder(args);
