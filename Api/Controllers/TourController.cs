@@ -23,7 +23,6 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
         return await mediator.Send(new GetTours());
     }
 
-    // GET: api/Tour/5
     [HttpGet("{id}")]
     [OutputCache]
     public async Task<ActionResult<TourDetailResponse>> GetTours(Guid id)
@@ -57,6 +56,12 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
         var response = await mediator.Send(updatedCommand);
         return HandleServiceResult(response);
 
+    }
+    [HttpGet("tour")]
+    public async Task<IActionResult> GetListTourByCompanyID()
+    {
+        var response = await mediator.Send(new GetListTourByCompanyQuery());
+        return HandleServiceResult(response);
     }
 
     [HttpPut("tourdestination/{id}")]

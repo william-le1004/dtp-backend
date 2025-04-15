@@ -17,7 +17,7 @@ namespace Application.Features.Tour.Commands
         string? About,
         string? Include,
         string? Pickinfor,
-        string? img
+        List<string>? img
     ) : IRequest<ApiResponse<TourResponse>>;
 
     public class UpdateTourInforHandler : IRequestHandler<UpdateTourInforCommand, ApiResponse<TourResponse>>
@@ -41,8 +41,16 @@ namespace Application.Features.Tour.Commands
 
             // Cập nhật thông tin của Tour
             tour.Update(request.Title, request.Category, request.Description,request.About,request.Include,request.Pickinfor);
-            _context.ImageUrls.RemoveRange(_context.ImageUrls.Where(i => i.RefId == tour.Id));
-            _context.ImageUrls.Add(new ImageUrl(tour.Id,request.img));
+            // Xóa các ImageUrls cũ và thêm mới
+            var existingImageUrls = await _context.ImageUrls
+                .Where(i => i.RefId == tour.Id)
+                .ToListAsync(cancellationToken);
+            _context.ImageUrls.RemoveRange(existingImageUrls);
+            foreach (var img in request.img)
+            {
+                // Thêm các ảnh mới vào ImageUrls
+                _context.ImageUrls.Add(new ImageUrl(tour.Id, img));
+            }
             // Cập nhật lại vào DbContext
             _context.Tours.Update(tour);
             await _context.SaveChangesAsync(cancellationToken);

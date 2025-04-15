@@ -1,5 +1,6 @@
 ﻿using Application.Common;
 using Application.Contracts.Persistence;
+using Domain.DataModel;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -46,7 +47,11 @@ namespace Application.Features.Rating.Commands
                 Star = request.Star,
                 Comment = request.Comment,
             };
-
+            // Nếu có danh sách ảnh, gán vào Rating
+            foreach (var image in request.Images ?? new List<string>())
+            {
+                _context.ImageUrls.Add(new ImageUrl(rating.Id,image));
+            }
             _context.Ratings.Add(rating);
             await _context.SaveChangesAsync(cancellationToken);
 
