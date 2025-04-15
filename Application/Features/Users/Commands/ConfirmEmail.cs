@@ -1,5 +1,8 @@
+using System.Net;
 using Application.Common;
+using Application.Contracts.EventBus;
 using Application.Contracts.Persistence;
+using Application.Messaging;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +15,10 @@ public record ConfirmEmailCommand(
     string ConfirmationToken)
     : IRequest<ApiResponse<bool>>;
 
-public class ConfirmEmailHandler(UserManager<User> userManager, ILogger<ConfirmEmailHandler> logger, IUserRepository userRepository)
+public class ConfirmEmailHandler(
+    UserManager<User> userManager,
+    ILogger<ConfirmEmailHandler> logger,
+    IEventBus eventBus)
     : IRequestHandler<ConfirmEmailCommand, ApiResponse<bool>>
 {
     public async Task<ApiResponse<bool>> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
@@ -32,8 +38,11 @@ public class ConfirmEmailHandler(UserManager<User> userManager, ILogger<ConfirmE
         {
             logger.LogError("Email confirmation failed, because {Error}", 
                 result.Errors.Select(e => e.Description).ToList());
-            return ApiResponse<bool>.Failure("Email confirmation failed", 400);
+            return ApiResponse<bool>.Failure("Email confirmation failed");
         }
+
+        await eventBus.PublishAsync(new UserAuthenticated(user.Name, user.UserName ?? "N/A", user.Email ?? "N/A"),
+            cancellationToken);
         
         logger.LogInformation("User {Email} email confirmation result: {Result}", user.Email, result.Succeeded);
         return ApiResponse<bool>.SuccessResult(true);
