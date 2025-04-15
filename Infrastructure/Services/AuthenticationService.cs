@@ -90,19 +90,25 @@ public class AuthenticationService(
         return true;
     }
 
-    public async Task<string> GenerateConfirmUrl(string email, string confirmUrl)
+    public async Task<string> GenerateConfirmUrl(string email, string confirmUrl, bool isReset = true)
     {
         var user = await GetUserByEmail(email);
 
-        var token = await GenerateSecureToken(user);
+        var token = await GenerateSecureToken(user, isReset);
 
         var emailConfirmationUrl = $"{confirmUrl}?confirmationToken={token}";
         return emailConfirmationUrl;
     }
 
-    private async Task<string> GenerateSecureToken(User? user)
+    private async Task<string> GenerateSecureToken(User? user, bool isReset)
     {
-        var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+        if (user is null)
+            throw new ArgumentNullException(nameof(user), "User cannot be null.");
+
+        string token = isReset
+            ? await userManager.GeneratePasswordResetTokenAsync(user)
+            : await userManager.GenerateEmailConfirmationTokenAsync(user);
+
         user.SecureToken = token;
         await userManager.UpdateAsync(user);
         return token;

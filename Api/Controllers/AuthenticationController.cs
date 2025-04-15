@@ -54,4 +54,18 @@ public class AuthenticationController(IMediator mediator, IUserContextService us
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
     }
+    
+    [HttpPost("forget-password")]
+    public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordCommand command)
+    {
+        var response = await mediator.Send(command);
+        return HandleServiceResult(response);
+    }
+    
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
+    {
+        var response = await mediator.Send(command);
+        return HandleServiceResult(response);
+    }
 }

@@ -9,5 +9,5 @@ public interface IAuthenticationService
     Task<AccessTokenResponse> LoginAsync(LoginRequestDto request);
     Task<AccessTokenResponse> RefreshTokenAsync(string refreshToken);
     Task<bool> LogoutAsync(string userId);
-    Task<string> GenerateConfirmUrl(string email, string confirmUrl);
+    Task<string> GenerateConfirmUrl(string email, string confirmUrl, bool isReset = true);
 }
