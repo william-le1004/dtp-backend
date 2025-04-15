@@ -1,7 +1,5 @@
-using System.Net;
 using Application.Common;
 using Application.Contracts.EventBus;
-using Application.Contracts.Persistence;
 using Application.Messaging;
 using Domain.Entities;
 using MediatR;
@@ -29,7 +27,7 @@ public class ConfirmEmailHandler(
         
         if (user == null)
         {
-            logger.LogError("User with  email does not exist");
+            logger.LogError("User with email does not exist");
             return ApiResponse<bool>.Failure("User not found", 404);
         }
         var result = await userManager.ConfirmEmailAsync(user, request.ConfirmationToken);
