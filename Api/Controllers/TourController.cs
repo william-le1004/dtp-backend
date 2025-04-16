@@ -50,14 +50,14 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
     }
 
     [HttpPut("tourinfor/{id}")]
-    public async Task<IActionResult> PutTour(Guid id,[FromBody] UpdateTourInforCommand command)
+    public async Task<IActionResult> PutTour(Guid id, [FromBody] UpdateTourInforCommand command)
     {
         var updatedCommand = command with { TourId = id };
         var response = await mediator.Send(updatedCommand);
         return HandleServiceResult(response);
 
     }
-    [HttpGet("tour")]
+    [HttpGet("company")]
     public async Task<IActionResult> GetListTourByCompanyID()
     {
         var response = await mediator.Send(new GetListTourByCompanyQuery());
@@ -65,7 +65,7 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
     }
 
     [HttpPut("tourdestination/{id}")]
-    public async Task<IActionResult> UpdateTourDestination(Guid id,[FromBody] UpdateTourDestinationCommand command)
+    public async Task<IActionResult> UpdateTourDestination(Guid id, [FromBody] UpdateTourDestinationCommand command)
     {
         var updatedCommand = command with { TourId = id };
         var response = await mediator.Send(updatedCommand);
@@ -90,7 +90,7 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
     }
 
     [HttpPut("scheduleticket/{id}")]
-    public async Task<IActionResult> UpdateTicketSchedule(Guid id,[FromBody] UpdateTicketScheduleByTicketKindCommand command)
+    public async Task<IActionResult> UpdateTicketSchedule(Guid id, [FromBody] UpdateTicketScheduleByTicketKindCommand command)
     {
         var updatedCommand = command with { TourId = id };
         var response = await mediator.Send(updatedCommand);
@@ -115,9 +115,9 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
         return HandleServiceResult(response);
     }
     [HttpPut("closetour/{id}")]
-    public async Task<IActionResult> CloseTour(Guid id)
-    {
-        var response = await mediator.Send(new CloseTourCommand(id));
+    public async Task<IActionResult> CloseTour(Guid id, [FromBody] string remark)
+    {    
+        var response = await mediator.Send(new CloseTourCommand(id,remark));
         return HandleServiceResult(response);
     }
     [HttpGet("schedule/{id}")]
@@ -150,4 +150,17 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
         var response = await mediator.Send(new GetListRatingByTourQuery(id));
         return HandleServiceResult(response);
     }
+    [HttpGet("operator/analys")]
+    public async Task<IActionResult> GetOperatorIncomeAnalysis()
+    {
+        var response = await mediator.Send(new GetOperatorIncomeAnalysisQuery());
+        return HandleServiceResult(response);
+    }
+    [HttpGet("admin/analys")]
+    public async Task<IActionResult> GetAdminIncomeAnalysis()
+    {
+        var response = await mediator.Send(new GetAdminIncomeAnalysisQuery());
+        return HandleServiceResult(response);
+    }
+
 }

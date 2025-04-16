@@ -28,7 +28,6 @@ namespace Application.Features.Tour.Queries
             CancellationToken cancellationToken)
         {
             var companyId = _userContextService.GetCompanyId();
-            // Truy vấn danh sách Tour có CompanyId trùng với giá trị truyền vào
             var tours = await _context.Tours
                 .Where(t => t.CompanyId == companyId)
                 .ToListAsync(cancellationToken);
