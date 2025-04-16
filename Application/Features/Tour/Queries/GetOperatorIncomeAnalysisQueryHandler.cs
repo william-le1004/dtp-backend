@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace Application.Features.OperatorAnalysis.Queries
+namespace Application.Features.Tour.Queries
 {
     // DTO cho dữ liệu biểu đồ số vé bán ra và doanh thu theo ngày
     public record DailySalesDto(
