@@ -57,7 +57,7 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
         return HandleServiceResult(response);
 
     }
-    [HttpGet("tour")]
+    [HttpGet("company")]
     public async Task<IActionResult> GetListTourByCompanyID()
     {
         var response = await mediator.Send(new GetListTourByCompanyQuery());
