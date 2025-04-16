@@ -76,19 +76,37 @@ namespace Application.Features.Tour.Queries
 
         public async Task<ApiResponse<List<TicketScheduleByDayDto>>> Handle(GetListTicketScheduleByTourIDQuery request, CancellationToken cancellationToken)
         {
-            // Lấy tất cả các TourSchedule của Tour có TourId được cung cấp, chỉ lấy các schedule chưa bị xóa và có OpenDate có giá trị
+            // Chỉ lấy các TourSchedule của tour mà chưa bị xóa, có OpenDate có giá trị và OpenDate > hiện tại + 1 ngày
+            var tomorrow = DateTime.Now.AddDays(1);
             var schedules = await _context.TourSchedules
-                .Where(ts => ts.TourId == request.TourId && !ts.IsDeleted && ts.OpenDate.HasValue)
+                .Where(ts => ts.TourId == request.TourId && !ts.IsDeleted && ts.OpenDate.HasValue && ts.OpenDate.Value > tomorrow)
                 .Include(ts => ts.TourScheduleTickets)
                 .ToListAsync(cancellationToken);
 
-            // Cập nhật số vé khả dụng cho từng schedule bằng cách gọi MapAvailableTourScheduleTickets
-            foreach (var schedule in schedules)
-            {
-                MapAvailableTourScheduleTickets(schedule);
-            }
+            // Lấy danh sách các TourScheduleTicket không bị xóa
+            var scheduleTicketIds = schedules
+                .SelectMany(s => s.TourScheduleTickets)
+                .Where(t => !t.IsDeleted)
+                .Select(t => t.TourScheduleId)
+                .Distinct()
+                .ToList();
 
-            // Lấy các scheduleTicket IDs (không cần dùng trong mapping mới vì số available đã được cập nhật)
+            // Lấy các TourBooking có trạng thái Paid cho các TourSchedule đã được lọc
+            var paidBookings = await _context.TourBookings
+                .Where(tb => tb.Status == Domain.Enum.BookingStatus.Paid && scheduleTicketIds.Contains(tb.TourScheduleId))
+                .Include(tb => tb.Tickets)
+                .ToListAsync(cancellationToken);
+
+            // Nhóm các vé đã được đặt theo cặp (TourScheduleId, TicketTypeId)
+            var bookingQuantities = paidBookings
+                .SelectMany(tb => tb.Tickets.Select(t => new {
+                    tb.TourScheduleId,
+                    t.TicketTypeId,
+                    t.Quantity
+                }))
+                .GroupBy(x => new { x.TourScheduleId, x.TicketTypeId })
+                .ToDictionary(g => new { g.Key.TourScheduleId, g.Key.TicketTypeId }, g => g.Sum(x => x.Quantity));
+
             // Lấy thông tin TicketTypes của Tour để tra cứu TicketKind
             var ticketTypes = await _context.TicketTypes
                 .Where(tt => tt.TourId == request.TourId)
@@ -100,26 +118,31 @@ namespace Application.Features.Tour.Queries
                 .Select(g => new TicketScheduleByDayDto(
                     Day: g.Key,
                     TicketSchedules: g.SelectMany(s => s.TourScheduleTickets.Where(t => !t.IsDeleted))
-                        .Select(tst =>
-                        {
-                            // Sau khi gọi MapAvailableTourScheduleTickets, AvailableTicket đã được cập nhật
-                            // Lấy TicketKind từ ticketTypes; nếu không tìm thấy, mặc định về Adult
-                            TicketKind ticketKind = ticketTypes.TryGetValue(tst.TicketTypeId, out var tt)
-                                ? tt.TicketKind
-                                : TicketKind.Adult;
+                                      .Select(tst =>
+                                      {
+                                          // Tính số lượng đã đặt từ bookingQuantities, nếu không có thì 0
+                                          var key = new { TourScheduleId = tst.TourScheduleId, TicketTypeId = tst.TicketTypeId };
+                                          int booked = bookingQuantities.TryGetValue(key, out int qty) ? qty : 0;
+                                          int available = tst.AvailableTicket - booked;
 
-                            return new TicketTypeScheduleDto(
-                                TicketTypeId: tst.TicketTypeId,
-                                TicketKind: ticketKind,
-                                NetCost: tst.NetCost,
-                                AvailableTicket: tst.AvailableTicket,
-                                TourScheduleId: tst.TourScheduleId
-                            );
-                        }).ToList()
+                                          // Lấy TicketKind từ ticketTypes; nếu không tìm thấy, mặc định là Adult
+                                          TicketKind ticketKind = ticketTypes.TryGetValue(tst.TicketTypeId, out var tt)
+                                              ? tt.TicketKind
+                                              : TicketKind.Adult;
+
+                                          return new TicketTypeScheduleDto(
+                                              TicketTypeId: tst.TicketTypeId,
+                                              TicketKind: ticketKind,
+                                              NetCost: tst.NetCost,
+                                              AvailableTicket: available,
+                                              TourScheduleId: tst.TourScheduleId
+                                          );
+                                      }).ToList()
                 ))
                 .ToList();
 
             return ApiResponse<List<TicketScheduleByDayDto>>.SuccessResult(result, "Ticket schedules retrieved successfully");
         }
+
     }
 }
