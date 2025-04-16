@@ -1,6 +1,4 @@
-﻿using Application.Features.AdminAnalysis.Queries;
-using Application.Features.Feedback.Commands;
-using Application.Features.OperatorAnalysis.Queries;
+﻿using Application.Features.Feedback.Commands;
 using Application.Features.Rating.Commands;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;

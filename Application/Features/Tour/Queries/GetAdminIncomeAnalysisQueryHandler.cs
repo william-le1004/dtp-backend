@@ -12,28 +12,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Tour.Queries
 {
-    // DTO cho dữ liệu biểu đồ theo ngày
-    public record DailySalesDto(
-        DateOnly Date,
-        int TicketsSold,
-        decimal TotalIncome
-    );
-
-    // DTO cho top tour: gồm TourId, TourTitle và số vé bán ra
-    public record TopTourDto(
-        Guid TourId,
-        string TourTitle,
-        int TicketsSold
-    );
-
-    // DTO cho booking mới nhất: gồm BookingId, BookingCode, ngày tạo, tên tour, tổng chi phí (NetCost)
-    public record NewestBookingDto(
-        Guid BookingId,
-        string BookingCode,
-        DateTime CreatedAt,
-        string TourTitle,
-        decimal TotalCost
-    );
+   
 
     // DTO tổng hợp kết quả phân tích cho Admin
     public record AdminIncomeAnalysisResponse(
