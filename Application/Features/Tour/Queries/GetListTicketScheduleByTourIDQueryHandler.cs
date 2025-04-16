@@ -89,7 +89,7 @@ namespace Application.Features.Tour.Queries
                                           var key = new { TourScheduleId = tst.TourScheduleId, TicketTypeId = tst.TicketTypeId };
                                           int booked = bookingQuantities.TryGetValue(key, out int qty) ? qty : 0;
                                           // Số vé khả dụng = AvailableTicket trong vé lịch trình - số vé đã đặt
-                                          int available = tst.AvailableTicket - booked;
+                                          int available = tst.Capacity - booked;
 
                                           // Lấy TicketKind từ ticketTypes; nếu không tìm thấy, mặc định là Adult
                                           TicketKind ticketKind = ticketTypes.TryGetValue(tst.TicketTypeId, out var tt)
