@@ -19,7 +19,7 @@ public class CreateCompanyValidator : AbstractValidator<CreateCompanyCommand>
             .MustAsync(async (name, cancellation) =>
             {
                 var companyExists = await repository.IsCompanyExist(name);
-                return !companyExists;
+                return companyExists;
             }).WithMessage("Company with this name already exists.")
             .NotEmpty().WithMessage("Name is required.")
             .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
@@ -33,10 +33,10 @@ public class CreateCompanyValidator : AbstractValidator<CreateCompanyCommand>
             .MaximumLength(100).WithMessage("Address must not exceed 100 characters.");
 
         RuleFor(x => x.Email)
-            .MustAsync(async (name, cancellation) =>
+            .MustAsync(async (email, cancellation) =>
             {
-                var phoneNumberExists = await repository.IsEmailCompanyExist(name);
-                return !phoneNumberExists;
+                var emailExists = await repository.IsEmailCompanyExist(email);
+                return emailExists;
             })
             .NotEmpty().WithMessage("Email is required.")
             .EmailAddress().WithMessage("A valid email is required.");
