@@ -74,7 +74,7 @@ public class RegistrationHandler(
                 new EmailConfirmed(
                     request.Name,
                     request.Email,
-                    await authenticationService.GenerateConfirmUrl(request.Email, request.ConfirmUrl)
+                    await authenticationService.GenerateConfirmUrl(request.Email, request.ConfirmUrl, false)
                 ),
                 cancellationToken
             );
