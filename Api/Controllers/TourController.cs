@@ -1,4 +1,5 @@
 ﻿using Application.Features.Feedback.Commands;
+using Application.Features.OperatorAnalysis.Queries;
 using Application.Features.Rating.Commands;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;
@@ -50,7 +51,7 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
     }
 
     [HttpPut("tourinfor/{id}")]
-    public async Task<IActionResult> PutTour(Guid id,[FromBody] UpdateTourInforCommand command)
+    public async Task<IActionResult> PutTour(Guid id, [FromBody] UpdateTourInforCommand command)
     {
         var updatedCommand = command with { TourId = id };
         var response = await mediator.Send(updatedCommand);
@@ -65,7 +66,7 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
     }
 
     [HttpPut("tourdestination/{id}")]
-    public async Task<IActionResult> UpdateTourDestination(Guid id,[FromBody] UpdateTourDestinationCommand command)
+    public async Task<IActionResult> UpdateTourDestination(Guid id, [FromBody] UpdateTourDestinationCommand command)
     {
         var updatedCommand = command with { TourId = id };
         var response = await mediator.Send(updatedCommand);
@@ -90,7 +91,7 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
     }
 
     [HttpPut("scheduleticket/{id}")]
-    public async Task<IActionResult> UpdateTicketSchedule(Guid id,[FromBody] UpdateTicketScheduleByTicketKindCommand command)
+    public async Task<IActionResult> UpdateTicketSchedule(Guid id, [FromBody] UpdateTicketScheduleByTicketKindCommand command)
     {
         var updatedCommand = command with { TourId = id };
         var response = await mediator.Send(updatedCommand);
@@ -148,6 +149,12 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
     public async Task<IActionResult> GetRatingByTourID(Guid id)
     {
         var response = await mediator.Send(new GetListRatingByTourQuery(id));
+        return HandleServiceResult(response);
+    }
+    [HttpPut("analys")]
+    public async Task<IActionResult> GetOperatorIncomeAnalysis()
+    {
+        var response = await mediator.Send(new GetOperatorIncomeAnalysisQuery());
         return HandleServiceResult(response);
     }
 }
