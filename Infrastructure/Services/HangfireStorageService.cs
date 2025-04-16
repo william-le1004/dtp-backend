@@ -16,9 +16,8 @@ public class HangfireStorageService(JobStorage jobStorage) : IHangfireStorageSer
         {
             var job = kv.Value.Job;
             if (job == null) return false;
-            return (Guid)(job.Args.FirstOrDefault() ?? Guid.Empty) == argId 
-                   && job.Method.Name == methodName 
-                   && job.Queue == queueName;
+            return (Guid)(job.Args.FirstOrDefault() ?? Guid.Empty) == argId
+                   && job.Method.Name == methodName;
         });
 
         return item.Key;
