@@ -1,4 +1,5 @@
-﻿using Application.Features.Feedback.Commands;
+﻿using Application.Features.AdminAnalysis.Queries;
+using Application.Features.Feedback.Commands;
 using Application.Features.OperatorAnalysis.Queries;
 using Application.Features.Rating.Commands;
 using Application.Features.Tour.Commands;
@@ -116,9 +117,9 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
         return HandleServiceResult(response);
     }
     [HttpPut("closetour/{id}")]
-    public async Task<IActionResult> CloseTour(Guid id)
-    {
-        var response = await mediator.Send(new CloseTourCommand(id));
+    public async Task<IActionResult> CloseTour(Guid id, [FromBody] string remark)
+    {    
+        var response = await mediator.Send(new CloseTourCommand(id,remark));
         return HandleServiceResult(response);
     }
     [HttpGet("schedule/{id}")]
@@ -151,10 +152,17 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
         var response = await mediator.Send(new GetListRatingByTourQuery(id));
         return HandleServiceResult(response);
     }
-    [HttpPut("analys")]
+    [HttpGet("operator/analys")]
     public async Task<IActionResult> GetOperatorIncomeAnalysis()
     {
         var response = await mediator.Send(new GetOperatorIncomeAnalysisQuery());
         return HandleServiceResult(response);
     }
+    [HttpGet("admin/analys")]
+    public async Task<IActionResult> GetAdminIncomeAnalysis()
+    {
+        var response = await mediator.Send(new GetAdminIncomeAnalysisQuery());
+        return HandleServiceResult(response);
+    }
+
 }
