@@ -13,4 +13,13 @@ public partial class Rating : AuditEntity
     public virtual Tour Tour { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
+    public Rating(Guid tourId, string userId, int star, string comment)
+    {
+        Id = Guid.NewGuid();
+        TourId = tourId;
+        UserId = userId;
+        Star = star;
+        Comment = comment;
+    }
+    public Rating() { }
 }
