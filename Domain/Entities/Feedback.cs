@@ -11,4 +11,13 @@ public partial class Feedback : AuditEntity
     public virtual TourSchedule TourSchedule { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
+    public Feedback(Guid tourScheduleId, string userId, string? description)
+    {
+        Id = Guid.NewGuid();                       
+        TourScheduleId = tourScheduleId;
+        UserId = userId;
+        Description = description;
+    }
+
+    public Feedback() { }
 }
