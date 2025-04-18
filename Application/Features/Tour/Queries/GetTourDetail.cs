@@ -36,14 +36,10 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
                     AvgStar = t.Ratings.Any() ? t.Ratings.Average(rating => rating.Star) : 0,
                     TotalRating = t.Ratings.Count(),
                     OnlyFromCost = t.OnlyFromCost(),
-                    TicketTypes = t.Tickets
+                    TicketTypes = t.Tickets,
+                    Pickinfor = t.Pickinfor,
+                    Include = t.Include,
                 },
-                Ratings = t.Ratings.Select(r => new RatingResponse()
-                {
-                    Star = r.Star,
-                    Comment = r.Comment,
-                    CreatedAt = r.CreatedAt,
-                }).OrderByDescending(x => x.CreatedAt).ToList(),
                 TourDestinations = t.TourDestinations
                     .Select(td => new TourDestinationResponse
                     {
@@ -79,7 +75,6 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
 public record TourDetailResponse
 {
     public TourTemplateDetailsResponse Tour { get; init; }
-    public List<RatingResponse> Ratings { get; init; } = new();
     public List<TourDestinationResponse> TourDestinations { get; init; } = new();
 }
 
@@ -100,17 +95,12 @@ public record TourTemplateDetailsResponse
     public string About { get; set; }
 
     public decimal OnlyFromCost { get; set; }
+    
+    public string? Include { get; set; }
+    
+    public string? Pickinfor { get; set; }
 
     public List<TicketType> TicketTypes { get; set; } = new();
-}
-
-public record RatingResponse
-{
-    public int Star { get; set; }
-
-    public string Comment { get; set; }
-
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
 }
 
 public record TourDestinationResponse
