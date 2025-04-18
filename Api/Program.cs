@@ -27,6 +27,7 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseHangfireDashboard("/hangfire");
 app.UseMiddleware<JwtBlacklistMiddleware>();
 
