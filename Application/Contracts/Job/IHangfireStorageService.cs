@@ -2,6 +2,6 @@
 
 public interface IHangfireStorageService
 {
-    string GetScheduleJobIdByArgId(string methodName, string queueName, Guid argId, int? from = null,
+    string GetScheduleJobIdByArgId(string methodName, Guid argId, int? from = null,
         int? count = null);
 }

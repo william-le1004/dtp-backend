@@ -57,12 +57,9 @@ public class PaymentProcessorHandler(IDtpDbContext context, IUserContextService 
         var items = new List<ItemData>();
         foreach (var item in order.Tickets)
         {
-            items.Add(new ItemData(item.TicketType.TicketKind.ToString() ?? string.Empty, item.Quantity, (int)item.GrossCost));
+            items.Add(new ItemData(item.TicketType.TicketKind.ToString(), item.Quantity, (int)item.GrossCost));
         }
 
-        var paymentOverTime = DateTime.Now.AddMinutes(30);
-        var orderOverTime = order.OverBookingTime();
-        
         var paymentData = new PaymentData(
             order.RefCode,
             (int)order.NetCost(),
@@ -75,9 +72,7 @@ public class PaymentProcessorHandler(IDtpDbContext context, IUserContextService 
             order.Email,
             order.PhoneNumber,
             null,
-            paymentOverTime > orderOverTime 
-                ? ((DateTimeOffset)orderOverTime).ToUnixTimeSeconds() 
-                : ((DateTimeOffset)paymentOverTime).ToUnixTimeSeconds()
+            ((DateTimeOffset)order.OverBookingTime()).ToUnixTimeSeconds()
         );
 
         var createPayment = await payOs.createPaymentLink(paymentData);

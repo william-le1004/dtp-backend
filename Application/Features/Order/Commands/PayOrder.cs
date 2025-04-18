@@ -48,9 +48,8 @@ public class PayOrderHandler(
         context.Payments.Update(payment);
         context.Wallets.UpdateRange(wallet, poolFund);
         await context.SaveChangesAsync(cancellationToken);
-        var jobId = storageService.GetScheduleJobIdByArgId(nameof(IOrderJobService.CancelOrder),
-            ApplicationConst.CancelOrderQueue,
-            payment.BookingId);
+        var jobId = storageService.GetScheduleJobIdByArgId(
+            nameof(IOrderJobService.CancelOrder), payment.BookingId);
         jobService.PaidCheck(jobId);
     }
 }

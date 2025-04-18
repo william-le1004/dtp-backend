@@ -8,7 +8,7 @@ public class HangfireStorageService(JobStorage jobStorage) : IHangfireStorageSer
 {
     private readonly IMonitoringApi _api = jobStorage.GetMonitoringApi();
 
-    public string GetScheduleJobIdByArgId(string methodName, string queueName, Guid argId, int? from = null, int? count = null)
+    public string GetScheduleJobIdByArgId(string methodName, Guid argId, int? from = null, int? count = null)
     {
         var list = _api.ScheduledJobs(from ?? 0, count ?? int.MaxValue);
         if (list == null) return string.Empty;
