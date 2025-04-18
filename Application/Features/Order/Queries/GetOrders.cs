@@ -1,5 +1,6 @@
 ﻿using Application.Contracts;
 using Application.Contracts.Persistence;
+using Application.Features.Order.Dto;
 using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,11 @@ public record OrderResponses
 {
     public Guid OrderId { get; init; }
     public string TourName { get; set; }
-    public string TourThumnail { get; set; }
+    
+    public PaymentStatus PaymentStatus { get; init; }
+    
+    public Guid TourId { get; init; }
+    public string? TourThumbnail { get; set; }
     public DateTime TourDate { get; set; }
     public List<OrderTicketResponse> OrderTickets { get; init; } = new ();
     public decimal FinalCost { get; set; }
@@ -25,7 +30,8 @@ public class GetOrdersHandler(IDtpDbContext context, IUserContextService userSer
     public async Task<IEnumerable<OrderResponses>> Handle(GetOrders request, CancellationToken cancellationToken)
     {
         var userId = userService.GetCurrentUserId()!;
-        var orders = await context.TourBookings.Include(x => x.TourSchedule)
+        var orders = await context.TourBookings
+            .Include(x => x.TourSchedule)
             .ThenInclude(x => x.Tour)
             .Include(x => x.Tickets)
             .ThenInclude(x => x.TicketType).Where(b => b.UserId == userId)
@@ -36,10 +42,11 @@ public class GetOrdersHandler(IDtpDbContext context, IUserContextService userSer
             {
                 OrderId = x.Id,
                 TourName = x.TourSchedule.Tour.Title,
-                TourThumnail = context.ImageUrls.Any(image => image.RefId == x.TourSchedule.Tour.Id)
-                    ? context.ImageUrls.FirstOrDefault(image => image.RefId == x.TourSchedule.Tour.Id).Url
+                TourId = x.TourSchedule.TourId,
+                TourThumbnail = context.ImageUrls.Any(image => image.RefId == x.TourSchedule.Tour.Id)
+                    ? context.ImageUrls.FirstOrDefault(image => image.RefId == x.TourSchedule.Tour.Id)!.Url
                     : null,
-                TourDate = x.TourSchedule.OpenDate.HasValue ? x.TourSchedule.OpenDate.Value : DateTime.MinValue,
+                TourDate = x.TourSchedule.OpenDate ?? DateTime.MinValue,
                 OrderTickets = x.Tickets.Select(t => new OrderTicketResponse()
                 {
                     Code = t.Code,
@@ -50,6 +57,10 @@ public class GetOrdersHandler(IDtpDbContext context, IUserContextService userSer
                 }).ToList(),
                 FinalCost = x.NetCost(),
                 Status = x.Status,
+                PaymentStatus = context.Payments
+                    .Where(p => p.BookingId == x.Id)
+                    .Select(p => p.Status)
+                    .FirstOrDefault()
             }).ToListAsync(cancellationToken: cancellationToken);
         return orders;
     }
