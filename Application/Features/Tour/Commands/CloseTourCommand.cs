@@ -62,25 +62,13 @@ namespace Application.Features.Tour.Commands
                 booking.Cancel(request.remark);
                 if (payment is not null)
                 {
-                    decimal refundAmount = 0;
-                    if (booking.IsFreeCancellationPeriod())
-                    {
-                        refundAmount = payment.NetCost;
-                    }
-                    else if (booking.TourSchedule.IsBeforeStartDate(4))
-                    {
-                        refundAmount = payment.NetCost * 0.7m;
-                    }
-
-                    if (refundAmount > 0)
-                    {
+                 
                         // Phát hành sự kiện hoàn tiền cho người dùng, thông tin UserId và Booking Code được lấy từ booking
-                        await _publisher.Publish(new PaymentRefunded(refundAmount, booking.UserId, booking.Code), cancellationToken);
+                        await _publisher.Publish(new PaymentRefunded(payment.NetCost, booking.UserId, booking.Code), cancellationToken);
                         // Gọi phương thức Refund() trên Payment để cập nhật trạng thái
                         payment.Refund();
                         _context.Payments.Update(payment);
-                    }
-                }
+                                  
             }
 
             // Sau khi xử lý hoàn tiền cho các booking đã thanh toán,

@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Contracts;
 using Application.Contracts.Persistence;
 using Domain.DataModel;
 using MediatR;
@@ -14,7 +15,6 @@ namespace Application.Features.Rating.Commands
     public record RatingResponse(
         Guid Id,
         Guid TourId,
-        string UserId,
         int Star,
         string Comment       
     );
@@ -22,7 +22,6 @@ namespace Application.Features.Rating.Commands
     // Command tạo Rating; client gửi TourId, UserId, Star, Comment và danh sách Images (có thể null)
     public record CreateRatingCommand(
         Guid TourId,
-        string UserId,
         int Star,
         string Comment,
         List<string>? Images = null
@@ -31,19 +30,23 @@ namespace Application.Features.Rating.Commands
     public class CreateRatingHandler : IRequestHandler<CreateRatingCommand, ApiResponse<RatingResponse>>
     {
         private readonly IDtpDbContext _context;
+        private readonly IUserContextService _userContextService;
 
-        public CreateRatingHandler(IDtpDbContext context)
+        public CreateRatingHandler(IDtpDbContext context, IUserContextService userContext )
         {
             _context = context;
+            _userContextService = userContext;
         }
 
         public async Task<ApiResponse<RatingResponse>> Handle(CreateRatingCommand request, CancellationToken cancellationToken)
         {
+            // Lấy UserId từ dịch vụ người dùng hiện tại
+            var userId = _userContextService.GetCurrentUserId();
             // Tạo một entity Rating mới với các dữ liệu từ command.
             var rating = new Domain.Entities.Rating
             {
                 TourId = request.TourId,
-                UserId = request.UserId,
+                UserId = userId,
                 Star = request.Star,
                 Comment = request.Comment,
             };
@@ -59,7 +62,6 @@ namespace Application.Features.Rating.Commands
             var responseDto = new RatingResponse(
                 Id: rating.Id,
                 TourId: rating.TourId,
-                UserId: rating.UserId,
                 Star: rating.Star,
                 Comment: rating.Comment
                 );
