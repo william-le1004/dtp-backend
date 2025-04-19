@@ -2,31 +2,28 @@
 using Application.Contracts;
 using Application.Contracts.Persistence;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Features.Feedback.Commands
 {
-    // DTO FeedbackResponse: định nghĩa thông tin trả về sau khi tạo Feedback
     public record FeedbackResponse(
         Guid Id,
         Guid TourScheduleId,
         string? Description
     );
 
-    // Command tạo Feedback; client gửi TourScheduleId, UserId và Description
     public record CreateFeedbackCommand(
         Guid TourScheduleId,
         string? Description
     ) : IRequest<ApiResponse<FeedbackResponse>>;
 
-    // Handler xử lý tạo Feedback
     public class CreateFeedbackHandler : IRequestHandler<CreateFeedbackCommand, ApiResponse<FeedbackResponse>>
     {
         private readonly IDtpDbContext _context;
         private readonly IUserContextService _userContextService;
-
 
         public CreateFeedbackHandler(IDtpDbContext context, IUserContextService userContextService)
         {
@@ -36,15 +33,33 @@ namespace Application.Features.Feedback.Commands
 
         public async Task<ApiResponse<FeedbackResponse>> Handle(CreateFeedbackCommand request, CancellationToken cancellationToken)
         {
-            // Sử dụng fully qualified name để tránh nhầm lẫn với namespace Feedback
+            // 1. Lấy userId từ context
             var userId = _userContextService.GetCurrentUserId();
+            if (string.IsNullOrEmpty(userId))
+                return ApiResponse<FeedbackResponse>.Failure("User is not authenticated", 401);
+
+            // 2. Kiểm tra TourSchedule có tồn tại chưa
+            bool scheduleExists = await _context.TourSchedules
+                .AsNoTracking()
+                .AnyAsync(ts => ts.Id == request.TourScheduleId, cancellationToken);
+            if (!scheduleExists)
+                return ApiResponse<FeedbackResponse>.Failure("TourSchedule not found", 404);
+
+            // 3. Kiểm tra User có tồn tại chưa (AspNetUsers table)
+            bool userExists = await _context.Users
+                .AsNoTracking()
+                .AnyAsync(u => u.Id == userId, cancellationToken);
+            if (!userExists)
+                return ApiResponse<FeedbackResponse>.Failure("User not found", 404);
+
+            // 4. Tạo Feedback
             var feedback = new Domain.Entities.Feedback
             {
+                Id = Guid.NewGuid(),                  // sinh khoá chính
                 TourScheduleId = request.TourScheduleId,
                 UserId = userId,
                 Description = request.Description
             };
-            
 
             _context.Feedbacks.Add(feedback);
             await _context.SaveChangesAsync(cancellationToken);
@@ -54,7 +69,6 @@ namespace Application.Features.Feedback.Commands
                 feedback.TourScheduleId,
                 feedback.Description
             );
-
             return ApiResponse<FeedbackResponse>.SuccessResult(response, "Feedback created successfully");
         }
     }
