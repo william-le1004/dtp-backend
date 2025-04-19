@@ -1,10 +1,12 @@
 ﻿using Application.Features.Order.Commands;
-using Application.Features.Order.Dto;
 using Application.Features.Order.Queries;
+using Domain.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.OData.Formatter;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace Api.Controllers;
 
@@ -18,6 +20,14 @@ public class OrderController(IMediator mediator) : ControllerBase
     public async Task<IEnumerable<OrderResponses>> GetTourBookings()
     {
         return await mediator.Send(new GetOrders());
+    }
+    
+    [HttpGet("tour/{tourId}")]
+    [EnableQuery]
+    [Authorize(Policy = ApplicationConst.HighLevelPermission)]
+    public async Task<IQueryable<OrderByTourResponse>> GetOrder([FromODataUri] Guid tourId)
+    {
+        return await mediator.Send(new GetOrdersByTour(tourId));
     }
 
     // GET: api/Oder/5

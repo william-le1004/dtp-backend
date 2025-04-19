@@ -2,6 +2,7 @@ using Api.Extensions;
 using Api.Filters;
 using Api.OutputCachingPolicy;
 using Application.Features.Company.Queries;
+using Application.Features.Order.Queries;
 using Application.Features.Tour.Queries;
 using Application.Features.Users.Queries;
 using Domain.Entities;
@@ -70,6 +71,7 @@ public static class DependencyInjection
     {
         var modelBuilder = new ODataConventionModelBuilder();
         modelBuilder.EntitySet<TourTemplateResponse>("Tour");
+        modelBuilder.EntitySet<OrderByTourResponse>("Order");
         modelBuilder.EntityType<TourScheduleResponse>()
             .Property(x => x.OpenDate).AsDate();
         modelBuilder.EntitySet<Destination>("Destination");

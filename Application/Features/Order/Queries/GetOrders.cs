@@ -11,9 +11,6 @@ public record OrderResponses
 {
     public Guid OrderId { get; init; }
     public string TourName { get; set; }
-    
-    public PaymentStatus PaymentStatus { get; init; }
-    
     public Guid TourId { get; init; }
     public string? TourThumbnail { get; set; }
     public DateTime TourDate { get; set; }
@@ -57,10 +54,6 @@ public class GetOrdersHandler(IDtpDbContext context, IUserContextService userSer
                 }).ToList(),
                 FinalCost = x.NetCost(),
                 Status = x.Status,
-                PaymentStatus = context.Payments
-                    .Where(p => p.BookingId == x.Id)
-                    .Select(p => p.Status)
-                    .FirstOrDefault()
             }).ToListAsync(cancellationToken: cancellationToken);
         return orders;
     }
