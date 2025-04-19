@@ -1,10 +1,12 @@
 using Api.Extensions;
 using Api.Filters;
+using Api.OutputCachingPolicy;
 using Application.Features.Company.Queries;
 using Application.Features.Tour.Queries;
 using Application.Features.Users.Queries;
 using Domain.Entities;
 using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
@@ -25,8 +27,9 @@ public static class DependencyInjection
         services.AddRedisOutputCache(options =>
         {
             options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(5)));
+            options.AddBasePolicy(b => b.AddPolicy<CustomPolicy>().SetCacheKeyPrefix("custom-"), true);
         });
-        
+        services.AddSingleton<IOutputCachePolicy, CustomPolicy>();
         var payOs = new PayOS(configuration["Environment:PayOs:ClientId"] ?? throw new Exception("Cannot find environment"),
             configuration["Environment:PayOs:ApiKey"] ?? throw new Exception("Cannot find environment"),
             configuration["Environment:PayOs:ChecksumKey"] ?? throw new Exception("Cannot find environment"));
