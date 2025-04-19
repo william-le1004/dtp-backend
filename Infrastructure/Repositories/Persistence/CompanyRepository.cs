@@ -62,9 +62,10 @@ public class CompanyRepository(DtpDbContext dbContext, UserManager<User> userMan
 
     public async Task<Company?> GetCompanyAsync(Guid companyId) =>
         await dbContext.Companies
+            .Where(c => c.Id == companyId)
             .Include(c => c.Staffs)
             .Include(c => c.Tours)
-            .FirstOrDefaultAsync(c => c.Id == companyId);
+            .FirstOrDefaultAsync();
 
     public async Task<bool> UpsertCompanyAsync(Company company)
     {
@@ -76,13 +77,13 @@ public class CompanyRepository(DtpDbContext dbContext, UserManager<User> userMan
         return await UpdateCompanyAsync(company);
     }
 
-    public async Task<bool> IsCompanyExist(string name) => 
+    public async Task<bool> ExistsByNameAsync(string name) => 
         !await dbContext.Companies.AnyAsync(c => c.Name == name);
     
-    public async Task<bool> IsEmailCompanyExist(string gmail) => 
+    public async Task<bool> ExistsByEmailAsync(string gmail) => 
         !await dbContext.Companies.AnyAsync(c => c.Email == gmail);
 
-    public async Task<string> GetCompanyName(Guid id) =>
+    public async Task<string> GetNameByIdAsync(Guid id) =>
         await dbContext.Companies
             .Where(c => c.Id == id)
             .Select(c => c.Name).FirstOrDefaultAsync() ?? string.Empty;

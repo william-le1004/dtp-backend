@@ -18,7 +18,7 @@ public class CreateCompanyValidator : AbstractValidator<CreateCompanyCommand>
         RuleFor(x => x.Name)
             .MustAsync(async (name, cancellation) =>
             {
-                var companyExists = await repository.IsCompanyExist(name);
+                var companyExists = await repository.ExistsByNameAsync(name);
                 return companyExists;
             }).WithMessage("Company with this name already exists.")
             .NotEmpty().WithMessage("Name is required.")
@@ -35,7 +35,7 @@ public class CreateCompanyValidator : AbstractValidator<CreateCompanyCommand>
         RuleFor(x => x.Email)
             .MustAsync(async (email, cancellation) =>
             {
-                var emailExists = await repository.IsEmailCompanyExist(email);
+                var emailExists = await repository.ExistsByEmailAsync(email);
                 return emailExists;
             })
             .NotEmpty().WithMessage("Email is required.")

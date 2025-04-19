@@ -18,7 +18,7 @@ public class UpdateCompanyValidator : AbstractValidator<UpdateCompanyCommand>
         RuleFor(x => x)
             .MustAsync(async (command, cancellation) =>
             {
-                var company = await repository.IsCompanyExist(command.Name);
+                var company = await repository.ExistsByNameAsync(command.Name);
                 return company;
             }).WithMessage("Company with this name already exists.");
         

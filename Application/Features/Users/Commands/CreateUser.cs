@@ -80,7 +80,7 @@ public class CreateUserCommandHandler(
                 request.Email,
                 request.UserName,
                 $"{request.UserName}{ApplicationConst.DefaultPassword}",
-                await companyRepository.GetCompanyName(request.CompanyId),
+                await companyRepository.GetNameByIdAsync(request.CompanyId),
                 await authenticationService.GenerateConfirmUrl(request.Email, request.ConfirmUrl)
             ), cancellationToken);
             

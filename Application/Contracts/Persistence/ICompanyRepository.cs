@@ -8,7 +8,7 @@ public interface ICompanyRepository
     Task<IEnumerable<Company>> GetCompaniesAsync();
     Task<Company?> GetCompanyAsync(Guid companyId);
     Task<bool> UpsertCompanyAsync(Company company);
-    Task<bool> IsCompanyExist(string name);
-    Task<string> GetCompanyName(Guid id);
-    Task<bool> IsEmailCompanyExist(string gmail);
+    Task<bool> ExistsByNameAsync(string name);
+    Task<string> GetNameByIdAsync(Guid id);
+    Task<bool> ExistsByEmailAsync(string gmail);
 }
