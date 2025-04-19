@@ -33,6 +33,10 @@ app.UseMiddleware<JwtBlacklistMiddleware>();
 
 RecurringJob.AddOrUpdate<IHangfireJobService>("HardDeleteJob",
     job => job.HardDeleteExpiredEntities(), Cron.Monthly);
+RecurringJob.AddOrUpdate<IOrderJobService>(
+    nameof(IOrderJobService.MarkToursAsCompleted),
+    service => service.MarkToursAsCompleted(),
+    "0 2 * * *");
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -41,7 +45,6 @@ app.UseCors("all");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseODataRouteDebug();
-app.UseOutputCache();
 app.MapControllers();
 app.UseHttpsRedirection();
 

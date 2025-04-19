@@ -19,4 +19,5 @@ public static class ApplicationConst
     public const string AppName = "Binh Dinh Tour";
     
     public const string CancelOrderQueue = "cancel-order";
+    public const string CompleteOrderQueue = "complete-order";
 }

@@ -120,7 +120,7 @@ public partial class TourBooking : AuditEntity
         Status = BookingStatus.AwaitingPayment;
     }
     
-    public void Complete(string remark)
+    public void Complete(string? remark = null)
     {
         if (Status != BookingStatus.Paid)
         {
