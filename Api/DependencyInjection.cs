@@ -5,6 +5,7 @@ using Application.Features.Company.Queries;
 using Application.Features.Order.Queries;
 using Application.Features.Tour.Queries;
 using Application.Features.Users.Queries;
+using Application.Features.Wallet.Queries;
 using Domain.Entities;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OutputCaching;
@@ -71,6 +72,7 @@ public static class DependencyInjection
     {
         var modelBuilder = new ODataConventionModelBuilder();
         modelBuilder.EntitySet<TourTemplateResponse>("Tour");
+        modelBuilder.EntitySet<TransactionResponse>("Wallet");
         modelBuilder.EntitySet<OrderByTourResponse>("Order");
         modelBuilder.EntityType<TourScheduleResponse>()
             .Property(x => x.OpenDate).AsDate();

@@ -47,6 +47,7 @@ public class DtpDbContext(DbContextOptions<DtpDbContext> options, IMediator medi
     public virtual DbSet<Category> Categories { get; set; }
     public virtual DbSet<DestinationActivity> DestinationActivities { get; set; }
     public virtual DbSet<Voucher> Voucher { get; set; }
+    public virtual DbSet<ExternalTransaction> ExternalTransaction { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

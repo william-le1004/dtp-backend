@@ -8,6 +8,7 @@ namespace Application.Features.Wallet.Queries;
 
 public record TransactionResponse
 {
+    public Guid Id { get; init; }
     public string? Description { get; set; }
     
     public decimal Amount { get; set; }
@@ -36,6 +37,7 @@ public class GetTransactionHistoryHandler(IDtpDbContext context, IUserContextSer
             .First(x => x.UserId == userId).Transactions
             .Select(x => new TransactionResponse()
             {
+                Id = x.Id,
                 Description = x.Description,
                 Amount = x.Amount,
                 CreatedAt = x.CreatedAt,

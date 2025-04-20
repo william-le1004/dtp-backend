@@ -11,7 +11,7 @@ public class Transaction : Entity
     public string TransactionCode { get; private set; }
 
     public string? Description { get; private set; }
-    public string RefTransactionCode { get; private set; }
+    public string? RefTransactionCode { get; private set; }
 
     public decimal AfterTransactionBalance { get; private set; }
 

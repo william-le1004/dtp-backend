@@ -33,7 +33,7 @@ public class WalletController(IMediator mediator) : ODataController
 
     [EnableQuery]
     [HttpGet("transaction")]
-    public async Task<IQueryable<TransactionResponse>> GetWalletTransaction()
+    public async Task<IQueryable<TransactionResponse>> Get()
     {
         return await mediator.Send(new GetTransactionHistory());
     }
@@ -62,7 +62,7 @@ public class WalletController(IMediator mediator) : ODataController
         var withdrawRequest = await mediator.Send(request);
         
         return withdrawRequest.Match<ActionResult>(
-            Some: (value) => Created(value.Id),
+            Some: (value) => Ok(new {id = value.Id}),
             None: () => BadRequest($"Wallet not found."));
     }
     
