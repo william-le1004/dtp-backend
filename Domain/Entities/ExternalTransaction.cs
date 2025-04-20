@@ -29,7 +29,7 @@ public class ExternalTransaction : AuditEntity
         ExternalTransactionCode = (int.Parse(DateTimeOffset.Now.ToString("ssfff"))
                                    + userId.Substring(0, 8)).Random();
         Description = description;
-        Amount = amount <= 0
+        Amount = amount >= 0
             ? amount
             : throw new ArgumentException("Amount must be greater than zero.", nameof(amount));
         Type = type;
