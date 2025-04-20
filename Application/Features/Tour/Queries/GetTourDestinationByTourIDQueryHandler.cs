@@ -26,7 +26,7 @@ namespace Application.Features.Tour.Queries
         TimeSpan EndTime,
         int? SortOrder,
         int? SortOrderByDate,
-        string? Img 
+        List<string> img 
     );
 
     // Query: lấy danh sách TourDestination theo TourId
@@ -67,7 +67,7 @@ namespace Application.Features.Tour.Queries
                 EndTime: td.EndTime,
                 SortOrder: td.SortOrder,
                 SortOrderByDate: td.SortOrderByDate,
-                Img: imageUrls.FirstOrDefault(i => i.RefId == td.Id)?.Url
+                img: imageUrls.Where(i => i.RefId == td.Id).Select(i => i.Url).ToList()
             )).ToList();
 
             return ApiResponse<List<TourDestinationDto>>.SuccessResult(dtoList, "Tour destinations retrieved successfully");
