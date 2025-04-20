@@ -45,6 +45,7 @@ namespace Application.Features.Rating.Commands
             // Tạo một entity Rating mới với các dữ liệu từ command.
             var rating = new Domain.Entities.Rating
             {
+                Id = Guid.NewGuid(), 
                 TourId = request.TourId,
                 UserId = userId,
                 Star = request.Star,
