@@ -1,5 +1,6 @@
 using Application.Contracts;
 using Application.Contracts.Persistence;
+using Application.Extensions;
 using Domain.Constants;
 using Domain.Entities;
 using Infrastructure.Contexts;
@@ -42,20 +43,13 @@ public class UserRepository(
         return await query.ToListAsync();
     }
 
-    public async Task<User?> GetUserDetailAsync(string userId, bool noTracking)
-    {
-        IQueryable<User> query = dtpDbContext.Users
+    public async Task<User?> GetUserDetailAsync(string userId, bool noTracking) =>
+        await dtpDbContext.Users
             .AsSplitQuery()
             .Include(x => x.Company)
-            .Include(x => x.Wallet);
-
-        if (noTracking)
-        {
-            query = query.AsNoTracking();
-        }
-
-        return await query.FirstOrDefaultAsync(x => x.Id == userId);
-    }
+            .Include(x => x.Wallet)
+            .ApplyNoTracking(noTracking)
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
     public async Task<string> GetUserRole(string userId)
     {

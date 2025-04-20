@@ -1,5 +1,5 @@
 ﻿using Domain.Common;
-using Domain.DataModel;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Extensions;
 
@@ -12,4 +12,7 @@ public static class QueryableExtensions
 
         return source.Where(x => x.IsDeleted == isDeleted);
     }
+    
+    public static IQueryable<T> ApplyNoTracking<T>(this IQueryable<T> query, bool noTracking) where T : class =>
+        noTracking ? query.AsNoTracking() : query;
 }

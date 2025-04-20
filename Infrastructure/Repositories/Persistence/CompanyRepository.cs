@@ -1,4 +1,5 @@
 using Application.Contracts.Persistence;
+using Application.Extensions;
 using Domain.Constants;
 using Domain.Entities;
 using Domain.Extensions;
@@ -59,17 +60,13 @@ public class CompanyRepository(DtpDbContext dbContext, UserManager<User> userMan
             .AsNoTracking()
             .ToListAsync();
 
-    public async Task<Company?> GetCompanyAsync(Guid companyId, bool noTracking)
-    {
-        IQueryable<Company> query = dbContext.Companies
+    public async Task<Company?> GetCompanyAsync(Guid companyId, bool noTracking) =>
+        await dbContext.Companies
+            .Where(c => c.Id == companyId)
             .Include(c => c.Staffs)
-            .Include(c => c.Tours);
-
-        if (noTracking)
-            query = query.AsNoTracking();
-
-        return await query.FirstOrDefaultAsync(c => c.Id == companyId);
-    }
+            .Include(c => c.Tours)
+            .ApplyNoTracking(noTracking)
+            .FirstOrDefaultAsync();
 
     public async Task<bool> UpsertCompanyAsync(Company company)
     {
