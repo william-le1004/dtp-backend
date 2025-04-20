@@ -11,7 +11,7 @@ public class DeleteUserCommandHandler(IUserRepository userRepository)
 {
     public async Task<ApiResponse<bool>> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetUserDetailAsync(request.UserId);
+        var user = await userRepository.GetUserDetailAsync(request.UserId, false);
 
         if (user is null)
             return ApiResponse<bool>.Failure("User not found");

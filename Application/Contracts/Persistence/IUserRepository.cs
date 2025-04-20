@@ -8,7 +8,7 @@ public interface IUserRepository
     Task<bool> UpdateProfileAsync(User user, string role);
     Task<bool> InactiveUserAsync(User user);
     Task<IEnumerable<User>> GetAllAsync();
-    Task<User?> GetUserDetailAsync(string userId);
+    Task<User?> GetUserDetailAsync(string userId, bool noTracking = true);
     Task<string> GetUserRole(string userId);
     Task<User> GetAdmin();
 }

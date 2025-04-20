@@ -57,7 +57,7 @@ public class UpdateProfileCommandHandler(IUserRepository userRepository)
 
         try
         {
-            var user = await userRepository.GetUserDetailAsync(request.Id);
+            var user = await userRepository.GetUserDetailAsync(request.Id, false);
             if (user is null) return ApiResponse<bool>.Failure("User not found", 404);
 
             user.UpdateProfile(request.Name, request.Address, request.PhoneNumber, request.Email, request.UserName);

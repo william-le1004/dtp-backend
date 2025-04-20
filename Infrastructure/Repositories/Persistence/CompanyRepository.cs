@@ -1,4 +1,3 @@
-using Application.Contracts;
 using Application.Contracts.Persistence;
 using Domain.Constants;
 using Domain.Entities;
@@ -60,12 +59,17 @@ public class CompanyRepository(DtpDbContext dbContext, UserManager<User> userMan
             .AsNoTracking()
             .ToListAsync();
 
-    public async Task<Company?> GetCompanyAsync(Guid companyId) =>
-        await dbContext.Companies
-            .Where(c => c.Id == companyId)
+    public async Task<Company?> GetCompanyAsync(Guid companyId, bool noTracking)
+    {
+        IQueryable<Company> query = dbContext.Companies
             .Include(c => c.Staffs)
-            .Include(c => c.Tours)
-            .FirstOrDefaultAsync();
+            .Include(c => c.Tours);
+
+        if (noTracking)
+            query = query.AsNoTracking();
+
+        return await query.FirstOrDefaultAsync(c => c.Id == companyId);
+    }
 
     public async Task<bool> UpsertCompanyAsync(Company company)
     {
@@ -96,7 +100,7 @@ public class CompanyRepository(DtpDbContext dbContext, UserManager<User> userMan
 
     private async Task<bool> UpdateCompanyAsync(Company company)
     {
-        var existingCompany = await GetCompanyAsync(company.Id)
+        var existingCompany = await GetCompanyAsync(company.Id, false)
                               ?? throw new KeyNotFoundException($"Company with ID {company.Id} not found.");
 
         if (existingCompany.Licensed)
