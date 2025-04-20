@@ -52,6 +52,11 @@ namespace Application.Features.Tour.Queries
                 UserEmail: r.User.Email,
                 Star: r.Star,
                 Comment: r.Comment
+            // Nếu có hình ảnh, lấy danh sách URL từ ImageUrls
+                , Images: _context.ImageUrls
+                    .Where(i => i.RefId == r.Id)
+                    .Select(i => i.Url)
+                    .ToList()
             )).ToList();
 
             return ApiResponse<List<RatingDto>>.SuccessResult(ratingDtos, "Ratings retrieved successfully");

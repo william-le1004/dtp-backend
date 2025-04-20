@@ -18,7 +18,7 @@ namespace Application.Features.Tour.Queries
         string? About,
         string? Include,
         string? Pickinfor,
-        string? Img
+        List<string>? Img
     );
     // Query nhận vào TourId
     public record GetTourInforByTourIDQuery(Guid TourId) : IRequest<ApiResponse<TourInforDto>>;
@@ -53,7 +53,10 @@ namespace Application.Features.Tour.Queries
                 About: tour.About,
                 Include: tour.Include,
                 Pickinfor: tour.Pickinfor,
-                Img: _context.ImageUrls.Any(i => i.RefId == tour.Id) ? _context.ImageUrls.FirstOrDefault(i => i.RefId == tour.Id).Url : null
+                Img: _context.ImageUrls
+                    .Where(i => i.RefId == tour.Id)
+                    .Select(i => i.Url)
+                    .ToList()
             );
 
             return ApiResponse<TourInforDto>.SuccessResult(dto, "Tour information retrieved successfully");
