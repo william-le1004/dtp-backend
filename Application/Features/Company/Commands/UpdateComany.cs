@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.Company.Commands;
 
-public record UpdateCompanyCommand(Guid Id, string Name, string Email, string Phone, string TaxCode, double CommissionRate)
+public record UpdateCompanyCommand(Guid Id, string Name, string Email, string Phone, string Address, string TaxCode, double CommissionRate)
     : IRequest<ApiResponse<bool>>;
 
 public class UpdateCompanyValidator : AbstractValidator<UpdateCompanyCommand>
@@ -15,18 +15,23 @@ public class UpdateCompanyValidator : AbstractValidator<UpdateCompanyCommand>
     {
         var repository = companyRepository;
         
-        RuleFor(x => x)
-            .MustAsync(async (command, cancellation) =>
-            {
-                var company = await repository.ExistsByNameAsync(command.Name);
-                return company;
-            }).WithMessage("Company with this name already exists.");
-        
         RuleFor(x => x.Name)
+            .MustAsync(async (name, cancellation) => await repository.ExistsByNameAsync(name))
+            .WithMessage("Company with this name already exists.")
             .NotEmpty().WithMessage("Name is required.")
             .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
+        
+        RuleFor(x => x.CommissionRate)
+            .NotEmpty().WithMessage("Commission Rate is required.")
+            .InclusiveBetween(0, 100).WithMessage("Commission Rate must be between 0 and 100.");
+        
+        RuleFor(x => x.Address)
+            .NotEmpty().WithMessage("Address is required.")
+            .MaximumLength(100).WithMessage("Address must not exceed 100 characters.");
 
         RuleFor(x => x.Email)
+            .MustAsync(async (email, cancellation) =>
+                await repository.ExistsByEmailAsync(email))
             .NotEmpty().WithMessage("Email is required.")
             .EmailAddress().WithMessage("A valid email is required.");
 
