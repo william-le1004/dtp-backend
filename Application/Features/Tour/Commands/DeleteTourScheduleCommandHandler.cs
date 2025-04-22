@@ -1,6 +1,8 @@
 ﻿using Application.Common;
 using Application.Contracts.Persistence;
-using Application.Features.Wallet.Events; // Giả sử PaymentRefunded được định nghĩa ở đây
+using Application.Features.Wallet.Events;
+using Application.Messaging.Tour;
+using Application.Messaging.Wallet;
 using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +40,8 @@ namespace Application.Features.Tour.Commands
                             s.OpenDate.HasValue && s.OpenDate.Value.Date >= request.StartDay.ToDateTime(TimeOnly.MinValue) &&
                             s.CloseDate.HasValue && s.CloseDate.Value.Date <= request.EndDay.ToDateTime(TimeOnly.MinValue))
                 .Include(s => s.TourScheduleTickets)
+                .Include(s => s.Tour)
+                .ThenInclude(t => t.Company)
                 .ToListAsync(cancellationToken);
 
             if (!schedules.Any())
@@ -62,27 +66,27 @@ namespace Application.Features.Tour.Commands
                     booking.Cancel(request.Remark);
                     if (payment != null)
                     {
-                        decimal refundAmount = 0;
-                        // Giả sử nếu booking ở free cancellation period, hoàn tiền 100%; nếu không, hoàn tiền 70% nếu booking gần khởi hành
-                        if (booking.IsFreeCancellationPeriod())
-                        {
-                            refundAmount = payment.NetCost;
-                        }
-                        else if (booking.TourSchedule.IsBeforeStartDate(4))
-                        {
-                            refundAmount = payment.NetCost * 0.7m;
-                        }
+                        // Trong trường hợp này, hoàn tiền 100%
+                        decimal refundAmount = payment.NetCost;
 
-                        // Nếu có refundAmount > 0, thực hiện hoàn tiền cho người dùng
-                        if (refundAmount > 0)
-                        {
-                            // Phát hành sự kiện PaymentRefunded (sự kiện này sẽ được xử lý riêng)
-                            await _publisher.Publish(new PaymentRefunded(refundAmount, booking.UserId, booking.Code), cancellationToken);
+                        // Publish TourCancelled event
+                        await _publisher.Publish(new TourCancelled(
+                            CompanyName: schedule.Tour.Company.Name,
+                            TourTitle: schedule.Tour.Title,
+                            BookingCode: booking.Code,
+                            CustomerName: booking.Name,
+                            StartDate: schedule.OpenDate.Value,
+                            Remark: request.Remark ?? "Tour cancelled by admin",
+                            PaidAmount: payment.NetCost,
+                            RefundAmount: refundAmount
+                        ), cancellationToken);
 
-                            // Gọi refund trên Payment (cập nhật trạng thái, ...)
-                            payment.Refund();
-                            _context.Payments.Update(payment);
-                        }
+                        // Publish PaymentRefunded event
+                        await _publisher.Publish(new PaymentRefunded(refundAmount, booking.UserId, booking.Code), cancellationToken);
+
+                        // Gọi refund trên Payment (cập nhật trạng thái, ...)
+                        payment.Refund();
+                        _context.Payments.Update(payment);
                     }
                 }
 
