@@ -42,6 +42,17 @@ namespace Application.Features.Rating.Commands
         {
             // Lấy UserId từ dịch vụ người dùng hiện tại
             var userId = _userContextService.GetCurrentUserId();
+            if (string.IsNullOrEmpty(userId))
+                return ApiResponse<RatingResponse>.Failure("User is not authenticated", 401);
+
+            // Kiểm tra xem user đã rating tour này chưa
+            var existingRating = await _context.Ratings
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.UserId == userId && r.TourId == request.TourId, cancellationToken);
+
+            if (existingRating != null)
+                return ApiResponse<RatingResponse>.Failure("You have already rated this tour", 400);
+
             // Tạo một entity Rating mới với các dữ liệu từ command.
             var rating = new Domain.Entities.Rating
             {

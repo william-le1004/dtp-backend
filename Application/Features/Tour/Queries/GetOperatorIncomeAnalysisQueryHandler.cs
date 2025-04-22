@@ -53,99 +53,111 @@ namespace Application.Features.Tour.Queries
 
         public async Task<ApiResponse<OperatorIncomeAnalysisResponse>> Handle(GetOperatorIncomeAnalysisQuery request, CancellationToken cancellationToken)
         {
-            // Lấy CompanyId của operator từ dịch vụ ngữ cảnh
-            var companyId = _userContextService.GetCompanyId();
-            if (!companyId.HasValue || companyId.Value == Guid.Empty)
-                return ApiResponse<OperatorIncomeAnalysisResponse>.Failure("Operator is not associated with any company", 404);
-
-            // Xác định tháng hiện tại
-            var now = DateTime.Now;
-            var firstDayOfMonth = new DateTime(now.Year, now.Month, 1);
-            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
-
-            // 1. Tính DailySales:
-            // Lấy tất cả các booking của các tour thuộc công ty trong tháng hiện tại.
-            // Giả sử TourBooking có trường CreatedAt (được thừa hưởng từ AuditEntity) và phương thức NetCost() trả về chi phí booking.
-            var bookingsThisMonth = await _context.TourBookings
-                .Include(tb => tb.Tickets)  // Tickets chứa Quantity của vé.
-                .Include(tb => tb.TourSchedule)
-                    .ThenInclude(ts => ts.Tour)
-                .Where(tb => tb.TourSchedule.Tour.CompanyId == companyId.Value
-                             && tb.CreatedAt >= firstDayOfMonth
-                             && tb.CreatedAt <= lastDayOfMonth)
-                .ToListAsync(cancellationToken);
-
-            var dailySales = bookingsThisMonth
-                .GroupBy(tb => DateOnly.FromDateTime(tb.CreatedAt))
-                .Select(g => new DailySalesDto(
-                    Date: g.Key,
-                    TicketsSold: g.Sum(tb => tb.Tickets.Sum(t => t.Quantity)),
-                    TotalIncome: g.Sum(tb => tb.NetCost()) // Giả sử NetCost() trả về tổng chi phí sau discount của booking.
-                ))
-                .OrderBy(ds => ds.Date)
-                .ToList();
-
-            // 2. Top 5 Tours được mua nhiều nhất:
-            // Lấy các booking của các tour thuộc công ty, sau đó nhóm theo TourId và tính tổng số lượng vé đã bán.
-            var tourSales = await _context.TourBookings
-                .Include(tb => tb.TourSchedule)
-                    .ThenInclude(ts => ts.Tour)
-                .Include(tb => tb.Tickets)
-                .Where(tb => tb.TourSchedule.Tour.CompanyId == companyId.Value)
-                .ToListAsync(cancellationToken);
-
-            var topTourSales = tourSales
-                .GroupBy(tb => tb.TourSchedule.TourId)
-                .Select(g => new
-                {
-                    TourId = g.Key,
-                    TicketsSold = g.Sum(tb => tb.Tickets.Sum(t => t.Quantity))
-                })
-                .OrderByDescending(x => x.TicketsSold)
-                .Take(5)
-                .ToList();
-
-            var topTours = new List<TopTourDto>();
-            foreach (var sale in topTourSales)
+            try
             {
-                // Lấy thông tin tour
-                var tour = await _context.Tours
+                // Lấy CompanyId của operator từ dịch vụ ngữ cảnh
+                var companyId = _userContextService.GetCompanyId();
+                if (!companyId.HasValue || companyId.Value == Guid.Empty)
+                    return ApiResponse<OperatorIncomeAnalysisResponse>.Failure("Operator is not associated with any company", 404);
+
+                // Xác định tháng hiện tại
+                var now = DateTime.Now;
+                var firstDayOfMonth = new DateTime(now.Year, now.Month, 1);
+                var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+                // 1. Tính DailySales
+                var bookingsThisMonth = await _context.TourBookings
+                    .Include(tb => tb.Tickets)
+                    .Include(tb => tb.TourSchedule)
+                        .ThenInclude(ts => ts.Tour)
+                    .Where(tb => tb.TourSchedule != null && 
+                                tb.TourSchedule.Tour != null && 
+                                tb.TourSchedule.Tour.CompanyId == companyId.Value &&
+                                tb.CreatedAt >= firstDayOfMonth &&
+                                tb.CreatedAt <= lastDayOfMonth)
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(t => t.Id == sale.TourId, cancellationToken);
-                if (tour != null)
+                    .ToListAsync(cancellationToken);
+
+                var dailySales = bookingsThisMonth
+                    .GroupBy(tb => DateOnly.FromDateTime(tb.CreatedAt))
+                    .Select(g => new DailySalesDto(
+                        Date: g.Key,
+                        TicketsSold: g.Sum(tb => tb.Tickets?.Sum(t => t.Quantity) ?? 0),
+                        TotalIncome: g.Sum(tb => tb.NetCost())
+                    ))
+                    .OrderBy(ds => ds.Date)
+                    .ToList();
+
+                // 2. Top 5 Tours được mua nhiều nhất
+                var tourSales = await _context.TourBookings
+                    .Include(tb => tb.TourSchedule)
+                        .ThenInclude(ts => ts.Tour)
+                    .Include(tb => tb.Tickets)
+                    .Where(tb => tb.TourSchedule != null && 
+                                tb.TourSchedule.Tour != null && 
+                                tb.TourSchedule.Tour.CompanyId == companyId.Value)
+                    .AsNoTracking()
+                    .ToListAsync(cancellationToken);
+
+                var topTourSales = tourSales
+                    .GroupBy(tb => tb.TourSchedule.TourId)
+                    .Select(g => new
+                    {
+                        TourId = g.Key,
+                        TicketsSold = g.Sum(tb => tb.Tickets?.Sum(t => t.Quantity) ?? 0)
+                    })
+                    .OrderByDescending(x => x.TicketsSold)
+                    .Take(5)
+                    .ToList();
+
+                var topTours = new List<TopTourDto>();
+                foreach (var sale in topTourSales)
                 {
-                    topTours.Add(new TopTourDto(
-                        TourId: tour.Id,
-                        TourTitle: tour.Title,
-                        TicketsSold: sale.TicketsSold
-                    ));
+                    var tour = await _context.Tours
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(t => t.Id == sale.TourId, cancellationToken);
+                    if (tour != null)
+                    {
+                        topTours.Add(new TopTourDto(
+                            TourId: tour.Id,
+                            TourTitle: tour.Title,
+                            TicketsSold: sale.TicketsSold
+                        ));
+                    }
                 }
+
+                // 3. 5 Newest Bookings
+                var newestBookings = await _context.TourBookings
+                    .Include(tb => tb.TourSchedule)
+                        .ThenInclude(ts => ts.Tour)
+                    .Where(tb => tb.TourSchedule != null && 
+                                tb.TourSchedule.Tour != null && 
+                                tb.TourSchedule.Tour.CompanyId == companyId.Value)
+                    .AsNoTracking()
+                    .OrderByDescending(tb => tb.CreatedAt)
+                    .Take(5)
+                    .ToListAsync(cancellationToken);
+
+                var newestBookingDtos = newestBookings.Select(tb => new NewestBookingDto(
+                    BookingId: tb.Id,
+                    BookingCode: tb.Code,
+                    CreatedAt: tb.CreatedAt,
+                    TourTitle: tb.TourSchedule?.Tour?.Title ?? "Unknown Tour",
+                    TotalCost: tb.NetCost()
+                )).ToList();
+
+                var responseDto = new OperatorIncomeAnalysisResponse(
+                    DailySales: dailySales,
+                    TopTours: topTours,
+                    NewestBookings: newestBookingDtos
+                );
+
+                return ApiResponse<OperatorIncomeAnalysisResponse>.SuccessResult(responseDto, "Operator income analysis retrieved successfully");
             }
-
-            // 3. 5 Newest Bookings:
-            var newestBookings = await _context.TourBookings
-                .Include(tb => tb.TourSchedule)
-                    .ThenInclude(ts => ts.Tour)
-                .Where(tb => tb.TourSchedule.Tour.CompanyId == companyId.Value)
-                .OrderByDescending(tb => tb.CreatedAt)
-                .Take(5)
-                .ToListAsync(cancellationToken);
-
-            var newestBookingDtos = newestBookings.Select(tb => new NewestBookingDto(
-                BookingId: tb.Id,
-                BookingCode: tb.Code,
-                CreatedAt: tb.CreatedAt,
-                TourTitle: tb.TourSchedule.Tour.Title,
-                TotalCost: tb.NetCost()
-            )).ToList();
-
-            var responseDto = new OperatorIncomeAnalysisResponse(
-                DailySales: dailySales,
-                TopTours: topTours,
-                NewestBookings: newestBookingDtos
-            );
-
-            return ApiResponse<OperatorIncomeAnalysisResponse>.SuccessResult(responseDto, "Operator income analysis retrieved successfully");
+            catch (Exception ex)
+            {
+                return ApiResponse<OperatorIncomeAnalysisResponse>.Failure($"Error retrieving operator income analysis: {ex.Message}", 500);
+            }
         }
     }
 }
