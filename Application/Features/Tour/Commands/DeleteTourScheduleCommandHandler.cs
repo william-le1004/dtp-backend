@@ -54,6 +54,7 @@ namespace Application.Features.Tour.Commands
                 // Kiểm tra các booking có trạng thái Paid cho schedule hiện tại
                 var paidBookings = await _context.TourBookings
                     .Where(tb => tb.TourScheduleId == schedule.Id && tb.Status == BookingStatus.Paid)
+                    .Include(tb => tb.User)
                     .ToListAsync(cancellationToken);
 
                 foreach (var booking in paidBookings)
@@ -75,6 +76,7 @@ namespace Application.Features.Tour.Commands
                             TourTitle: schedule.Tour.Title,
                             BookingCode: booking.Code,
                             CustomerName: booking.Name,
+                            CustomerEmail: booking.User?.Email ?? string.Empty,
                             StartDate: schedule.OpenDate.Value,
                             Remark: request.Remark ?? "Tour cancelled by admin",
                             PaidAmount: payment.NetCost,

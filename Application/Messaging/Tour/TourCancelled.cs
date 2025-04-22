@@ -7,6 +7,7 @@ public record TourCancelled(
     string TourTitle,
     string BookingCode,
     string CustomerName,
+    string CustomerEmail,
     DateTime StartDate,
     string Remark,
     decimal PaidAmount,
