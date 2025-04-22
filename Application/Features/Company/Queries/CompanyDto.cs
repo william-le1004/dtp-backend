@@ -10,7 +10,8 @@ public record CompanyDto(
     bool Licensed,
     int Staff,
     int TourCount,
-    double CommissionRate);
+    double CommissionRate,
+    bool IsDelete);
 
 public record CompanyDetailDto(
     Guid Id,

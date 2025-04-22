@@ -15,7 +15,8 @@ public static class CompanyMappingExtensions
             entity.Licensed,
             entity.StaffCount(),
             entity.TourCount(),
-            entity.CommissionRate
+            entity.CommissionRate,
+            entity.IsDeleted
         );
 
     public static CompanyDetailDto MapToCompanyDetailDto(this Domain.Entities.Company entity,
