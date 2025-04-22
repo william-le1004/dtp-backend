@@ -361,10 +361,6 @@ namespace Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Images")
-                        .IsRequired()
-                        .HasColumnType("json");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
@@ -724,7 +720,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("RefTransactionCode")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("Status")
@@ -850,8 +845,8 @@ namespace Infrastructure.Migrations
                             Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
                             AccessFailedCount = 0,
                             Address = "123 Admin St",
-                            ConcurrencyStamp = "1286c068-fcf8-4d1a-a41c-f4344befba0c",
-                            CreatedAt = new DateTime(2025, 4, 13, 15, 44, 33, 343, DateTimeKind.Utc).AddTicks(4003),
+                            ConcurrencyStamp = "bee3246f-3466-4af1-9085-fe6384c7abf8",
+                            CreatedAt = new DateTime(2025, 4, 22, 14, 10, 22, 450, DateTimeKind.Utc).AddTicks(8892),
                             CreatedBy = "System",
                             Email = "dtpAdmin@gmail.com",
                             EmailConfirmed = true,
@@ -860,10 +855,10 @@ namespace Infrastructure.Migrations
                             Name = "Admin User",
                             NormalizedEmail = "DTPADMIN@GMAIL.COM",
                             NormalizedUserName = "DTPADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFQP/VtgYwZ17IaSdlsFpQnhzPsjlTQb/cFvN4qGiadvg4cdeVpNsRM/VbwRiS2FQA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGtvLrxlIQeZrH1cReK4E4JCZzuQZhr5bC/Em0bOmTq1fi3dLjV2bPRTZnP26r135A==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "3e10743f-a753-49d8-a57d-cad62b54116b",
+                            SecurityStamp = "63007789-0888-4368-bef9-1244fdf6db57",
                             TwoFactorEnabled = false,
                             UserName = "dtpAdmin"
                         },
@@ -872,8 +867,8 @@ namespace Infrastructure.Migrations
                             Id = "9e224968-33e4-4652-b7b7-8574d048cdb9",
                             AccessFailedCount = 0,
                             Address = "456 Operator Rd",
-                            ConcurrencyStamp = "1d061681-2d87-4688-9e15-d6b2d1ac09c6",
-                            CreatedAt = new DateTime(2025, 4, 13, 15, 44, 33, 401, DateTimeKind.Utc).AddTicks(7941),
+                            ConcurrencyStamp = "dfcbe297-a62d-4e96-a42d-d9abb3a5aa8a",
+                            CreatedAt = new DateTime(2025, 4, 22, 14, 10, 22, 499, DateTimeKind.Utc).AddTicks(6355),
                             CreatedBy = "System",
                             Email = "operator@gmail.com",
                             EmailConfirmed = true,
@@ -882,10 +877,10 @@ namespace Infrastructure.Migrations
                             Name = "Operator User",
                             NormalizedEmail = "OPERATOR@GMAIL.COM",
                             NormalizedUserName = "OPERATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGp7dqr94445esT/++ir4cfme+KpjYTIo7Td0flhTeb+L59BMvA2YdmW0ijBSwQQrg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPLWIRcDSIKyAiVcqi5Qdp8Oqnyf3fC/zSHBWx8P+39cgEktNYHp9Hk4Ehdg273gJw==",
                             PhoneNumber = "0987654321",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0ed63b42-366e-47bc-a634-5a491bc22f45",
+                            SecurityStamp = "0a50ec29-f5af-452f-ad60-177ef411a6ff",
                             TwoFactorEnabled = false,
                             UserName = "operator"
                         });
@@ -929,17 +924,17 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8368db05-5fb6-4be4-b7e1-acb210eda9fc"),
+                            Id = new Guid("a1f0501a-f18b-4318-96de-833a01630168"),
                             Balance = 1000m,
-                            CreatedAt = new DateTime(2025, 4, 13, 22, 44, 33, 404, DateTimeKind.Local).AddTicks(1957),
+                            CreatedAt = new DateTime(2025, 4, 22, 21, 10, 22, 507, DateTimeKind.Local).AddTicks(9079),
                             IsDeleted = false,
                             UserId = "8e445865-a24d-4543-a6c6-9443d048cdb9"
                         },
                         new
                         {
-                            Id = new Guid("17b632b7-082a-4b47-8a17-0b87c5f91291"),
+                            Id = new Guid("8f0cebfb-ea05-4eb0-9b8a-a3b80cb4a7cd"),
                             Balance = 500m,
-                            CreatedAt = new DateTime(2025, 4, 13, 22, 44, 33, 404, DateTimeKind.Local).AddTicks(2019),
+                            CreatedAt = new DateTime(2025, 4, 22, 21, 10, 22, 507, DateTimeKind.Local).AddTicks(9130),
                             IsDeleted = false,
                             UserId = "9e224968-33e4-4652-b7b7-8574d048cdb9"
                         });

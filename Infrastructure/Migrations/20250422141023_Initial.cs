@@ -58,6 +58,7 @@ namespace Infrastructure.Migrations
                     Name = table.Column<string>(type: "longtext", nullable: false),
                     Email = table.Column<string>(type: "longtext", nullable: false),
                     Phone = table.Column<string>(type: "longtext", nullable: false),
+                    Address = table.Column<string>(type: "longtext", nullable: false),
                     TaxCode = table.Column<string>(type: "longtext", nullable: false),
                     CommissionRate = table.Column<double>(type: "double", nullable: false),
                     Licensed = table.Column<bool>(type: "tinyint(1)", nullable: false),
@@ -391,7 +392,6 @@ namespace Infrastructure.Migrations
                     TourId = table.Column<Guid>(type: "char(36)", nullable: false),
                     UserId = table.Column<string>(type: "varchar(255)", nullable: false),
                     Star = table.Column<int>(type: "int", nullable: false),
-                    Images = table.Column<string>(type: "json", nullable: false),
                     Comment = table.Column<string>(type: "longtext", nullable: false),
                     IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -505,7 +505,7 @@ namespace Infrastructure.Migrations
                     WalletId = table.Column<Guid>(type: "char(36)", nullable: false),
                     TransactionCode = table.Column<string>(type: "longtext", nullable: false),
                     Description = table.Column<string>(type: "longtext", nullable: true),
-                    RefTransactionCode = table.Column<string>(type: "longtext", nullable: false),
+                    RefTransactionCode = table.Column<string>(type: "longtext", nullable: true),
                     AfterTransactionBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
@@ -752,8 +752,8 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "Address", "CompanyId", "ConcurrencyStamp", "CreatedAt", "CreatedBy", "Email", "EmailConfirmed", "IsActive", "LastModified", "LastModifiedBy", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "OtpKey", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecureToken", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "8e445865-a24d-4543-a6c6-9443d048cdb9", 0, "123 Admin St", null, "454b2235-a233-4a47-8dac-3cc9d0dcee78", new DateTime(2025, 4, 11, 14, 3, 12, 429, DateTimeKind.Utc).AddTicks(6621), "System", "dtpAdmin@gmail.com", true, true, null, null, false, null, "Admin User", "DTPADMIN@GMAIL.COM", "DTPADMIN", null, "AQAAAAIAAYagAAAAEEcg3u8BA2EjnFe4tXjji7EKAXH30ueF8Wca3lC3Eyt4wWs1a+yw6riFgDUEQJY+Bg==", "1234567890", false, null, "09dd41bb-ebc9-4be8-8f09-f12ae0644767", false, "dtpAdmin" },
-                    { "9e224968-33e4-4652-b7b7-8574d048cdb9", 0, "456 Operator Rd", null, "d6a0cb43-d181-416d-8297-82dca3072acd", new DateTime(2025, 4, 11, 14, 3, 12, 478, DateTimeKind.Utc).AddTicks(3364), "System", "operator@gmail.com", true, true, null, null, false, null, "Operator User", "OPERATOR@GMAIL.COM", "OPERATOR", null, "AQAAAAIAAYagAAAAEFei5km+iv65RxGIGBNWLFFJ4AAlefxqcFY11jk0CyjbPg3AQhvl0Cu0Luw0nbE1lQ==", "0987654321", false, null, "83c8aed1-6171-4a33-a951-49e4f1842122", false, "operator" }
+                    { "8e445865-a24d-4543-a6c6-9443d048cdb9", 0, "123 Admin St", null, "bee3246f-3466-4af1-9085-fe6384c7abf8", new DateTime(2025, 4, 22, 14, 10, 22, 450, DateTimeKind.Utc).AddTicks(8892), "System", "dtpAdmin@gmail.com", true, true, null, null, false, null, "Admin User", "DTPADMIN@GMAIL.COM", "DTPADMIN", null, "AQAAAAIAAYagAAAAEGtvLrxlIQeZrH1cReK4E4JCZzuQZhr5bC/Em0bOmTq1fi3dLjV2bPRTZnP26r135A==", "1234567890", false, null, "63007789-0888-4368-bef9-1244fdf6db57", false, "dtpAdmin" },
+                    { "9e224968-33e4-4652-b7b7-8574d048cdb9", 0, "456 Operator Rd", null, "dfcbe297-a62d-4e96-a42d-d9abb3a5aa8a", new DateTime(2025, 4, 22, 14, 10, 22, 499, DateTimeKind.Utc).AddTicks(6355), "System", "operator@gmail.com", true, true, null, null, false, null, "Operator User", "OPERATOR@GMAIL.COM", "OPERATOR", null, "AQAAAAIAAYagAAAAEPLWIRcDSIKyAiVcqi5Qdp8Oqnyf3fC/zSHBWx8P+39cgEktNYHp9Hk4Ehdg273gJw==", "0987654321", false, null, "0a50ec29-f5af-452f-ad60-177ef411a6ff", false, "operator" }
                 });
 
             migrationBuilder.InsertData(
@@ -770,8 +770,8 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "Balance", "CreatedAt", "CreatedBy", "IsDeleted", "LastModified", "LastModifiedBy", "UserId" },
                 values: new object[,]
                 {
-                    { new Guid("7ab5c9b3-3b5f-4a5a-b609-55f965cd76b0"), 1000m, new DateTime(2025, 4, 11, 21, 3, 12, 482, DateTimeKind.Local).AddTicks(4513), null, false, null, null, "8e445865-a24d-4543-a6c6-9443d048cdb9" },
-                    { new Guid("b55a8915-0fef-4df5-999d-3cafb9785108"), 500m, new DateTime(2025, 4, 11, 21, 3, 12, 482, DateTimeKind.Local).AddTicks(4579), null, false, null, null, "9e224968-33e4-4652-b7b7-8574d048cdb9" }
+                    { new Guid("8f0cebfb-ea05-4eb0-9b8a-a3b80cb4a7cd"), 500m, new DateTime(2025, 4, 22, 21, 10, 22, 507, DateTimeKind.Local).AddTicks(9130), null, false, null, null, "9e224968-33e4-4652-b7b7-8574d048cdb9" },
+                    { new Guid("a1f0501a-f18b-4318-96de-833a01630168"), 1000m, new DateTime(2025, 4, 22, 21, 10, 22, 507, DateTimeKind.Local).AddTicks(9079), null, false, null, null, "8e445865-a24d-4543-a6c6-9443d048cdb9" }
                 });
 
             migrationBuilder.CreateIndex(
