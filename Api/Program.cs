@@ -45,6 +45,7 @@ app.UseCors("all");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseODataRouteDebug();
+app.UseOutputCache();
 app.UseMiddleware<TransactionMiddleware>();
 app.MapControllers();
 app.UseHttpsRedirection();
