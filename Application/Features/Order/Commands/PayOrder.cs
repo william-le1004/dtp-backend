@@ -19,6 +19,12 @@ public class PayOrderHandler(
     {
         var payment = await context.Payments
             .Include(x => x.Booking)
+            .ThenInclude(x => x.Tickets)
+            .ThenInclude(x => x.TicketType)
+            .Include(x => x.Booking)
+            .ThenInclude(x => x.TourSchedule)
+            .ThenInclude(x=> x.Tour)
+            .AsSingleQuery()
             .FirstOrDefaultAsync(x => x.Booking.RefCode == request.OrderCode
                                       && x.Status == PaymentStatus.Pending,
                 cancellationToken: cancellationToken);
@@ -48,6 +54,7 @@ public class PayOrderHandler(
         context.Payments.Update(payment);
         context.Wallets.UpdateRange(wallet, poolFund);
         await context.SaveChangesAsync(cancellationToken);
+        
         var jobId = storageService.GetScheduleJobIdByArgId(
             nameof(IOrderJobService.CancelOrder), payment.BookingId);
         jobService.PaidCheck(jobId);

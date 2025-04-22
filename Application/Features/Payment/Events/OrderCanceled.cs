@@ -27,8 +27,6 @@ public class OrderCanceledHandler(IDtpDbContext context, IPublisher publisher) :
                     await publisher.Publish(new PaymentRefunded(refundAmount, notification.UserId,
                         notification.OrderCode), cancellationToken);
                     payment.Refund();
-                    context.Payments.Update(payment);
-                    await context.SaveChangesAsync(cancellationToken);
                 }
                 else if (payment.Booking.TourSchedule.IsBeforeStartDate(4))
                 {
@@ -36,16 +34,14 @@ public class OrderCanceledHandler(IDtpDbContext context, IPublisher publisher) :
                     await publisher.Publish(new PaymentRefunded(refundAmount, notification.UserId,
                         notification.OrderCode), cancellationToken);
                     payment.Refund();
-                    context.Payments.Update(payment);
-                    await context.SaveChangesAsync(cancellationToken);
                 }
             }
             else
             {
                 payment.Cancel();
-                context.Payments.Update(payment);
-                await context.SaveChangesAsync(cancellationToken);
             }
+            context.Payments.Update(payment);
+            await context.SaveChangesAsync(cancellationToken);
         }
     }
 }

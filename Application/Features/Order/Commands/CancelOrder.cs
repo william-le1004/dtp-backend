@@ -18,7 +18,12 @@ public class CancelOrderHandler(
     public async Task<Option<Guid>> Handle(CancelOrder request, CancellationToken cancellationToken)
     {
         var userId = userService.GetCurrentUserId()!;
-        var order = await context.TourBookings.Include(x => x.TourSchedule)
+        var order = await context.TourBookings
+            .Include(x => x.Tickets)
+            .ThenInclude(x => x.TicketType)
+            .Include(x => x.TourSchedule)
+            .ThenInclude(x=> x.Tour)
+            .AsSingleQuery()
             .SingleOrDefaultAsync(x => x.UserId == userId
                                        && x.Id == request.Id, cancellationToken: cancellationToken);
 

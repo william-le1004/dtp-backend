@@ -41,8 +41,11 @@ namespace Application.Features.Tour.Commands
 
             // 2. Tìm tất cả các booking đã Paid
             var paidBookings = await _context.TourBookings
-                .Include(tb => tb.Tickets)
-                .Include(tb => tb.TourSchedule)
+                .Include(x => x.Tickets)
+                .ThenInclude(x => x.TicketType)
+                .Include(x => x.TourSchedule)
+                .ThenInclude(x=> x.Tour)
+                .AsSingleQuery()
                 .Where(tb => tb.TourSchedule.TourId == tour.Id && tb.Status == BookingStatus.Paid)
                 .ToListAsync(cancellationToken);
 

@@ -61,8 +61,13 @@ namespace Application.Features.Tour.Commands
                 {
                     // Lấy Payment tương ứng với booking
                     var payment = await _context.Payments
-                        .Include(p => p.Booking)
-                        .ThenInclude(b => b.TourSchedule)
+                        .Include(x => x.Booking)
+                        .ThenInclude(x => x.Tickets)
+                        .ThenInclude(x => x.TicketType)
+                        .Include(x => x.Booking)
+                        .ThenInclude(x => x.TourSchedule)
+                        .ThenInclude(x=> x.Tour)
+                        .AsSingleQuery()
                         .FirstOrDefaultAsync(p => p.BookingId == booking.Id, cancellationToken);
                     booking.Cancel(request.Remark);
                     if (payment != null)

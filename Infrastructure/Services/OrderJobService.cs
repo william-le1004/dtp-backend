@@ -29,7 +29,11 @@ public class OrderJobService(
     public async Task CancelOrder(Guid bookingId)
     {
         var order = await context.TourBookings
+            .Include(x => x.Tickets)
+            .ThenInclude(x => x.TicketType)
             .Include(x => x.TourSchedule)
+            .ThenInclude(x=> x.Tour)
+            .AsSingleQuery()
             .FirstOrDefaultAsync(x => x.Id == bookingId && x.Status == BookingStatus.AwaitingPayment);
         if (order is not null)
         {

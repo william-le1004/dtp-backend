@@ -1,10 +1,11 @@
 ﻿using Domain.Enum;
+using Domain.Events;
 using Domain.Extensions;
 using Domain.ValueObject;
 
 namespace Domain.Entities;
 
-public partial class TourBooking : AuditEntity
+public partial class TourBooking : Entity
 {
     public string UserId { get; private set; }
     public string Code { get; init; }
@@ -108,6 +109,7 @@ public partial class TourBooking : AuditEntity
 
         Status = BookingStatus.Cancelled;
         Remark = remark;
+        AddOrderCancelDomainEvent();
     }
 
     public void WaitingForPayment()
@@ -140,6 +142,7 @@ public partial class TourBooking : AuditEntity
 
         Status = BookingStatus.Paid;
         Remark = remark;
+        AddOrderPaidDomainEvent();
     }
 
     public bool IsFreeCancellationPeriod()
@@ -151,6 +154,50 @@ public partial class TourBooking : AuditEntity
     public bool IsOverdue()
     {
         return CreatedAt.AddHours(1) > DateTime.Now;
+    }
+    
+    private void AddOrderPaidDomainEvent()
+    {
+        var orderPaid = new OrderPaid
+        {
+             OrderId = Id,
+             OrderCode = Code,
+             TourName = TourSchedule.Tour.Title,
+             TourDate = TourSchedule.OpenDate,
+             FinalCost = NetCost(),
+             Email = Email,
+             OrderTickets = Tickets.Select(x=> new OrderPaid.OrderedTicket()
+             {
+                 Code = x.Code,
+                 Quantity = x.Quantity,
+                 TicketKind = x.TicketType.TicketKind.ToString(),
+                 GrossCost = x.GrossCost
+             }).ToList()
+        };
+        
+        AddDomainEvent(orderPaid);
+    }
+    
+    private void AddOrderCancelDomainEvent()
+    {
+        var orderPaid = new OrderCanceled()
+        {
+            OrderId = Id,
+            OrderCode = Code,
+            TourName = TourSchedule.Tour.Title,
+            TourDate = TourSchedule.OpenDate,
+            FinalCost = NetCost(),
+            Email = Email,
+            OrderTickets = Tickets.Select(x=> new OrderCanceled.OrderedTicket()
+            {
+                Code = x.Code,
+                Quantity = x.Quantity,
+                TicketKind = x.TicketType.TicketKind.ToString(),
+                GrossCost = x.GrossCost
+            }).ToList()
+        };
+        
+        AddDomainEvent(orderPaid);
     }
     
     public DateTime OverBookingTime() => CreatedAt.AddHours(1);
