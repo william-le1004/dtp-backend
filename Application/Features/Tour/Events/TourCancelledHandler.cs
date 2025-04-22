@@ -22,7 +22,7 @@ public class TourCancelledHandler : INotificationHandler<TourCancelled>
             PaymentMethod: "Refund",
             TourName: notification.TourTitle,
             CustomerName: notification.CustomerName,
-            CustomerEmail: string.Empty, // Cần thêm vào event nếu cần
+            CustomerEmail: notification.CustomerEmail,
             CustomerPhone: string.Empty, // Cần thêm vào event nếu cần
             PaymentDate: DateTime.UtcNow,
             Status: "Cancelled"

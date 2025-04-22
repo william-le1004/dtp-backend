@@ -75,6 +75,7 @@ namespace Application.Features.Tour.Commands
                             TourTitle: schedule.Tour.Title,
                             BookingCode: booking.Code,
                             CustomerName: booking.Name,
+                            CustomerEmail: booking.Email,
                             StartDate: schedule.OpenDate.Value,
                             Remark: request.Remark ?? "Tour cancelled by admin",
                             PaidAmount: payment.NetCost,
