@@ -11,17 +11,17 @@ namespace Infrastructure.Repositories.Persistence;
 
 public class CompanyRepository(DtpDbContext dbContext, UserManager<User> userManager) : ICompanyRepository
 {
-    public async Task<bool> GrantCompanyAsync(Company company)
+    public async Task<Company> GrantCompanyAsync(Guid id)
     {
-        if (string.IsNullOrWhiteSpace(company.Email))
-            throw new InvalidOperationException("Company email is missing or invalid.");
+        var existCompany = await GetCompanyAsync(id, false);
+        if (existCompany is null)
+            throw new InvalidOperationException("Company not found.");
 
-        company.AcceptLicense();
+        existCompany.AcceptLicense();
 
-        await CreateUserForCompanyAsync(company);
-
+        await CreateUserForCompanyAsync(existCompany);
         await dbContext.SaveChangesAsync();
-        return true;
+        return existCompany;
     }
 
     private async Task CreateUserForCompanyAsync(Company company)
@@ -49,7 +49,7 @@ public class CompanyRepository(DtpDbContext dbContext, UserManager<User> userMan
         }
 
         await userManager.AddToRoleAsync(user, ApplicationRole.OPERATOR);
-        company.AddStaff(user);
+        user.AssignCompany(company.Id);
     }
 
     public async Task<IEnumerable<Company>> GetCompaniesAsync() =>
@@ -60,9 +60,9 @@ public class CompanyRepository(DtpDbContext dbContext, UserManager<User> userMan
             .AsNoTracking()
             .ToListAsync();
 
-    public async Task<Company?> GetCompanyAsync(Guid companyId, bool noTracking) =>
+    public async Task<Company?> GetCompanyAsync(Guid id, bool noTracking) =>
         await dbContext.Companies
-            .Where(c => c.Id == companyId)
+            .Where(c => c.Id == id)
             .Include(c => c.Staffs)
             .Include(c => c.Tours)
             .ApplyNoTracking(noTracking)

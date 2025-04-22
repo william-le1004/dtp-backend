@@ -32,18 +32,9 @@ public class GrantLicenseCommandHandler(
 
         try
         {
-            var company = await companyRepository.GetCompanyAsync(request.CompanyId);
-            if (company == null)
-            {
-                return ApiResponse<bool>.Failure("Company Not Found", (int)HttpStatusCode.NotFound,
-                    ["Company Not Found"]);
-            }
-
-
-            var result = await companyRepository.GrantCompanyAsync(company);
-
-            var staff = company.Staffs.FirstOrDefault(u =>
-                u.CompanyId == company.Id &&
+            var result = await companyRepository.GrantCompanyAsync(request.CompanyId);
+            var staff = result.Staffs.FirstOrDefault(u =>
+                u.CompanyId == result.Id &&
                 userManager.IsInRoleAsync(u, ApplicationRole.OPERATOR).Result);
 
             if (staff == null)
@@ -51,12 +42,13 @@ public class GrantLicenseCommandHandler(
                 return ApiResponse<bool>.Failure("Operator staff not found", (int)HttpStatusCode.NotFound,
                     ["Operator staff not found"]);
             }
+
             await eventBus.PublishAsync(new UserCreated(
-                staff.Name,           
+                staff.Name,
                 staff.Email,
                 staff.UserName,
                 $"{staff.UserName}{ApplicationConst.DefaultPassword}",
-                company.Name,
+                result.Name,
                 await authenticationService.GenerateConfirmUrl(staff.Email, request.ConfirmUrl)
             ), cancellationToken);
 
@@ -66,11 +58,8 @@ public class GrantLicenseCommandHandler(
                 staff.UserName,
                 staff.Email
             );
-            
-            return result
-                ? ApiResponse<bool>.SuccessResult(true, "Company Already Granted License")
-                : ApiResponse<bool>.Failure("Company Not Found", (int)HttpStatusCode.NotFound,
-                    ["Company Not Found"]);
+
+            return ApiResponse<bool>.SuccessResult(true, "Company Already Granted License");
         }
         catch (Exception ex)
         {
