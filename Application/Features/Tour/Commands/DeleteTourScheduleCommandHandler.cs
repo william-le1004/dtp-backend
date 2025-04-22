@@ -37,8 +37,9 @@ namespace Application.Features.Tour.Commands
             // Lấy tất cả các TourSchedule của Tour có TourId = request.TourId và nằm trong khoảng thời gian được chỉ định
             var schedules = await _context.TourSchedules
                 .Where(s => s.TourId == request.TourId &&
-                            s.OpenDate.HasValue && s.OpenDate.Value.Date >= request.StartDay.ToDateTime(TimeOnly.MinValue) &&
-                            s.CloseDate.HasValue && s.CloseDate.Value.Date <= request.EndDay.ToDateTime(TimeOnly.MinValue))
+                            s.OpenDate.HasValue && 
+                            s.OpenDate.Value.Date >= request.StartDay.ToDateTime(TimeOnly.MinValue) &&
+                            s.OpenDate.Value.Date <= request.EndDay.ToDateTime(TimeOnly.MinValue))
                 .Include(s => s.TourScheduleTickets)
                 .Include(s => s.Tour)
                 .ThenInclude(t => t.Company)
