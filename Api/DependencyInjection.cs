@@ -1,6 +1,7 @@
 using Api.Extensions;
 using Api.Filters;
 using Api.OutputCachingPolicy;
+using Application.Dtos;
 using Application.Features.Company.Queries;
 using Application.Features.Order.Queries;
 using Application.Features.Tour.Queries;
@@ -71,15 +72,22 @@ public static class DependencyInjection
     private static IEdmModel GetEdmModel()
     {
         var modelBuilder = new ODataConventionModelBuilder();
+        
         modelBuilder.EntitySet<TourTemplateResponse>("Tour");
-        modelBuilder.EntitySet<TransactionResponse>("Wallet");
-        modelBuilder.EntitySet<OrderByTourResponse>("Order");
         modelBuilder.EntityType<TourScheduleResponse>()
             .Property(x => x.OpenDate).AsDate();
+        
+        modelBuilder.EntitySet<TransactionResponse>("Wallet");
+        modelBuilder.EntitySet<OrderByTourResponse>("Order");
+        
         modelBuilder.EntitySet<Destination>("Destination");
         modelBuilder.EntitySet<Category>("Category");
         modelBuilder.EntitySet<UserDto>("User");
-        modelBuilder.EntitySet<CompanyDto>("Company");
+        
+        var companyEntity = modelBuilder.EntitySet<CompanyDto>("Company");
+        companyEntity.EntityType.Collection.Function("Tour")
+            .ReturnsFromEntitySet<TourByCompanyResponse>("Owner");
+        
         modelBuilder.EnableLowerCamelCase();
         return modelBuilder.GetEdmModel();
     }

@@ -1,5 +1,7 @@
+using Application.Dtos;
 using Application.Features.Company.Commands;
 using Application.Features.Company.Queries;
+using Application.Features.Tour.Queries;
 using Domain.Constants;
 using Infrastructure.Contexts;
 using MediatR;
@@ -58,5 +60,12 @@ public class CompanyController(IMediator mediator) : BaseController
     {
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
+    }
+    
+    [HttpGet("tour")]
+    [EnableQuery]
+    public async Task<IQueryable<TourByCompanyResponse>> Tour()
+    {
+        return await mediator.Send(new GetListTourByCompanyQuery());
     }
 }

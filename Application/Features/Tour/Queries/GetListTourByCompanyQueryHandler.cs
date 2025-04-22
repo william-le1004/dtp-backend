@@ -1,19 +1,15 @@
-﻿using Application.Common;
-using Application.Contracts;
+﻿using Application.Contracts;
 using Application.Contracts.Persistence;
 using Application.Dtos;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-// Giả sử TourResponse được định nghĩa, ví dụ: record TourResponse(Guid Id, string Title, Guid? CompanyId, Guid? Category, string? Description);
+
 
 namespace Application.Features.Tour.Queries
 {
-  
-    // Query nhận CompanyId và trả về danh sách TourResponse được bọc trong ApiResponse
-    public record GetListTourByCompanyQuery() : IRequest<ApiResponse<List<TourResponse>>>;
+    public record GetListTourByCompanyQuery() : IRequest<IQueryable<TourByCompanyResponse>>;
 
     public class
-        GetListTourByCompanyQueryHandler : IRequestHandler<GetListTourByCompanyQuery, ApiResponse<List<TourResponse>>>
+        GetListTourByCompanyQueryHandler : IRequestHandler<GetListTourByCompanyQuery, IQueryable<TourByCompanyResponse>>
     {
         private readonly IDtpDbContext _context;
         private readonly IUserContextService _userContextService;
@@ -24,19 +20,28 @@ namespace Application.Features.Tour.Queries
             _userContextService = userContextService;
         }
 
-        public async Task<ApiResponse<List<TourResponse>>> Handle(GetListTourByCompanyQuery request,
+        public Task<IQueryable<TourByCompanyResponse>> Handle(GetListTourByCompanyQuery request,
             CancellationToken cancellationToken)
         {
             var companyId = _userContextService.GetCompanyId();
-            var tours = await _context.Tours
-                .Where(t => t.CompanyId == companyId)
-                .ToListAsync(cancellationToken);
+            var tours = _context.Tours
+                .Where(t => t.CompanyId == companyId);
 
             var tourResponses = tours
-                .Select(t => new TourResponse(t.Id, t.Title, t.CompanyId, t.CategoryId, t.Description, t.About,t.Pickinfor,t.Include,t.IsDeleted))
-                .ToList();
+                .Select(t => new TourByCompanyResponse()
+                {
+                    Id = t.Id,
+                    CompanyId = t.CompanyId,
+                    Title = t.Title,
+                    CategoryId = t.CategoryId,
+                    Description = t.Description,
+                    About = t.About,
+                    Pickinfor = t.Pickinfor,
+                    Include = t.Include,
+                    IsDeleted = t.IsDeleted,
+                });
 
-            return ApiResponse<List<TourResponse>>.SuccessResult(tourResponses, "Tours retrieved successfully");
+            return Task.FromResult(tourResponses);
         }
     }
 }

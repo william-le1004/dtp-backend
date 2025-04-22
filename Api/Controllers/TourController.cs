@@ -2,7 +2,6 @@
 using Application.Features.Rating.Commands;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;
-using MassTransit.Mediator;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -12,7 +11,7 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class TourController(ILogger<TourController> logger, MediatR.IMediator mediator)
+public class TourController(ILogger<TourController> logger, IMediator mediator)
     : BaseController
 {
     [HttpGet]
@@ -56,12 +55,6 @@ public class TourController(ILogger<TourController> logger, MediatR.IMediator me
         var response = await mediator.Send(updatedCommand);
         return HandleServiceResult(response);
 
-    }
-    [HttpGet("company")]
-    public async Task<IActionResult> GetListTourByCompanyID()
-    {
-        var response = await mediator.Send(new GetListTourByCompanyQuery());
-        return HandleServiceResult(response);
     }
 
     [HttpPut("tourdestination/{id}")]
