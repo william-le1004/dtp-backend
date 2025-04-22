@@ -52,7 +52,15 @@ namespace Application.Features.Feedback.Commands
             if (!userExists)
                 return ApiResponse<FeedbackResponse>.Failure("User not found", 404);
 
-            // 4. Tạo Feedback
+            // 4. Kiểm tra xem user đã feedback cho tour schedule này chưa
+            var existingFeedback = await _context.Feedbacks
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.UserId == userId && f.TourScheduleId == request.TourScheduleId, cancellationToken);
+
+            if (existingFeedback != null)
+                return ApiResponse<FeedbackResponse>.Failure("You have already provided feedback for this tour schedule", 400);
+
+            // 5. Tạo Feedback
             var feedback = new Domain.Entities.Feedback
             {
                 Id = Guid.NewGuid(),                  // sinh khoá chính

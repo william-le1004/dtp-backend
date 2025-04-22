@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Contracts;
 using Application.Contracts.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -26,20 +27,38 @@ namespace Application.Features.Tour.Queries
     public class GetListFeedbackByTourQueryHandler : IRequestHandler<GetListFeedbackByTourQuery, ApiResponse<List<FeedbackResponse>>>
     {
         private readonly IDtpDbContext _context;
+        private readonly IUserContextService _userContextService;
 
-        public GetListFeedbackByTourQueryHandler(IDtpDbContext context)
+        public GetListFeedbackByTourQueryHandler(IDtpDbContext context, IUserContextService userContextService)
         {
             _context = context;
+            _userContextService = userContextService;
         }
 
         public async Task<ApiResponse<List<FeedbackResponse>>> Handle(GetListFeedbackByTourQuery request, CancellationToken cancellationToken)
         {
-            // Include thông tin TourSchedule và User để truy cập TourSchedule.TourId và thông tin người dùng
-            var feedbacks = await _context.Feedbacks
+            // Base query with includes
+            var query = _context.Feedbacks
                 .Include(f => f.TourSchedule)
+                    .ThenInclude(ts => ts.Tour)
                 .Include(f => f.User)
-                .Where(f => f.TourSchedule.TourId == request.TourId)
-                .ToListAsync(cancellationToken);
+                .Where(f => f.TourSchedule.TourId == request.TourId);
+
+            // Filter based on user role
+            if (_userContextService.IsOperatorRole())
+            {
+                var companyId = _userContextService.GetCompanyId();
+                if (!companyId.HasValue)
+                {
+                    return ApiResponse<List<FeedbackResponse>>.Failure("Operator is not associated with any company", 403);
+                }
+
+                // Operator can only see feedbacks for tours belonging to their company
+                query = query.Where(f => f.TourSchedule.Tour.CompanyId == companyId.Value);
+            }
+            // Admin can see all feedbacks, so no additional filter needed
+
+            var feedbacks = await query.ToListAsync(cancellationToken);
 
             var feedbackDtos = feedbacks.Select(f => new FeedbackResponse(
                 Id: f.Id,
