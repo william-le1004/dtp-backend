@@ -30,9 +30,7 @@ public static class DependencyInjection
         services.AddRedisOutputCache(options =>
         {
             options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(5)));
-            options.AddBasePolicy(b => b.AddPolicy<CustomPolicy>().SetCacheKeyPrefix("custom-"), true);
         });
-        services.AddSingleton<IOutputCachePolicy, CustomPolicy>();
         var payOs = new PayOS(configuration["Environment:PayOs:ClientId"] ?? throw new Exception("Cannot find environment"),
             configuration["Environment:PayOs:ApiKey"] ?? throw new Exception("Cannot find environment"),
             configuration["Environment:PayOs:ChecksumKey"] ?? throw new Exception("Cannot find environment"));

@@ -1,5 +1,6 @@
 using System.Net;
 using Application.Common;
+using Application.Contracts.Caching;
 using Application.Contracts.Persistence;
 using FluentValidation;
 using MediatR;
@@ -45,11 +46,12 @@ public class CreateCompanyValidator : AbstractValidator<CreateCompanyCommand>
     }
 }
 
-public class CreateCompanyCommandHandler(ICompanyRepository companyRepository)
+public class CreateCompanyCommandHandler(ICompanyRepository companyRepository, IRedisCacheService redisCache)
     : IRequestHandler<CreateCompanyCommand, ApiResponse<bool>>
 {
     public async Task<ApiResponse<bool>> Handle(CreateCompanyCommand request, CancellationToken cancellationToken)
     {
+        const string cacheKey = "GetAllCompanies";
         var validator = new CreateCompanyValidator(companyRepository);
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
@@ -65,6 +67,7 @@ public class CreateCompanyCommandHandler(ICompanyRepository companyRepository)
   
             await companyRepository.UpsertCompanyAsync(newCompany);
 
+            await redisCache.RemoveDataAsync(cacheKey);
             return ApiResponse<bool>.SuccessResult(true, "Company created successfully");
         }
         catch (Exception ex)
