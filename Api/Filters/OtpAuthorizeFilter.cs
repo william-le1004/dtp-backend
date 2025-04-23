@@ -36,7 +36,7 @@ public class OtpAuthorizeFilter(
         // Validate the OTP
         if (!ValidateOtp(user.OtpKey, otpHeader))
         {
-            context.Result = new ForbidResult("Invalid OTP.");
+            context.Result = new BadRequestObjectResult("Invalid OTP.");
         }
     }
 
