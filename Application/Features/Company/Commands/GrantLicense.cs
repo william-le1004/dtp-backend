@@ -52,7 +52,7 @@ public class GrantLicenseCommandHandler(
                 staff.UserName,
                 $"{staff.UserName}{ApplicationConst.DefaultPassword}",
                 result.Name,
-                await authenticationService.GenerateConfirmUrl(staff.Email, request.ConfirmUrl)
+                await authenticationService.GenerateConfirmUrl(staff.Email, request.ConfirmUrl, false)
             ), cancellationToken);
 
             logger.LogInformation(

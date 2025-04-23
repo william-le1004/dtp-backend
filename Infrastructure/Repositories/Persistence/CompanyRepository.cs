@@ -100,11 +100,6 @@ public class CompanyRepository(DtpDbContext dbContext, UserManager<User> userMan
         var existingCompany = await GetCompanyAsync(company.Id, false)
                               ?? throw new KeyNotFoundException($"Company with ID {company.Id} not found.");
 
-        if (existingCompany.Licensed)
-        {
-            throw new InvalidOperationException("Company is licensed and cannot be updated.");
-        }
-
         dbContext.Entry(existingCompany).CurrentValues.SetValues(company);
         return await SaveChangesAsync();
     }
