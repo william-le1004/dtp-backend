@@ -6,4 +6,6 @@ public interface IOrderJobService
     Task CancelOrder(Guid bookingId);
     void PaidCheck(string jobId);
     Task MarkToursAsCompleted();
+    void ScheduleCompleteOrder(Guid bookingId);
+    Task MarkOrderCompleted(Guid bookingId);
 }

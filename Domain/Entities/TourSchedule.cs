@@ -79,4 +79,9 @@ public class TourSchedule : AuditEntity
     {
         return OpenDate < DateTime.Now;
     }
+
+    public decimal GrossSettlementCost()
+    {
+       return TourBookings.Sum(x => x.NetCost());
+    }
 }
