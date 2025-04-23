@@ -7,9 +7,9 @@ public partial class TourDestination
 
     public Guid DestinationId { get; private set; }
 
-    public TimeSpan StartTime { get; private set; }
+    public TimeSpan? StartTime { get; private set; }
 
-    public TimeSpan EndTime { get; private set; }
+    public TimeSpan? EndTime { get; private set; }
 
     public int? SortOrder { get; private set; }
 
