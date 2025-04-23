@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Contracts.EventBus;
 using Application.Contracts.Persistence;
 using Application.Features.Wallet.Events;
 using Application.Messaging.Tour;
@@ -25,7 +26,7 @@ namespace Application.Features.Tour.Commands
     {
         private readonly IDtpDbContext _context;
         private readonly IPublisher _publisher;
-
+        IEventBus eventBus;
         public DeleteTourScheduleHandler(IDtpDbContext context, IPublisher publisher)
         {
             _context = context;
@@ -72,18 +73,16 @@ namespace Application.Features.Tour.Commands
                     booking.Cancel(request.Remark);
                     if (payment != null)
                     {
-                        // Trong trường hợp này, hoàn tiền 100%
                         decimal refundAmount = payment.NetCost;
 
-                        // Publish TourCancelled event
-                        await _publisher.Publish(new TourCancelled(
+                        await eventBus.PublishAsync(new TourCancelled(
                             CompanyName: schedule.Tour.Company.Name,
                             TourTitle: schedule.Tour.Title,
                             BookingCode: booking.Code,
                             CustomerName: booking.Name,
                             CustomerEmail: booking.Email,
                             StartDate: schedule.OpenDate.Value,
-                            Remark: request.Remark ?? "Tour cancelled by admin",
+                            Remark: request.Remark,
                             PaidAmount: payment.NetCost,
                             RefundAmount: refundAmount
                         ), cancellationToken);

@@ -10,6 +10,7 @@
         <Folder Include="Contracts\Persistence\" />
         <Folder Include="Features\Order\Queries\" />
         <Folder Include="Features\Payment\Queries\" />
+        <Folder Include="Features\Tour\Events\" />
     </ItemGroup>
 
     <ItemGroup>
