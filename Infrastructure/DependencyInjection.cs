@@ -92,7 +92,7 @@ public static class DependencyInjection
         services.AddScoped<IHangfireJobService, HangfireJobService>();
         services.AddScoped<IOrderJobService, OrderJobService>();
         services.AddScoped<IHangfireStorageService, HangfireStorageService>();
-        services.AddScoped<IAnalyticsService, AnalyticsService>();
+       
 
         services.AddAuthentication(item =>
         {
