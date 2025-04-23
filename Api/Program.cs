@@ -27,7 +27,7 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
 
-// app.UseMiddleware<ErrorHandlingMiddleware>();
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseHangfireDashboard("/hangfire");
 app.UseMiddleware<JwtBlacklistMiddleware>();
 
@@ -45,7 +45,7 @@ app.UseCors("all");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseODataRouteDebug();
-app.UseOutputCache();
+// app.UseOutputCache();
 app.UseMiddleware<TransactionMiddleware>();
 app.MapControllers();
 app.UseHttpsRedirection();
