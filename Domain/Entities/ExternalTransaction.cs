@@ -3,11 +3,11 @@ using Domain.Extensions;
 
 namespace Domain.Entities;
 
-public class ExternalTransaction : AuditEntity
+public partial class ExternalTransaction : AuditEntity
 {
-    public string UserId { get; private set; }
+    public string UserId { get; set; }
 
-    public virtual User User { get; private set; }
+    public virtual User User { get; set; } = null!;
 
     public string ExternalTransactionCode { get; private set; }
     
@@ -21,6 +21,10 @@ public class ExternalTransaction : AuditEntity
 
     public ExternalTransactionStatus Status { get; private set; }
 
+    public ExternalTransaction()
+    {
+    }
+    
     public ExternalTransaction(
         string transactionCode,
         decimal amount, ExternalTransactionType type, string userId, string? description = null
