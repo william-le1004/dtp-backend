@@ -31,7 +31,8 @@ public class GetOwnExternalTransactionHandler(IDtpDbContext context, IUserContex
                     CompanyName = x.User.Company != null ? x.User.Company.Name : string.Empty,
                     CompanyId = x.User.Company != null ? x.User.Company.Id : Guid.Empty,
                     Status = x.Status,
-                    Type = x.Type
+                    Type = x.Type,
+                    CreatedAt = x.CreatedAt,
                 });
         return Task.FromResult(externalTransactions);
     }

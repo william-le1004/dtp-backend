@@ -75,7 +75,11 @@ public static class DependencyInjection
         modelBuilder.EntityType<TourScheduleResponse>()
             .Property(x => x.OpenDate).AsDate();
         
+        modelBuilder.EntitySet<ExternalTransactionResponse>("ExternalTransaction")
+            .EntityType.Property(x=> x.CreatedAt).AsDate();
+        
         var transactionEntity = modelBuilder.EntitySet<TransactionResponse>("Wallet");
+        transactionEntity.EntityType.Property(x=> x.CreatedAt).AsDate();
         transactionEntity.EntityType.Collection.Function("ExternalTransaction")
             .ReturnsFromEntitySet<ExternalTransactionResponse>("ExternalTransaction");
         

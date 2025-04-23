@@ -23,6 +23,8 @@ public record ExternalTransactionResponse
     public ExternalTransactionType Type { get; set; }
 
     public ExternalTransactionStatus Status { get; set; }
+    
+    public DateTime CreatedAt { get; set; }
 }
 
 public record GetExternalTransaction() : IRequest<IQueryable<ExternalTransactionResponse>>;
@@ -49,7 +51,8 @@ public class GetExternalTransactionHandler(IDtpDbContext context)
                     CompanyName = x.User.Company != null ? x.User.Company.Name : string.Empty,
                     CompanyId = x.User.Company != null ? x.User.Company.Id : Guid.Empty,
                     Status = x.Status,
-                    Type = x.Type
+                    Type = x.Type,
+                    CreatedAt = x.CreatedAt,
                 });
         return Task.FromResult(externalTransactions);
     }
