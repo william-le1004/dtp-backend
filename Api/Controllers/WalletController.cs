@@ -12,7 +12,7 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-// [Authorize]
+[Authorize]
 public class WalletController(IMediator mediator) : ODataController
 {
     [HttpGet("otp")]
@@ -41,14 +41,14 @@ public class WalletController(IMediator mediator) : ODataController
     
     [EnableQuery]
     [HttpGet("external-transaction")]
-    // [Authorize(Roles = ApplicationRole.ADMIN)]
+    [Authorize(Roles = ApplicationRole.ADMIN)]
     public async Task<IQueryable<ExternalTransactionResponse>> ExternalTransaction()
     {
         return await mediator.Send(new GetExternalTransaction());
     }
     
     [HttpPost("external-transaction/{id}/accept")]
-    // [Authorize(Roles = ApplicationRole.ADMIN)]
+    [Authorize(Roles = ApplicationRole.ADMIN)]
     public async Task<IActionResult> AcceptExternalTransaction(Guid id)
     {
         await mediator.Send(new AcceptExternalTransaction(id));
