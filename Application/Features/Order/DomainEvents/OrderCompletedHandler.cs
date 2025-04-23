@@ -12,7 +12,9 @@ public class OrderCompletedHandler(IDtpDbContext context, IUserRepository reposi
         var tourSchedule = await context.TourSchedules
             .Include(x=> x.Tour)
             .Include(x=> x.TourBookings)
-            .ThenInclude(x=> x.Tickets).FirstOrDefaultAsync(x=> x.Id == notification.TourScheduleId, cancellationToken);
+            .ThenInclude(x=> x.Tickets)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x=> x.Id == notification.TourScheduleId, cancellationToken);
 
         if (tourSchedule is not null)
         {
@@ -33,7 +35,6 @@ public class OrderCompletedHandler(IDtpDbContext context, IUserRepository reposi
             
             context.Wallets.UpdateRange(receiveWallet, poolFund);
             await context.SaveChangesAsync(cancellationToken);
-            
         }
     }
 }

@@ -75,7 +75,7 @@ public class UserRepository(
     {
         var usersInRole = await userManager.GetUsersInRoleAsync(ApplicationRole.OPERATOR);
 
-        var user = usersInRole.FirstOrDefault();
+        var user = usersInRole.FirstOrDefault(x => x.CompanyId == companyId);
 
         if (user != null)
         {

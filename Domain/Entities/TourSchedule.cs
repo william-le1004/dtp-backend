@@ -82,6 +82,6 @@ public class TourSchedule : AuditEntity
 
     public decimal GrossSettlementCost()
     {
-       return TourBookings.Sum(x => x.NetCost());
+       return TourBookings.Where(x=> x.IsPaid()).Sum(x => x.NetCost());
     }
 }
