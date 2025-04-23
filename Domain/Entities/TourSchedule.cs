@@ -46,6 +46,17 @@ public class TourSchedule : AuditEntity
         return false;
     }
 
+    public bool IsAfterEndDate(int date)
+    {
+        var afterEndDate = CloseDate?.AddDays(date);
+        if (afterEndDate.HasValue)
+        {
+            return afterEndDate.Value <= DateTime.Now;
+        }
+
+        return false;
+    }
+
 
     public bool IsAvailableTicket(Guid ticketTypeId)
     {

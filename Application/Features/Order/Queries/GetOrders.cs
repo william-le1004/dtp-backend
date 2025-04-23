@@ -17,6 +17,8 @@ public record OrderResponses
     public List<OrderTicketResponse> OrderTickets { get; init; } = new ();
     public decimal FinalCost { get; set; }
     
+    public bool CanRating { get; set; }
+    
     public BookingStatus Status { get; set; }
 }
 
@@ -44,6 +46,7 @@ public class GetOrdersHandler(IDtpDbContext context, IUserContextService userSer
                     ? context.ImageUrls.FirstOrDefault(image => image.RefId == x.TourSchedule.Tour.Id)!.Url
                     : null,
                 TourDate = x.TourSchedule.OpenDate ?? DateTime.MinValue,
+                CanRating = x.CanRatting(),
                 OrderTickets = x.Tickets.Select(t => new OrderTicketResponse()
                 {
                     Code = t.Code,

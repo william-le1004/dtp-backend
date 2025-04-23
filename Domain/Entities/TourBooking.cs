@@ -199,7 +199,12 @@ public partial class TourBooking : Entity
         
         AddDomainEvent(orderPaid);
     }
-    
+
+    public bool CanRatting()
+    {
+        return IsPaid() && TourSchedule.IsAfterEndDate(1);
+    }
+
     public DateTime OverBookingTime() => CreatedAt.AddHours(1);
     
     public bool IsCancelled() => Status == BookingStatus.Cancelled;
