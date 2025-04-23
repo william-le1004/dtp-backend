@@ -39,6 +39,10 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
                     TicketTypes = t.Tickets,
                     Pickinfor = t.Pickinfor,
                     Include = t.Include,
+                    ImageUrls = context.ImageUrls
+                        .Where(img => img.RefId == t.Id)
+                        .Select(img => img.Url)
+                        .ToList()
                 },
                 TourDestinations = t.TourDestinations
                     .Select(td => new TourDestinationResponse
@@ -101,6 +105,7 @@ public record TourTemplateDetailsResponse
     public string? Pickinfor { get; set; }
 
     public List<TicketType> TicketTypes { get; set; } = new();
+    public List<string> ImageUrls { get; set; } = new();
 }
 
 public record TourDestinationResponse
