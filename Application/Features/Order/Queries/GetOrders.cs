@@ -37,7 +37,7 @@ public class GetOrdersHandler(IDtpDbContext context, IUserContextService userSer
             .AsSplitQuery()
             .AsNoTracking()
             .Where(x=> x.UserId == userId)
-            .OrderBy(x=> x.CreatedAt)
+            .OrderByDescending(x=> x.CreatedAt)
             .Select(x=> new OrderResponses()
             {
                 OrderId = x.Id,
