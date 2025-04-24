@@ -209,6 +209,7 @@ public partial class TourBooking : Entity
     public DateTime OverBookingTime() => CreatedAt.AddHours(1);
     
     public bool IsCancelled() => Status == BookingStatus.Cancelled;
+    public bool IsCompleted() => Status == BookingStatus.Completed;
     public bool IsPending() => Status == BookingStatus.AwaitingPayment;
     public bool IsPaid() => Status == BookingStatus.Paid;
     public bool IsPaymentProcessing() => Status == BookingStatus.AwaitingPayment;
