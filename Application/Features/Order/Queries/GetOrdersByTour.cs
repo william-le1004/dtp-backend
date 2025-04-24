@@ -18,7 +18,7 @@ public class GetOrdersByTourHandler(
         var companyId = service.GetCompanyId()!;
 
         var tour = context.Tours
-            .FirstOrDefault(x => x.CompanyId == companyId && x.Id != request.Id);
+            .FirstOrDefault(x => x.CompanyId == companyId && x.Id == request.Id);
 
         if (tour is not null)
         {
