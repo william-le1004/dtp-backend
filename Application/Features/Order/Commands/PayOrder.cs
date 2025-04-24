@@ -58,5 +58,6 @@ public class PayOrderHandler(
         var jobId = storageService.GetScheduleJobIdByArgId(
             nameof(IOrderJobService.CancelOrder), payment.BookingId);
         jobService.PaidCheck(jobId);
+        jobService.ScheduleCompleteOrder(payment.BookingId);
     }
 }

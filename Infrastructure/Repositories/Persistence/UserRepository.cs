@@ -71,6 +71,22 @@ public class UserRepository(
         return user!;
     }
 
+    public async Task<User> GetOperatorByCompanyId(Guid companyId)
+    {
+        var usersInRole = await userManager.GetUsersInRoleAsync(ApplicationRole.OPERATOR);
+
+        var user = usersInRole.FirstOrDefault(x => x.CompanyId == companyId);
+
+        if (user != null)
+        {
+            await userManager.Users.Include(x => x.Wallet)
+                .Include(x=> x.Company)
+                .FirstOrDefaultAsync(u => u.Id == user.Id && u.CompanyId == companyId);
+        }
+
+        return user!;
+    }
+
     public async Task<bool> CreateUserAsync(User user, string role, Guid companyId)
     {
         if (companyId != Guid.Empty)

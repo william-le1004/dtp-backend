@@ -86,7 +86,7 @@ public static class DependencyInjection
         services.AddScoped<IDtpDbContext, DtpDbContext>();
         services.AddHttpContextAccessor();
         services.AddScoped<IUserContextService, UserContextService>();
-        services.AddSingleton<ICloudinaryService,CloudinaryService>();
+        services.AddSingleton<ICloudinaryService, CloudinaryService>();
         services.AddTransient<IEventBus, EventBus>();
         services.AddScoped<AuditableEntityInterceptor>();
         services.AddScoped<IHangfireJobService, HangfireJobService>();
@@ -116,9 +116,9 @@ public static class DependencyInjection
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(ApplicationConst.AuthenticatedUser, 
+            options.AddPolicy(ApplicationConst.AuthenticatedUser,
                 policy => policy.RequireAuthenticatedUser());
-            options.AddPolicy(ApplicationConst.AdminPermission, 
+            options.AddPolicy(ApplicationConst.AdminPermission,
                 policy => policy.RequireRole(ApplicationRole.ADMIN));
             options.AddPolicy(ApplicationConst.ManagementPermission,
                 policy => policy.RequireRole(ApplicationRole.ADMIN, ApplicationRole.OPERATOR));
@@ -151,8 +151,16 @@ public static class DependencyInjection
                 SucceededListSize = 6,
                 UseTransactions = false
             }));
-        
-        services.AddHangfireServer();
+
+        services.AddHangfireServer(options =>
+        {
+            options.Queues =
+            [
+                ApplicationConst.CompleteOrderQueue,
+                ApplicationConst.CancelOrderQueue,
+                "default"
+            ];
+        });
 
         return services;
     }

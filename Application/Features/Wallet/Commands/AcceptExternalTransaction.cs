@@ -24,6 +24,9 @@ public class AcceptExternalTransactionHandler(
         if (externalTransaction is not null)
         {
             externalTransaction.AcceptWithdrawal();
+            context.ExternalTransaction.Update(externalTransaction);
+            context.SaveChangesAsync(cancellationToken);
+            
             eventBus.PublishAsync(new Withdrawn
             {
                 Amount = externalTransaction.Amount,

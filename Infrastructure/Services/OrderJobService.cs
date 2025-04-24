@@ -67,4 +67,26 @@ public class OrderJobService(
         context.TourBookings.UpdateRange(orders);
         await context.SaveChangesAsync();
     }
+
+
+    [Queue(ApplicationConst.CompleteOrderQueue)]
+    public async Task MarkOrderCompleted(Guid bookingId)
+    {
+        var order = await context.TourBookings
+            .Include(x => x.TourSchedule)
+            .FirstOrDefaultAsync(x => x.Status == BookingStatus.Paid
+                                      && x.Id == bookingId);
+
+        if (order is not null)
+        {
+            order.Complete();
+            context.TourBookings.Update(order);
+            await context.SaveChangesAsync();
+        }
+    }
+    
+    public void ScheduleCompleteOrder(Guid bookingId)
+    {
+        jobClient.Schedule(() => MarkOrderCompleted(bookingId), TimeSpan.FromMinutes(1));
+    }
 }
