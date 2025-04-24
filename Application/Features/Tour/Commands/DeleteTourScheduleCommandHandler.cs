@@ -40,7 +40,7 @@ namespace Application.Features.Tour.Commands
                 .Where(s => s.TourId == request.TourId &&
                             s.OpenDate.HasValue && 
                             s.OpenDate.Value.Date >= request.StartDay.ToDateTime(TimeOnly.MinValue) &&
-                            s.OpenDate.Value.Date <= request.EndDay.ToDateTime(TimeOnly.MinValue))
+                            s.OpenDate.Value.Date <= request.EndDay.ToDateTime(TimeOnly.MaxValue))
                 .Include(s => s.TourScheduleTickets)
                 .Include(s => s.Tour)
                 .ThenInclude(t => t.Company)
@@ -74,18 +74,6 @@ namespace Application.Features.Tour.Commands
                     if (payment != null)
                     {
                         decimal refundAmount = payment.NetCost;
-
-                        await eventBus.PublishAsync(new TourCancelled(
-                            CompanyName: schedule.Tour.Company.Name,
-                            TourTitle: schedule.Tour.Title,
-                            BookingCode: booking.Code,
-                            CustomerName: booking.Name,
-                            CustomerEmail: booking.Email,
-                            StartDate: schedule.OpenDate.Value,
-                            Remark: request.Remark,
-                            PaidAmount: payment.NetCost,
-                            RefundAmount: refundAmount
-                        ), cancellationToken);
 
                         // Publish PaymentRefunded event
                         await _publisher.Publish(new PaymentRefunded(refundAmount, booking.UserId, booking.Code), cancellationToken);
