@@ -35,65 +35,48 @@ namespace Application.Features.Tour.Commands
 
         public async Task<ApiResponse<string>> Handle(DeleteTourSchedule request, CancellationToken cancellationToken)
         {
-            // Lấy tất cả các TourSchedule của Tour có TourId = request.TourId và nằm trong khoảng thời gian được chỉ định
             var schedules = await _context.TourSchedules
-                .Where(s => s.TourId == request.TourId &&
-                            s.OpenDate.HasValue && 
-                            s.OpenDate.Value.Date >= request.StartDay.ToDateTime(TimeOnly.MinValue) &&
-                            s.OpenDate.Value.Date <= request.EndDay.ToDateTime(TimeOnly.MaxValue))
+                .Where(s => s.TourId == request.TourId
+                            && s.OpenDate.HasValue
+                            && s.OpenDate.Value.Date >= request.StartDay.ToDateTime(TimeOnly.MinValue)
+                            && s.OpenDate.Value.Date <= request.EndDay.ToDateTime(TimeOnly.MaxValue)
+                            && !s.IsDeleted)
                 .Include(s => s.TourScheduleTickets)
-                .Include(s => s.Tour)
-                .ThenInclude(t => t.Company)
+                .Include(s => s.TourBookings)   // <-- include bookings
                 .ToListAsync(cancellationToken);
 
             if (!schedules.Any())
-            {
-                return ApiResponse<string>.Failure("No tour schedules found in the given date range for the specified Tour", 404);
-            }
+                return ApiResponse<string>.Failure("No tour schedules found …", 404);
 
             foreach (var schedule in schedules)
             {
-                // Kiểm tra các booking có trạng thái Paid cho schedule hiện tại
-                var paidBookings = await _context.TourBookings
-                    .Where(tb => tb.TourScheduleId == schedule.Id && tb.Status == BookingStatus.Paid)
-                    .ToListAsync(cancellationToken);
-
-                foreach (var booking in paidBookings)
+                // refund tất cả booking Paid
+                var paid = schedule.TourBookings
+                                 .Where(tb => tb.Status == BookingStatus.Paid)
+                                 .ToList();
+                foreach (var booking in paid)
                 {
-                    // Lấy Payment tương ứng với booking
-                    var payment = await _context.Payments
-                        .Include(x => x.Booking)
-                        .ThenInclude(x => x.Tickets)
-                        .ThenInclude(x => x.TicketType)
-                        .Include(x => x.Booking)
-                        .ThenInclude(x => x.TourSchedule)
-                        .ThenInclude(x=> x.Tour)
-                        .AsSingleQuery()
-                        .FirstOrDefaultAsync(p => p.BookingId == booking.Id, cancellationToken);
                     booking.Cancel(request.Remark);
+                    var payment = await _context.Payments
+                        .FirstOrDefaultAsync(p => p.BookingId == booking.Id, cancellationToken);
                     if (payment != null)
                     {
-                        decimal refundAmount = payment.NetCost;
-
-                        // Publish PaymentRefunded event
-                        await _publisher.Publish(new PaymentRefunded(refundAmount, booking.UserId, booking.Code), cancellationToken);
-
-                        // Gọi refund trên Payment (cập nhật trạng thái, ...)
+                        await _publisher.Publish(
+                            new PaymentRefunded(payment.NetCost, booking.UserId, booking.Code),
+                            cancellationToken);
                         payment.Refund();
-                        _context.Payments.Update(payment);
                     }
                 }
 
-                // Sau khi hoàn tiền (nếu cần), đánh dấu các vé lịch trình và schedule là deleted
-                foreach (var ticket in schedule.TourScheduleTickets.ToList())
-                {
-                    ticket.IsDeleted = true;
-                }
+                // đánh dấu xóa tickets và schedule
+                schedule.TourScheduleTickets.ToList()
+                    .ForEach(tkt => tkt.IsDeleted = true);
                 schedule.IsDeleted = true;
             }
 
             await _context.SaveChangesAsync(cancellationToken);
-            return ApiResponse<string>.SuccessResult("Tour schedules and associated tickets deleted successfully", "Deletion successful");
+            return ApiResponse<string>.SuccessResult("Schedules deleted", "OK");
         }
+
     }
 }
