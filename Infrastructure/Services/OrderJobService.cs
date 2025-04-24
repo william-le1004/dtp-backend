@@ -87,6 +87,6 @@ public class OrderJobService(
     
     public void ScheduleCompleteOrder(Guid bookingId)
     {
-        jobClient.Schedule(() => MarkOrderCompleted(bookingId), TimeSpan.FromMinutes(1));
+        jobClient.Schedule(() => MarkOrderCompleted(bookingId), TimeSpan.FromMinutes(5));
     }
 }
