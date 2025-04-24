@@ -46,16 +46,16 @@ public class GetToursHandler(IDtpDbContext context) : IRequestHandler<GetTours, 
 {
     public Task<IQueryable<TourTemplateResponse>> Handle(GetTours request, CancellationToken cancellationToken)
     {
-        var tours = from tour in context.Tours.IsDeleted(false)
-                .Include(tour => tour.Company)
-                .Include(tour => tour.TourSchedules)
-                .Include(tour => tour.Ratings)
-                .Include(tour => tour.Tickets)
-                .Include(tour => tour.TourDestinations)
-                .ThenInclude(tourDestination => tourDestination.Destination)
-                .AsSingleQuery()
-                .AsNoTracking()
-            select new TourTemplateResponse
+        var tours = context.Tours.IsDeleted(false)
+            .Include(tour => tour.Company)
+            .Include(tour => tour.TourSchedules)
+            .Include(tour => tour.Ratings)
+            .Include(tour => tour.Tickets)
+            .Include(tour => tour.TourDestinations)
+            .ThenInclude(tourDestination => tourDestination.Destination)
+            .AsSingleQuery()
+            .AsNoTracking()
+            .Select(tour => new TourTemplateResponse()
             {
                 Id = tour.Id,
                 ThumbnailUrl = context.ImageUrls.Any(image => image.RefId == tour.Id)
@@ -69,19 +69,19 @@ public class GetToursHandler(IDtpDbContext context) : IRequestHandler<GetTours, 
                 OnlyFromCost = tour.Tickets.Min(x => x.DefaultNetCost),
                 IsDeleted = tour.IsDeleted,
                 CreatedAt = tour.CreatedAt,
-                TourScheduleResponses = from schedule in tour.TourSchedules
-                    select new TourScheduleResponse
+                TourScheduleResponses =
+                    tour.TourSchedules.Select(schedule => new TourScheduleResponse
                     {
                         Id = schedule.Id,
                         OpenDate = schedule.OpenDate.HasValue ? schedule.OpenDate.Value : DateTime.MinValue
-                    },
-                FirstDestination = (from td in tour.TourDestinations.OrderBy(x => x.SortOrder)
-                    select new LocationFirstDestination
+                    }),
+                FirstDestination = tour.TourDestinations.OrderBy(x => x.SortOrder).Select(td =>
+                    new LocationFirstDestination()
                     {
                         Latitude = td.Destination.Latitude,
                         Longitude = td.Destination.Longitude
                     }).FirstOrDefault()
-            };
+            });
 
         return Task.FromResult(tours.AsQueryable());
     }

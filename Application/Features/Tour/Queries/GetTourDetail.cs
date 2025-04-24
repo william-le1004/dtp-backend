@@ -13,11 +13,20 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
 {
     public Task<Option<TourDetailResponse>> Handle(GetTourDetail request, CancellationToken cancellationToken)
     {
-        var tourDetailResponse = (from t in context.Tours.IsDeleted(false)
-            where t.Id == request.TourId
-            select new TourDetailResponse
+        var tourDetailResponse = context.Tours.IsDeleted(false)
+            .Include(t => t.Ratings)
+            .Include(t => t.Company)
+            .Include(t => t.Tickets)
+            .Include(t => t.TourDestinations)
+            .ThenInclude(td => td.Destination)
+            .Include(t => t.TourDestinations)
+            .ThenInclude(td => td.DestinationActivities)
+            .AsSplitQuery()
+            .AsNoTracking()
+            .Where(t => t.Id == request.TourId)
+            .Select(t => new TourDetailResponse
             {
-                Tour = new TourTemplateDetailsResponse
+                Tour = new TourTemplateDetailsResponse()
                 {
                     Id = t.Id,
                     Title = t.Title,
@@ -30,12 +39,13 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
                     TicketTypes = t.Tickets,
                     Pickinfor = t.Pickinfor,
                     Include = t.Include,
-                    ImageUrls = (from img in context.ImageUrls
-                        where img.RefId == t.Id
-                        select img.Url).ToList()
+                    ImageUrls = context.ImageUrls
+                        .Where(img => img.RefId == t.Id)
+                        .Select(img => img.Url)
+                        .ToList()
                 },
-                TourDestinations = (from td in t.TourDestinations
-                    select new TourDestinationResponse
+                TourDestinations = t.TourDestinations
+                    .Select(td => new TourDestinationResponse
                     {
                         Name = td.Destination.Name,
                         Longitude = td.Destination.Longitude,
@@ -44,19 +54,21 @@ public class GetTourDetailHandler(IDtpDbContext context) : IRequestHandler<GetTo
                         SortOrderByDate = td.SortOrderByDate,
                         StartTime = td.StartTime,
                         EndTime = td.EndTime,
-                        ImageUrls = (from img in context.ImageUrls
-                            where img.RefId == td.Id
-                            select img.Url).ToList(),
-                        Activities = (from x in td.DestinationActivities
-                            select new TourActivity
-                            {
-                                Name = x.Name,
-                                StartTime = x.StartTime,
-                                EndTime = x.EndTime,
-                                SortOrder = x.SortOrder ?? 0
-                            }).ToList()
-                    }).ToList()
-            }).SingleOrDefault();
+                        ImageUrls = context.ImageUrls
+                            .Where(img => img.RefId == td.Id)
+                            .Select(img => img.Url)
+                            .ToList(),
+                        Activities = td.DestinationActivities.Select(x => new TourActivity()
+                        {
+                            Name = x.Name,
+                            StartTime = x.StartTime,
+                            EndTime = x.EndTime,
+                            SortOrder = x.SortOrder ?? 0
+                        }).ToList(),
+                    })
+                    .ToList()
+            })
+            .SingleOrDefault();
 
         return Task.FromResult(tourDetailResponse is null
             ? Option.None
