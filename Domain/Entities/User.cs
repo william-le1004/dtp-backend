@@ -22,7 +22,6 @@ public sealed class User : IdentityUser
         PhoneNumber = phoneNumber;
         Basket = new Basket();
         Wallet = new Wallet(Id);
-        CreatedAt = DateTime.UtcNow;
     }
 
     public DateTime CreatedAt { get; init; }
