@@ -1,8 +1,18 @@
 using Api;
+using Api.Filters;
+using Api.Middlewares;
 using Application;
+using Application.Contracts.Job;
+using Hangfire;
 using Infrastructure;
+using Infrastructure.Common.Extensions;
+using Microsoft.AspNetCore.OData;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Load environment variables (for local development)
+DotNetEnv.Env.Load();
+
 
 var configuration = builder.Configuration;
 builder.Services.AddEndpointsApiExplorer();
@@ -12,18 +22,35 @@ builder.Services.AddControllers();
 builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddInfrastructureService(configuration)
-    .AddApplicationServices()
-    .AddEndpointServices();
+    .AddApplicationServices(configuration)
+    .AddEndpointServices(configuration);
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseMiddleware<ErrorHandlingMiddleware>();
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    Authorization = [new AllowAllDashboardAuthorizationFilter()]
+});
+app.UseMiddleware<JwtBlacklistMiddleware>();
 
+RecurringJob.AddOrUpdate<IHangfireJobService>("HardDeleteJob",
+    job => job.HardDeleteExpiredEntities(), Cron.Monthly);
+RecurringJob.AddOrUpdate<IOrderJobService>(
+    nameof(IOrderJobService.MarkToursAsCompleted),
+    service => service.MarkToursAsCompleted(),
+    "0 2 * * *");
+
+app.UseSwagger();
+app.UseSwaggerUI();
+// app.ApplyMigrations();
+app.UseCors("all");
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseODataRouteDebug();
+// app.UseOutputCache();
+app.UseMiddleware<TransactionMiddleware>();
 app.MapControllers();
 app.UseHttpsRedirection();
 

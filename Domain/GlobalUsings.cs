@@ -1,1 +1,1 @@
-global using Domain.Commons;
+global using Domain.Common;

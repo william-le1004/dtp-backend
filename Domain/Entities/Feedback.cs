@@ -2,23 +2,22 @@
 
 public partial class Feedback : AuditEntity
 {
-    public Guid TourId { get; set; }
+    public Guid TourScheduleId { get; set; }
 
-    public Guid UserId { get; set; }
+    public string UserId { get; set; }
 
     public string? Description { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
-
-    public string? CreatedBy { get; set; }
-
-    public DateTime? LastModified { get; set; }
-
-    public string? LastModifiedBy { get; set; }
-
-    public sbyte? IsDeleted { get; set; }
-
-    public virtual Tour Tour { get; set; } = null!;
+    public virtual TourSchedule TourSchedule { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
+    public Feedback(Guid tourScheduleId, string userId, string? description)
+    {
+        Id = Guid.NewGuid();                       
+        TourScheduleId = tourScheduleId;
+        UserId = userId;
+        Description = description;
+    }
+
+    public Feedback() { }
 }
