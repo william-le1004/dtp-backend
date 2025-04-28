@@ -25,6 +25,8 @@ public partial class TourBooking : Entity
     public decimal DiscountAmount { get; private set; }
 
     public Voucher? Voucher { get; private set; }
+    
+    public virtual User User { get; set; } = null!;
 
     public decimal GrossCost
     {
