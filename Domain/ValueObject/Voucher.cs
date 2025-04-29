@@ -6,6 +6,10 @@ public class Voucher
     public decimal MaxDiscountAmount { get; set; }
     public double Percent { get; set; }
     public DateTime ExpiryDate { get; set; }
+    
+    public int Quantity { get; set; }
+    
+    public int AvailableVoucher { get; }
 
     public bool IsValid()
     {

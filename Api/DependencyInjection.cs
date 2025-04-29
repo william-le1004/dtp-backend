@@ -6,6 +6,7 @@ using Application.Features.Company.Queries;
 using Application.Features.Order.Queries;
 using Application.Features.Tour.Queries;
 using Application.Features.Users.Queries;
+using Application.Features.Voucher.Queries;
 using Application.Features.Wallet.Queries;
 using Domain.Entities;
 using Microsoft.AspNetCore.OData;
@@ -70,6 +71,9 @@ public static class DependencyInjection
     private static IEdmModel GetEdmModel()
     {
         var modelBuilder = new ODataConventionModelBuilder();
+        
+        var voucher = modelBuilder.EntitySet<VoucherResponse>("Voucher");
+        voucher.EntityType.HasKey(x => x.Code).Property(x => x.ExpiryDate).AsDate();
         
         modelBuilder.EntitySet<TourTemplateResponse>("Tour");
         modelBuilder.EntityType<TourScheduleResponse>()
