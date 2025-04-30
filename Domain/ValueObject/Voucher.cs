@@ -1,15 +1,31 @@
-﻿namespace Domain.ValueObject;
+﻿using Domain.Extensions;
 
-public class Voucher
+namespace Domain.ValueObject;
+
+public class Voucher : AuditEntity
 {
     public string Code { get; set; }
     public decimal MaxDiscountAmount { get; set; }
     public double Percent { get; set; }
     public DateTime ExpiryDate { get; set; }
-    
+
     public int Quantity { get; set; }
-    
+    public string Description { get; set; }
+
     public int AvailableVoucher { get; }
+
+    public Voucher(decimal maxDiscountAmount,
+        double percent, DateTime expiryDate,
+        int quantity, string description)
+    {
+        Code = StringExtensions.GenerateCode();
+        MaxDiscountAmount = maxDiscountAmount;
+        Percent = percent;
+        ExpiryDate = expiryDate;
+        Quantity = quantity;
+        Description = description;
+        AvailableVoucher = Quantity;
+    }
 
     public bool IsValid()
     {

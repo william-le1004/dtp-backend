@@ -73,7 +73,7 @@ public static class DependencyInjection
         var modelBuilder = new ODataConventionModelBuilder();
         
         var voucher = modelBuilder.EntitySet<VoucherResponse>("Voucher");
-        voucher.EntityType.HasKey(x => x.Code).Property(x => x.ExpiryDate).AsDate();
+        voucher.EntityType.HasKey(x => x.Id).Property(x => x.ExpiryDate).AsDate();
         
         modelBuilder.EntitySet<TourTemplateResponse>("Tour");
         modelBuilder.EntityType<TourScheduleResponse>()
