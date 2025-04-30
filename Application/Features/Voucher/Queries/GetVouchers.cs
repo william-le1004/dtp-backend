@@ -6,7 +6,7 @@ namespace Application.Features.Voucher.Queries;
 
 public record VoucherResponse
 {
-    
+    public Guid Id { get; init; }
     public string Code { get; set; } = string.Empty;
     public decimal MaxDiscountAmount { get; set; }
     public double Percent { get; set; }
@@ -31,6 +31,7 @@ public class GetVouchersHandler(IDtpDbContext context) : IRequestHandler<GetVouc
             })
             .Select(x => new VoucherResponse()
             {
+                Id = x.Voucher.Id,
                 Code = x.Voucher.Code,
                 Quantity = x.Voucher.Quantity,
                 AvailableVoucher = x.Voucher.Quantity - x.Used,

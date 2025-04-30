@@ -8,6 +8,6 @@ public class VoucherConfiguration : IEntityTypeConfiguration<Voucher>
 {
     public void Configure(EntityTypeBuilder<Voucher> builder)
     {
-        builder.HasKey(x => x.Code);
+        builder.Ignore(e => e.AvailableVoucher).HasKey(x => x.Id);
     }
 }

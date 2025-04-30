@@ -1,7 +1,11 @@
-﻿namespace Domain.Extensions;
+﻿using System.Text;
+
+namespace Domain.Extensions;
 
 public static class StringExtensions
 {
+    
+    private static readonly string Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     public static string Random(this string source)
     {
         Random random = new Random();
@@ -13,6 +17,20 @@ public static class StringExtensions
         }
 
         return new string(result);
+    }
+    
+    public static string GenerateCode(int length = 10)
+    {
+        Random random = new Random();
+        var voucherCode = new StringBuilder();
+
+        for (int i = 0; i < length; i++)
+        {
+            int index = random.Next(Characters.Length);
+            voucherCode.Append(Characters[index]);
+        }
+
+        return voucherCode.ToString();
     }
     
     public static long ToLong(this string input)
