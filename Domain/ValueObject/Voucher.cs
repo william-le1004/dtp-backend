@@ -12,7 +12,12 @@ public class Voucher : AuditEntity
     public int Quantity { get; set; }
     public string Description { get; set; }
 
-    public int AvailableVoucher { get; }
+    public int AvailableVoucher { get; private set; }
+
+
+    public Voucher()
+    {
+    }
 
     public Voucher(decimal maxDiscountAmount,
         double percent, DateTime expiryDate,
@@ -30,7 +35,7 @@ public class Voucher : AuditEntity
     public bool IsValid()
     {
         // Check if the voucher is expired
-        return DateTime.Now <= ExpiryDate;
+        return DateTime.Now <= ExpiryDate && AvailableVoucher > 0;
     }
 
     public decimal ApplyVoucherDiscount(decimal orderTotal)
@@ -43,5 +48,10 @@ public class Voucher : AuditEntity
         }
 
         return MaxDiscountAmount;
+    }
+
+    public void CalAvailableVoucher(int used)
+    {
+        AvailableVoucher = Quantity - used;
     }
 }
