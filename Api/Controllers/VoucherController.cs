@@ -1,7 +1,6 @@
 using Application.Features.Voucher.Commands;
 using Application.Features.Voucher.Queries;
 using Domain.Constants;
-using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,5 +27,25 @@ public class VoucherController(IMediator mediator) : ODataController
     {
         var voucherId = await mediator.Send(command);
         return Ok( new { id = voucherId });
+    }
+    
+    [HttpPut("{id}")]
+    [Authorize(Roles = ApplicationRole.ADMIN)]
+    public async Task<ActionResult> PutVoucher(Guid id, UpdateVoucherCommand command)
+    {
+        command.Id = id;
+        await mediator.Send(command);
+        return NoContent();
+    }
+    
+    [HttpDelete("{id}")]
+    [Authorize(Roles = ApplicationRole.ADMIN)]
+    public async Task<ActionResult> DeleteVoucher(Guid id)
+    {
+        var result = await mediator.Send(new DeleteVoucherCommand(id));
+        
+        return result.Match<ActionResult>(
+            Some: (value) => NoContent(),
+            None: () => NotFound($"Voucher ({id}) not found."));
     }
 }
