@@ -23,8 +23,6 @@ public partial class TourBooking : Entity
     public string? VoucherCode { get; private set; }
 
     public decimal DiscountAmount { get; private set; }
-
-    public Voucher? Voucher { get; private set; }
     
     public virtual User User { get; set; } = null!;
 

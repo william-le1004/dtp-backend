@@ -59,7 +59,7 @@ public class PlaceOrderCommandHandler(
             booking.ApplyVoucher(voucher);
         }
         
-        context.TourSchedules.Attach(touSchedule!);
+        context.TourSchedules.Entry(touSchedule!).State = EntityState.Unchanged;
         context.TourBookings.Add(booking);
         await context.SaveChangesAsync(cancellationToken: cancellationToken);
         await publisher.Publish(removeBasketEvent, cancellationToken); 
