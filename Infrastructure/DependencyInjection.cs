@@ -82,6 +82,7 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITourScheduleRepository, TourScheduleRepository>();
         services.AddScoped<ICompanyRepository, CompanyRepository>();
+        services.AddScoped<IVoucherRepository, VoucherRepository>();
         services.AddScoped<JwtTokenService>();
         services.AddScoped<IDtpDbContext, DtpDbContext>();
         services.AddHttpContextAccessor();
