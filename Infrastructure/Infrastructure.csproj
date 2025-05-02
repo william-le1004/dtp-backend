@@ -8,14 +8,16 @@
 
     <ItemGroup>
         <PackageReference Include="CloudinaryDotNet" Version="1.27.4" />
+        <PackageReference Include="FirebaseAdmin" Version="3.2.0" />
+        <PackageReference Include="Google.Apis.Auth" Version="1.69.0" />
         <PackageReference Include="Hangfire" Version="1.8.18" />
         <PackageReference Include="Hangfire.AspNetCore" Version="1.8.18" />
         <PackageReference Include="Hangfire.Core" Version="1.8.18" />
         <PackageReference Include="Hangfire.Redis.StackExchange" Version="1.12.0" />
         <PackageReference Include="MassTransit.Abstractions" Version="8.4.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.13"/>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.13"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.13"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.13" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.13" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.13" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.13">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,8 +26,9 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.13"/>
-        <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.11"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.13" />
+        <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.11" />
+        <PackageReference Include="MySqlConnector" Version="2.4.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Otp.NET" Version="1.4.0" />
         <PackageReference Include="QRCoder" Version="1.6.0" />
@@ -33,11 +36,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Application\Application.csproj"/>
-        <ProjectReference Include="..\Domain\Domain.csproj"/>
+        <ProjectReference Include="..\Application\Application.csproj" />
+        <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+        <Folder Include="Configs\" />
         <Folder Include="Migrations\" />
     </ItemGroup>
 

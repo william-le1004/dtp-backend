@@ -44,6 +44,7 @@ public sealed class User : IdentityUser
     private readonly List<ExternalTransaction> _transactions = new();
     public List<ExternalTransaction> ExternalTransactions => _transactions;
     public string? SecureToken { get; set; }
+    public string? FcmToken { get; set; }
 
 
     public ExternalTransaction RequestWithdraw(string transactionCode,

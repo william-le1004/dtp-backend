@@ -4,10 +4,13 @@ using Application.Contracts.Authentication;
 using Application.Contracts.Caching;
 using Application.Contracts.Cloudinary;
 using Application.Contracts.EventBus;
+using Application.Contracts.Firebase;
 using Application.Contracts.Job;
 using Application.Contracts.Persistence;
 using Domain.Constants;
 using Domain.Entities;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Hangfire;
 using Hangfire.Redis.StackExchange;
 using Infrastructure.Common.Settings;
@@ -93,7 +96,7 @@ public static class DependencyInjection
         services.AddScoped<IHangfireJobService, HangfireJobService>();
         services.AddScoped<IOrderJobService, OrderJobService>();
         services.AddScoped<IHangfireStorageService, HangfireStorageService>();
-       
+        services.AddScoped<IFcmService, FcmService>();
 
         services.AddAuthentication(item =>
         {
