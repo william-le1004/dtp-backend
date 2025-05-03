@@ -14,23 +14,22 @@ namespace Infrastructure.Services;
 public class FcmService : IFcmService
 {
     private readonly DtpDbContext _dbContext;
-    private readonly UserManager<User> _userManager;
     private readonly ILogger<FcmService> _logger;
     private static bool _initialized;
 
-    public FcmService(DtpDbContext dbContext, UserManager<User> userManager, ILogger<FcmService> logger)
+    public FcmService(DtpDbContext dbContext, ILogger<FcmService> logger)
     {
         _dbContext = dbContext;
-        _userManager = userManager;
         _logger = logger;
         
-        var projectRoot = Directory.GetParent(AppContext.BaseDirectory).Parent.Parent.Parent.FullName;
-        var credentialsPath = Path.Combine(projectRoot, "firebase-adminsdk.json");
+        // var projectRoot = Directory.GetParent(AppContext.BaseDirectory).Parent.Parent.Parent.FullName;
+        // var credentialsPath = Path.Combine(projectRoot, "firebase-adminsdk.json");
+        // _logger.LogInformation("Firebase credentials path: {Path}", credentialsPath);
         if (!_initialized)
         {
             FirebaseApp.Create(new AppOptions()
             {
-                Credential = GoogleCredential.FromFile(credentialsPath),
+                Credential = GoogleCredential.FromFile("/root/Downloads/firebase-adminsdk.json"),
             });
             _initialized = true;
         }
