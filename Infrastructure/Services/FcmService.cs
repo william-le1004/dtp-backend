@@ -29,7 +29,7 @@ public class FcmService : IFcmService
         {
             FirebaseApp.Create(new AppOptions()
             {
-                Credential = GoogleCredential.FromFile("/root/Downloads/firebase-adminsdk.json"),
+                Credential = GoogleCredential.FromFile("/root/Desktop/dtp/dtp-backend/Api/firebase-adminsdk.json"),
             });
             _initialized = true;
         }
