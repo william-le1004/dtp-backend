@@ -26,7 +26,7 @@ public class Voucher : AuditEntity
         Code = StringExtensions.GenerateCode();
         MaxDiscountAmount = maxDiscountAmount;
         Percent = percent;
-        ExpiryDate = expiryDate;
+        ExpiryDate = expiryDate > DateTime.UtcNow ? expiryDate : throw new Exception("Expiry date must be in the future.");
         Quantity = quantity;
         Description = description;
         AvailableVoucher = Quantity;

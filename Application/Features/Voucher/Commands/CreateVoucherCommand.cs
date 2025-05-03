@@ -18,10 +18,10 @@ public class FutureDateAttribute : ValidationAttribute
 public record CreateVoucherCommand : IRequest<Guid>
 {
     
-    [Range(0.01, 1000, ErrorMessage = "Max discount amount must be between 0.01 and 1000.")]
+    [Range(0.01, double.MaxValue, ErrorMessage = "Max discount amount must be between 0.01 and 1000.")]
     public decimal MaxDiscountAmount { get; set; }
 
-    [Range(0.01, 100, ErrorMessage = "Discount percentage must be between 0.01 and 100.")]
+    [Range(0.0001, 1.0, ErrorMessage = "Discount percent must be between 1% and 100% (0.01 to 1.0).")]
     public double Percent { get; set; }
 
     [Required(ErrorMessage = "Expiry date is required.")]
