@@ -38,7 +38,7 @@ public record CreateVoucherCommand : IRequest<Guid>
 
 public class CreateVoucherCommandHandler(IDtpDbContext context) : IRequestHandler<CreateVoucherCommand, Guid>
 {
-    public Task<Guid> Handle(CreateVoucherCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(CreateVoucherCommand request, CancellationToken cancellationToken)
     {
         var voucher = new VoucherEntity(
             request.MaxDiscountAmount,
@@ -48,7 +48,7 @@ public class CreateVoucherCommandHandler(IDtpDbContext context) : IRequestHandle
             request.Description);
         
         context.Voucher.Add(voucher);
-        context.SaveChangesAsync(cancellationToken);
-        return Task.FromResult(voucher.Id);
+        await context.SaveChangesAsync(cancellationToken);
+        return voucher.Id;
     }
 }

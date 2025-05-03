@@ -1,6 +1,8 @@
+using Application.Contracts.Persistence;
 using Application.Features.Voucher.Commands;
 using Application.Features.Voucher.Queries;
 using Domain.Constants;
+using Domain.ValueObject;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +14,7 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 // [Authorize]
-public class VoucherController(IMediator mediator) : ODataController
+public class VoucherController(IMediator mediator, IVoucherRepository repository) : ODataController
 {
     [HttpGet]
     [EnableQuery]
@@ -27,6 +29,18 @@ public class VoucherController(IMediator mediator) : ODataController
     {
         var voucherId = await mediator.Send(command);
         return Ok( new { id = voucherId });
+    }
+
+    [HttpGet("{code}")]
+    public async Task<ActionResult<Voucher>> GetVoucherByCode(string code)
+    {
+        var voucher = await repository.GetVoucherByCodeAsync(code);
+
+        if (voucher is null)
+        {
+            return NotFound();
+        }
+        return voucher;
     }
     
     [HttpPut("{id}")]
