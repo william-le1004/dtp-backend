@@ -52,33 +52,8 @@ public class FcmService : IFcmService
 
         foreach (var message in messages)
         {
-            try
-            {
-                await FirebaseMessaging.DefaultInstance.SendAsync(message);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-
+            await FirebaseMessaging.DefaultInstance.SendAsync(message);
             _logger.LogInformation("Successfully sent message: {Message}", message);
         }
-    }
-
-    public async Task<string> SendNotificationAsync(string title, string body, string token)
-    {
-        var message = new Message
-        {
-            Token = token,
-            Notification = new Notification
-            {
-                Title = title,
-                Body = body
-            }
-        };
-
-        string response = await FirebaseMessaging.DefaultInstance.SendAsync(message);
-        return response;
     }
 }
