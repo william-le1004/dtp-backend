@@ -22,4 +22,6 @@ RUN dotnet publish "Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAp
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+COPY firebase-adminsdk.json ./firebase-adminsdk.json
 ENTRYPOINT ["dotnet", "Api.dll"]

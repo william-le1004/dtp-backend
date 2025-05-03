@@ -22,14 +22,11 @@ public class FcmService : IFcmService
         _dbContext = dbContext;
         _logger = logger;
         
-        // var projectRoot = Directory.GetParent(AppContext.BaseDirectory).Parent.Parent.Parent.FullName;
-        // var credentialsPath = Path.Combine(projectRoot, "firebase-adminsdk.json");
-        // _logger.LogInformation("Firebase credentials path: {Path}", credentialsPath);
         if (!_initialized)
         {
             FirebaseApp.Create(new AppOptions()
             {
-                Credential = GoogleCredential.FromFile("/root/Desktop/dtp/dtp-backend/Api/firebase-adminsdk.json"),
+                Credential = GoogleCredential.FromFile(Path.Combine(AppContext.BaseDirectory, "firebase-adminsdk.json")),
             });
             _initialized = true;
         }
