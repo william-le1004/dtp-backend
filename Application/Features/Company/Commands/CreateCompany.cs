@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Application.Features.Company.Commands;
 
-public record CreateCompanyCommand(string Name, string Email, string Phone, string Address, string TaxCode, double CommissionRate)
+public record CreateCompanyCommand(string Name, string Email, string Phone, string Address, string TaxCode, double CommissionRate, string FcmToken)
     : IRequest<ApiResponse<bool>>;
 
 public class CreateCompanyValidator : AbstractValidator<CreateCompanyCommand>
@@ -69,7 +69,7 @@ public class CreateCompanyCommandHandler(ICompanyRepository companyRepository, I
             await companyRepository.UpsertCompanyAsync(newCompany);
 
             await redisCache.RemoveDataAsync(cacheKey);
-            await fcmService.SendNotificationAsync("New Company Created", $"A new company named {request.Name} has been created.");
+            await fcmService.SendNotificationAsync(request.FcmToken, "New Company Created", $"A new company named {request.Name} has been created.");
             return ApiResponse<bool>.SuccessResult(true, "Company created successfully");
         }
         catch (Exception ex)
