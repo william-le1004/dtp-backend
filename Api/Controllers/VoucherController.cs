@@ -23,6 +23,13 @@ public class VoucherController(IMediator mediator, IVoucherRepository repository
         return mediator.Send(new GetVouchers());
     }
     
+    [HttpGet("own")]
+    [EnableQuery]
+    public Task<IQueryable<VoucherResponse>> Own()
+    {
+        return mediator.Send(new GetOwnVoucher());
+    }
+    
     [HttpPost]
     [Authorize(Roles = ApplicationRole.ADMIN)]
     public async Task<ActionResult> PostVoucher(CreateVoucherCommand command)

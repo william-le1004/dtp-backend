@@ -1,32 +1,16 @@
 using Application.Contracts.Persistence;
-using Application.Dtos;
-using Application.Extensions;
 using Domain.Enum;
 using MediatR;
 
 namespace Application.Features.Voucher.Queries;
 
-public record VoucherResponse : AuditResponse
-{
-    public string Code { get; set; } = string.Empty;
-    public decimal MaxDiscountAmount { get; set; }
-    public double Percent { get; set; }
-    public DateTime ExpiryDate { get; set; }
-    
-    public int Quantity { get; set; }
-    
-    public int AvailableVoucher { get; set; }
-    
-    public string Description { get; set; } = string.Empty;
-}
+public record GetOwnVoucher(): IRequest<IQueryable<VoucherResponse>>;
 
-public record GetVouchers() : IRequest<IQueryable<VoucherResponse>>;
-
-public class GetVouchersHandler(IDtpDbContext context) : IRequestHandler<GetVouchers, IQueryable<VoucherResponse>>
+public class GetOwnVoucherHandler(IDtpDbContext context) : IRequestHandler<GetOwnVoucher, IQueryable<VoucherResponse>>
 {
-    public Task<IQueryable<VoucherResponse>> Handle(GetVouchers request, CancellationToken cancellationToken)
+    public Task<IQueryable<VoucherResponse>> Handle(GetOwnVoucher request, CancellationToken cancellationToken)
     {
-        var vouchersWithAvailable = context.Voucher.IsDeleted(false)
+        var vouchersWithAvailable = context.Voucher
             .Select(v => new
             {
                 Voucher = v,

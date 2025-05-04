@@ -75,6 +75,8 @@ public static class DependencyInjection
         var voucher = modelBuilder.EntitySet<VoucherResponse>("Voucher");
         voucher.EntityType.HasKey(x => x.Id).Property(x => x.ExpiryDate).AsDate();
         
+        voucher.EntityType.Collection.Function("Own").ReturnsFromEntitySet<VoucherResponse>("Voucher");
+        
         modelBuilder.EntitySet<TourTemplateResponse>("Tour");
         modelBuilder.EntityType<TourScheduleResponse>()
             .Property(x => x.OpenDate).AsDate();
