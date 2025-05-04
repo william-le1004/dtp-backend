@@ -114,7 +114,7 @@ public class UserRepository(
             throw new InvalidOperationException($"User creation failed: {errors}");
         }
 
-        if (!string.IsNullOrEmpty(role))
+        if (string.IsNullOrEmpty(role))
         {
             var currentRoles = await userManager.GetRolesAsync(user);
             if (currentRoles.Contains(role))
