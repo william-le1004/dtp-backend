@@ -15,7 +15,7 @@ public record TransactionResponse
 
     public TransactionType Type { get; set; }
     
-    public Guid TransactionId { get; init; }
+    public string TransactionId { get; init; }
     
     public DateTime CreatedAt { get; set; }
 };
@@ -42,7 +42,7 @@ public class GetTransactionHistoryHandler(IDtpDbContext context, IUserContextSer
                 Amount = x.Amount,
                 CreatedAt = x.CreatedAt,
                 Type = x.Type,
-                TransactionId = x.Id
+                TransactionId = x.TransactionCode
             });
 
         return Task.FromResult(transactions.AsQueryable());
