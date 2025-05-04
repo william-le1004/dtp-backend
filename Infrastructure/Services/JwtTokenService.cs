@@ -53,7 +53,8 @@ public class JwtTokenService
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim("uid", user.Id),
-            new Claim("company_id", user.CompanyId.ToString() ?? "None")
+            new Claim("company_id", user.CompanyId.ToString() ?? "None"),
+            new Claim("fcm_token", user.FcmToken ?? "None")
         };
 
         claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
