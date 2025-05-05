@@ -1,4 +1,4 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Contracts.Persistence;
 using Domain.Entities;
 using Domain.Enum;

@@ -1,4 +1,4 @@
-﻿using Application.Common;
+using Application.Common;
 using Application.Contracts.EventBus;
 using Application.Contracts.Persistence;
 using Application.Features.Wallet.Events;
