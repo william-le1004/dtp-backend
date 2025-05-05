@@ -34,7 +34,6 @@ public class FcmService : IFcmService
 
     public async Task SendNotificationAsync(string title, string body)
     {
-        
         var tokens = await _dbContext.Users
             .Where(u => u.FcmToken != null)
             .Select(u => u.FcmToken)
