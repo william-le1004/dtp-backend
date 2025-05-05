@@ -131,7 +131,7 @@ public partial class TourBooking : Entity
 
         Status = BookingStatus.Completed;
         Remark = remark;
-        AddDomainEvent(new OrderCompleted(TourScheduleId));
+        // AddDomainEvent(new OrderCompleted(TourScheduleId));
     }
 
     public void Purchase(string? remark = null)
