@@ -33,7 +33,8 @@ public class PlaceOrderCommandHandler(
     IPublisher publisher,
     IUserContextService userService,
     ITourScheduleRepository repository,
-    IOrderJobService backgroundJob
+    IOrderJobService backgroundJob,
+    IVoucherRepository voucherRepository
     )
     : IRequestHandler<PlaceOrderCommand, TourBooking>
 {
@@ -43,8 +44,7 @@ public class PlaceOrderCommandHandler(
 
         var removeBasketEvent = new OrderSubmittedEvent(userId, request.TourScheduleId);
         var touSchedule = await repository.GetTourScheduleByIdAsync(request.TourScheduleId);
-        var voucher = await context.Voucher.SingleOrDefaultAsync(x => x.Code == request.VoucherCode,
-            cancellationToken: cancellationToken);
+        var voucher = await voucherRepository.GetVoucherByCodeAsync(request.VoucherCode);
 
         var booking = new TourBooking(userId, request.TourScheduleId, touSchedule!,
             request.Name, request.PhoneNumber, request.Email);
@@ -59,7 +59,7 @@ public class PlaceOrderCommandHandler(
             booking.ApplyVoucher(voucher);
         }
         
-        context.TourSchedules.Attach(touSchedule!);
+        context.TourSchedules.Entry(touSchedule!).State = EntityState.Unchanged;
         context.TourBookings.Add(booking);
         await context.SaveChangesAsync(cancellationToken: cancellationToken);
         await publisher.Publish(removeBasketEvent, cancellationToken); 

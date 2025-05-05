@@ -23,8 +23,8 @@ public partial class TourBooking : Entity
     public string? VoucherCode { get; private set; }
 
     public decimal DiscountAmount { get; private set; }
-
-    public Voucher? Voucher { get; private set; }
+    
+    public virtual User User { get; set; } = null!;
 
     public decimal GrossCost
     {
@@ -131,6 +131,7 @@ public partial class TourBooking : Entity
 
         Status = BookingStatus.Completed;
         Remark = remark;
+        // AddDomainEvent(new OrderCompleted(TourScheduleId));
     }
 
     public void Purchase(string? remark = null)
@@ -208,6 +209,7 @@ public partial class TourBooking : Entity
     public DateTime OverBookingTime() => CreatedAt.AddHours(1);
     
     public bool IsCancelled() => Status == BookingStatus.Cancelled;
+    public bool IsCompleted() => Status == BookingStatus.Completed;
     public bool IsPending() => Status == BookingStatus.AwaitingPayment;
     public bool IsPaid() => Status == BookingStatus.Paid;
     public bool IsPaymentProcessing() => Status == BookingStatus.AwaitingPayment;

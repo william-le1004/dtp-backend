@@ -11,4 +11,5 @@ public interface IUserRepository
     Task<User?> GetUserDetailAsync(string userId, bool noTracking = true);
     Task<string> GetUserRole(string userId);
     Task<User> GetAdmin();
+    Task<User> GetOperatorByCompanyId(Guid companyId);
 }

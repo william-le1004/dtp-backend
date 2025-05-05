@@ -22,7 +22,7 @@ public sealed class User : IdentityUser
         PhoneNumber = phoneNumber;
         Basket = new Basket();
         Wallet = new Wallet(Id);
-        CreatedAt = DateTime.UtcNow;
+        CreatedAt = DateTime.Now;
     }
 
     public DateTime CreatedAt { get; init; }
@@ -42,8 +42,9 @@ public sealed class User : IdentityUser
     public Basket Basket { get; private set; }
     
     private readonly List<ExternalTransaction> _transactions = new();
-    public IReadOnlyCollection<ExternalTransaction> ExternalTransactions => _transactions.AsReadOnly();
+    public List<ExternalTransaction> ExternalTransactions => _transactions;
     public string? SecureToken { get; set; }
+    public string? FcmToken { get; set; }
 
 
     public ExternalTransaction RequestWithdraw(string transactionCode,

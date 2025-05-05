@@ -4,10 +4,13 @@ using Application.Contracts.Authentication;
 using Application.Contracts.Caching;
 using Application.Contracts.Cloudinary;
 using Application.Contracts.EventBus;
+using Application.Contracts.Firebase;
 using Application.Contracts.Job;
 using Application.Contracts.Persistence;
 using Domain.Constants;
 using Domain.Entities;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Hangfire;
 using Hangfire.Redis.StackExchange;
 using Infrastructure.Common.Settings;
@@ -82,17 +85,18 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITourScheduleRepository, TourScheduleRepository>();
         services.AddScoped<ICompanyRepository, CompanyRepository>();
+        services.AddScoped<IVoucherRepository, VoucherRepository>();
         services.AddScoped<JwtTokenService>();
         services.AddScoped<IDtpDbContext, DtpDbContext>();
         services.AddHttpContextAccessor();
         services.AddScoped<IUserContextService, UserContextService>();
-        services.AddSingleton<ICloudinaryService,CloudinaryService>();
+        services.AddSingleton<ICloudinaryService, CloudinaryService>();
         services.AddTransient<IEventBus, EventBus>();
         services.AddScoped<AuditableEntityInterceptor>();
         services.AddScoped<IHangfireJobService, HangfireJobService>();
         services.AddScoped<IOrderJobService, OrderJobService>();
         services.AddScoped<IHangfireStorageService, HangfireStorageService>();
-       
+        services.AddScoped<IFcmService, FcmService>();
 
         services.AddAuthentication(item =>
         {
@@ -116,9 +120,9 @@ public static class DependencyInjection
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(ApplicationConst.AuthenticatedUser, 
+            options.AddPolicy(ApplicationConst.AuthenticatedUser,
                 policy => policy.RequireAuthenticatedUser());
-            options.AddPolicy(ApplicationConst.AdminPermission, 
+            options.AddPolicy(ApplicationConst.AdminPermission,
                 policy => policy.RequireRole(ApplicationRole.ADMIN));
             options.AddPolicy(ApplicationConst.ManagementPermission,
                 policy => policy.RequireRole(ApplicationRole.ADMIN, ApplicationRole.OPERATOR));
@@ -151,8 +155,16 @@ public static class DependencyInjection
                 SucceededListSize = 6,
                 UseTransactions = false
             }));
-        
-        services.AddHangfireServer();
+
+        services.AddHangfireServer(options =>
+        {
+            options.Queues =
+            [
+                ApplicationConst.CompleteOrderQueue,
+                ApplicationConst.CancelOrderQueue,
+                "default"
+            ];
+        });
 
         return services;
     }

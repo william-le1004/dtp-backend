@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.Users.Commands;
 
-public record LoginCommand(string UserName, string Password)
+public record LoginCommand(string UserName, string Password, string FcmToken = "")
     : IRequest<ApiResponse<AccessTokenResponse>>;
 
 public class LoginValidator : AbstractValidator<LoginCommand>
@@ -34,7 +34,7 @@ public class LoginHandler(IAuthenticationService authenticationService)
 
         try
         {
-            var user = new LoginRequestDto(request.UserName, request.Password);
+            var user = new LoginRequestDto(request.UserName, request.Password, request.FcmToken);
             var tokenResponse = await authenticationService.LoginAsync(user);
 
             return ApiResponse<AccessTokenResponse>.SuccessResult(tokenResponse);

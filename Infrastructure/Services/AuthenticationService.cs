@@ -44,6 +44,9 @@ public class AuthenticationService(
 
         var tokens = await jwtTokenService.GenerateTokens(user);
         await StoreRefreshToken(user.Id, tokens.RefreshToken);
+        
+        if(!string.IsNullOrEmpty(request.FcmToken)) user!.FcmToken = request.FcmToken;
+        await userManager.UpdateAsync(user);
         return tokens;
     }
 
@@ -73,7 +76,7 @@ public class AuthenticationService(
         var accessToken = userContext.GetAccessToken();
         var tokenJti = jwtTokenService.GetJtiFromToken(accessToken);
         var tokenExpiry = jwtTokenService.GetTokenExpiry(accessToken);
-        var expiryTime = tokenExpiry - DateTime.UtcNow;
+        var expiryTime = tokenExpiry - DateTime.Now;
 
         if (expiryTime > TimeSpan.Zero)
         {

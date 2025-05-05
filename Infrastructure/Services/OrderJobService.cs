@@ -1,8 +1,10 @@
 ﻿using Application.Contracts.Job;
 using Domain.Constants;
 using Domain.Enum;
+using Domain.Events;
 using Hangfire;
 using Infrastructure.Contexts;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -11,7 +13,8 @@ namespace Infrastructure.Services;
 public class OrderJobService(
     IBackgroundJobClient jobClient,
     DtpDbContext context,
-    ILogger<OrderJobService> logger
+    ILogger<OrderJobService> logger,
+    IPublisher publisher
 ) : IOrderJobService
 {
     public void ScheduleCancelOrder(Guid bookingId)
@@ -66,5 +69,28 @@ public class OrderJobService(
         
         context.TourBookings.UpdateRange(orders);
         await context.SaveChangesAsync();
+    }
+
+
+    [Queue(ApplicationConst.CompleteOrderQueue)]
+    public async Task MarkOrderCompleted(Guid bookingId)
+    {
+        var order = await context.TourBookings
+            .Include(x => x.TourSchedule)
+            .FirstOrDefaultAsync(x => x.Status == BookingStatus.Paid
+                                      && x.Id == bookingId);
+
+        if (order is not null)
+        {
+            order.Complete();
+            context.TourBookings.Update(order);
+            await context.SaveChangesAsync();
+            await publisher.Publish(new OrderCompleted(order.TourScheduleId));
+        }
+    }
+    
+    public void ScheduleCompleteOrder(Guid bookingId)
+    {
+        jobClient.Schedule(() => MarkOrderCompleted(bookingId), TimeSpan.FromMinutes(5));
     }
 }

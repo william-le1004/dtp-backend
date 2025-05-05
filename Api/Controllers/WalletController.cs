@@ -1,6 +1,7 @@
 ﻿using Api.Filters;
 using Application.Features.Wallet.Commands;
 using Application.Features.Wallet.Queries;
+using Domain.Constants;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -36,6 +37,29 @@ public class WalletController(IMediator mediator) : ODataController
     public async Task<IQueryable<TransactionResponse>> Get()
     {
         return await mediator.Send(new GetTransactionHistory());
+    }
+    
+    [EnableQuery]
+    [HttpGet("external-transaction")]
+    [Authorize(Roles = ApplicationRole.ADMIN)]
+    public async Task<IQueryable<ExternalTransactionResponse>> ExternalTransaction()
+    {
+        return await mediator.Send(new GetExternalTransaction());
+    }
+    
+    [HttpPost("external-transaction/{id}/accept")]
+    [Authorize(Roles = ApplicationRole.ADMIN)]
+    public async Task<IActionResult> AcceptExternalTransaction(Guid id)
+    {
+        await mediator.Send(new AcceptExternalTransaction(id));
+        return NoContent();
+    }
+    
+    [EnableQuery]
+    [HttpGet("own-external-transaction")]
+    public async Task<IQueryable<ExternalTransactionResponse>> OwnExternalTransaction()
+    {
+        return await mediator.Send(new GetOwnExternalTransaction());
     }
 
     [HttpGet("transaction/{id}")]

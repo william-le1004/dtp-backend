@@ -6,6 +6,7 @@ using Application.Features.Company.Queries;
 using Application.Features.Order.Queries;
 using Application.Features.Tour.Queries;
 using Application.Features.Users.Queries;
+using Application.Features.Voucher.Queries;
 using Application.Features.Wallet.Queries;
 using Domain.Entities;
 using Microsoft.AspNetCore.OData;
@@ -30,9 +31,7 @@ public static class DependencyInjection
         services.AddRedisOutputCache(options =>
         {
             options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(5)));
-            options.AddBasePolicy(b => b.AddPolicy<CustomPolicy>().SetCacheKeyPrefix("custom-"), true);
         });
-        services.AddSingleton<IOutputCachePolicy, CustomPolicy>();
         var payOs = new PayOS(configuration["Environment:PayOs:ClientId"] ?? throw new Exception("Cannot find environment"),
             configuration["Environment:PayOs:ApiKey"] ?? throw new Exception("Cannot find environment"),
             configuration["Environment:PayOs:ChecksumKey"] ?? throw new Exception("Cannot find environment"));
@@ -73,11 +72,26 @@ public static class DependencyInjection
     {
         var modelBuilder = new ODataConventionModelBuilder();
         
+        var voucher = modelBuilder.EntitySet<VoucherResponse>("Voucher");
+        voucher.EntityType.HasKey(x => x.Id).Property(x => x.ExpiryDate).AsDate();
+        
+        voucher.EntityType.Collection.Function("Own").ReturnsFromEntitySet<VoucherResponse>("Voucher");
+        
         modelBuilder.EntitySet<TourTemplateResponse>("Tour");
         modelBuilder.EntityType<TourScheduleResponse>()
             .Property(x => x.OpenDate).AsDate();
         
-        modelBuilder.EntitySet<TransactionResponse>("Wallet");
+        modelBuilder.EntitySet<ExternalTransactionResponse>("ExternalTransaction")
+            .EntityType.Property(x=> x.CreatedAt).AsDate();
+        
+        var transactionEntity = modelBuilder.EntitySet<TransactionResponse>("Wallet");
+        transactionEntity.EntityType.Property(x=> x.CreatedAt).AsDate();
+        transactionEntity.EntityType.Collection.Function("ExternalTransaction")
+            .ReturnsFromEntitySet<ExternalTransactionResponse>("ExternalTransaction");
+        
+        transactionEntity.EntityType.Collection.Function("OwnExternalTransaction")
+            .ReturnsFromEntitySet<ExternalTransactionResponse>("ExternalTransaction");
+        
         modelBuilder.EntitySet<OrderByTourResponse>("Order");
         
         modelBuilder.EntitySet<Destination>("Destination");

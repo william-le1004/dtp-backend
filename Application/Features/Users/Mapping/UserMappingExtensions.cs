@@ -25,6 +25,7 @@ public static class UserMappingExtensions
             entity.PhoneNumber,
             entity.Address,
             entity.Company?.Name,
+            entity.Company?.Id,
             role,
             entity.IsActive
         );

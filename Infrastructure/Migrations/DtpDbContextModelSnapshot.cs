@@ -575,7 +575,7 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("VoucherCode")
                         .HasColumnType("varchar(255)");
@@ -583,6 +583,8 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("TourScheduleId");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("VoucherCode");
 
@@ -845,8 +847,8 @@ namespace Infrastructure.Migrations
                             Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
                             AccessFailedCount = 0,
                             Address = "123 Admin St",
-                            ConcurrencyStamp = "bee3246f-3466-4af1-9085-fe6384c7abf8",
-                            CreatedAt = new DateTime(2025, 4, 22, 14, 10, 22, 450, DateTimeKind.Utc).AddTicks(8892),
+                            ConcurrencyStamp = "9acdd1fa-a44d-4079-b1a2-75972f6001a1",
+                            CreatedAt = new DateTime(2025, 4, 28, 16, 58, 44, 867, DateTimeKind.Utc).AddTicks(1714),
                             CreatedBy = "System",
                             Email = "dtpAdmin@gmail.com",
                             EmailConfirmed = true,
@@ -855,10 +857,10 @@ namespace Infrastructure.Migrations
                             Name = "Admin User",
                             NormalizedEmail = "DTPADMIN@GMAIL.COM",
                             NormalizedUserName = "DTPADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGtvLrxlIQeZrH1cReK4E4JCZzuQZhr5bC/Em0bOmTq1fi3dLjV2bPRTZnP26r135A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJNFCYA6jnPjSDVabXohq08UIAwClszcWOJjvuuAwhYQ9ohOXF9aGKce6hL02sFNpQ==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "63007789-0888-4368-bef9-1244fdf6db57",
+                            SecurityStamp = "0721a60b-f144-4716-aa08-64c897ad1d22",
                             TwoFactorEnabled = false,
                             UserName = "dtpAdmin"
                         },
@@ -867,8 +869,8 @@ namespace Infrastructure.Migrations
                             Id = "9e224968-33e4-4652-b7b7-8574d048cdb9",
                             AccessFailedCount = 0,
                             Address = "456 Operator Rd",
-                            ConcurrencyStamp = "dfcbe297-a62d-4e96-a42d-d9abb3a5aa8a",
-                            CreatedAt = new DateTime(2025, 4, 22, 14, 10, 22, 499, DateTimeKind.Utc).AddTicks(6355),
+                            ConcurrencyStamp = "07db7f11-6676-4709-86f0-10a4bfa46992",
+                            CreatedAt = new DateTime(2025, 4, 28, 16, 58, 44, 926, DateTimeKind.Utc).AddTicks(162),
                             CreatedBy = "System",
                             Email = "operator@gmail.com",
                             EmailConfirmed = true,
@@ -877,10 +879,10 @@ namespace Infrastructure.Migrations
                             Name = "Operator User",
                             NormalizedEmail = "OPERATOR@GMAIL.COM",
                             NormalizedUserName = "OPERATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPLWIRcDSIKyAiVcqi5Qdp8Oqnyf3fC/zSHBWx8P+39cgEktNYHp9Hk4Ehdg273gJw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGtb199xTuDmmfa7mEKy0pSMWmnF44N+fV3N0uRDQID0J5/4TRaCveNE56t4NDm3+Q==",
                             PhoneNumber = "0987654321",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0a50ec29-f5af-452f-ad60-177ef411a6ff",
+                            SecurityStamp = "fda16b2a-97c1-4e45-bd22-11a672abeaaa",
                             TwoFactorEnabled = false,
                             UserName = "operator"
                         });
@@ -924,17 +926,17 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a1f0501a-f18b-4318-96de-833a01630168"),
+                            Id = new Guid("293c0015-6b8a-4a61-b5cb-85dae14ccbb8"),
                             Balance = 1000m,
-                            CreatedAt = new DateTime(2025, 4, 22, 21, 10, 22, 507, DateTimeKind.Local).AddTicks(9079),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             UserId = "8e445865-a24d-4543-a6c6-9443d048cdb9"
                         },
                         new
                         {
-                            Id = new Guid("8f0cebfb-ea05-4eb0-9b8a-a3b80cb4a7cd"),
+                            Id = new Guid("6d9da11b-d8c5-418d-a99d-6d4844f11390"),
                             Balance = 500m,
-                            CreatedAt = new DateTime(2025, 4, 22, 21, 10, 22, 507, DateTimeKind.Local).AddTicks(9130),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             UserId = "9e224968-33e4-4652-b7b7-8574d048cdb9"
                         });
@@ -1275,11 +1277,19 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.ValueObject.Voucher", "Voucher")
                         .WithMany()
                         .HasForeignKey("VoucherCode");
 
                     b.Navigation("TourSchedule");
+
+                    b.Navigation("User");
 
                     b.Navigation("Voucher");
                 });

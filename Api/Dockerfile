@@ -1,5 +1,4 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
@@ -22,5 +21,7 @@ RUN dotnet publish "Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAp
 
 FROM base AS final
 WORKDIR /app
+COPY Api/firebase-adminsdk.json ./firebase-adminsdk.json
+
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Api.dll"]

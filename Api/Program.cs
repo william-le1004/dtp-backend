@@ -1,4 +1,5 @@
 using Api;
+using Api.Filters;
 using Api.Middlewares;
 using Application;
 using Application.Contracts.Job;
@@ -28,7 +29,10 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 var app = builder.Build();
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
-app.UseHangfireDashboard("/hangfire");
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = [new AllowAllDashboardAuthorizationFilter()]
+});
 app.UseMiddleware<JwtBlacklistMiddleware>();
 
 RecurringJob.AddOrUpdate<IHangfireJobService>("HardDeleteJob",
@@ -45,7 +49,7 @@ app.UseCors("all");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseODataRouteDebug();
-app.UseOutputCache();
+// app.UseOutputCache();
 app.UseMiddleware<TransactionMiddleware>();
 app.MapControllers();
 app.UseHttpsRedirection();

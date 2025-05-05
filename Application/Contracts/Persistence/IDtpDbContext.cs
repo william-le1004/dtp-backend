@@ -45,7 +45,10 @@ public interface IDtpDbContext
     public DbSet<TourScheduleTicket> TourScheduleTicket { get; set; }
     public DbSet<ImageUrl> ImageUrls { get; set; }
     public DbSet<Voucher> Voucher { get; set; }
-    public DbSet<ExternalTransaction> ExternalTransaction { get; set; }    
+    public DbSet<ExternalTransaction> ExternalTransaction { get; set; } 
+    
+    public DbSet<SystemSetting> SystemSetting { get; set; }
+
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

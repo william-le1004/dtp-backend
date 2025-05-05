@@ -1,6 +1,7 @@
 using System.Net;
 using Application.Common;
 using Application.Contracts.Authentication;
+using Application.Contracts.Caching;
 using Application.Contracts.EventBus;
 using Application.Contracts.Persistence;
 using Application.Messaging;
@@ -20,7 +21,8 @@ public class GrantLicenseCommandHandler(
     IEventBus eventBus,
     ILogger<GrantLicenseCommandHandler> logger,
     UserManager<User> userManager,
-    IAuthenticationService authenticationService)
+    IAuthenticationService authenticationService,
+    IRedisCacheService redisCache)
     : IRequestHandler<GrantLicenseCommand, ApiResponse<bool>>
 {
     public async Task<ApiResponse<bool>> Handle(GrantLicenseCommand request, CancellationToken cancellationToken)
@@ -32,6 +34,7 @@ public class GrantLicenseCommandHandler(
 
         try
         {
+            const string cacheKey = "GetAllCompanies";
             var result = await companyRepository.GrantCompanyAsync(request.CompanyId);
             var staff = result.Staffs.FirstOrDefault(u =>
                 u.CompanyId == result.Id &&
@@ -49,7 +52,7 @@ public class GrantLicenseCommandHandler(
                 staff.UserName,
                 $"{staff.UserName}{ApplicationConst.DefaultPassword}",
                 result.Name,
-                await authenticationService.GenerateConfirmUrl(staff.Email, request.ConfirmUrl)
+                await authenticationService.GenerateConfirmUrl(staff.Email, request.ConfirmUrl, false)
             ), cancellationToken);
 
             logger.LogInformation(
@@ -59,6 +62,7 @@ public class GrantLicenseCommandHandler(
                 staff.Email
             );
 
+            await redisCache.RemoveDataAsync(cacheKey);
             return ApiResponse<bool>.SuccessResult(true, "Company Already Granted License");
         }
         catch (Exception ex)
