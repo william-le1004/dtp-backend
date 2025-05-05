@@ -69,7 +69,7 @@ namespace Application.Features.Tour.Queries
                 .Where(ts => ts.TourId == request.TourId
                              && !ts.IsDeleted
                              && ts.OpenDate.HasValue
-                             && ts.OpenDate.Value > tomorrow)
+                             && ts.OpenDate.Value >= DateTime.Today )
                 .Include(ts => ts.TourScheduleTickets)
                 .ToListAsync(cancellationToken);
 
