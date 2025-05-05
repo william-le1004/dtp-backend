@@ -62,14 +62,14 @@ namespace Application.Features.Tour.Queries
             GetListTicketScheduleByTourIDQuery request,
             CancellationToken cancellationToken)
         {
-            var tomorrow = DateTime.Now.AddDays(1);
+            var today = DateTime.Today;
 
             // 1) Lấy các schedule
             var schedules = await _context.TourSchedules
                 .Where(ts => ts.TourId == request.TourId
                              && !ts.IsDeleted
                              && ts.OpenDate.HasValue
-                             && ts.OpenDate.Value > tomorrow)
+                             && ts.OpenDate.Value >= today)
                 .Include(ts => ts.TourScheduleTickets)
                 .ToListAsync(cancellationToken);
 

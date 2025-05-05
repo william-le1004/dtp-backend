@@ -2,15 +2,9 @@
 using Application.Contracts.EventBus;
 using Application.Contracts.Persistence;
 using Application.Features.Wallet.Events;
-using Application.Messaging.Tour;
-using Application.Messaging.Wallet;
 using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Features.Tour.Commands
 {
@@ -35,65 +29,64 @@ namespace Application.Features.Tour.Commands
 
         public async Task<ApiResponse<string>> Handle(DeleteTourSchedule request, CancellationToken cancellationToken)
         {
-            // Lấy tất cả các TourSchedule của Tour có TourId = request.TourId và nằm trong khoảng thời gian được chỉ định
+            var today = DateTime.Today;
+
             var schedules = await _context.TourSchedules
-                .Where(s => s.TourId == request.TourId &&
-                            s.OpenDate.HasValue && 
-                            s.OpenDate.Value.Date >= request.StartDay.ToDateTime(TimeOnly.MinValue) &&
-                            s.OpenDate.Value.Date <= request.EndDay.ToDateTime(TimeOnly.MaxValue))
+                .Where(s => s.TourId == request.TourId
+                            && s.OpenDate.HasValue
+                            && s.OpenDate.Value.Date >= request.StartDay.ToDateTime(TimeOnly.MinValue)
+                            && s.OpenDate.Value.Date <= request.EndDay.ToDateTime(TimeOnly.MaxValue)
+                            && !s.IsDeleted)
                 .Include(s => s.TourScheduleTickets)
-                .Include(s => s.Tour)
-                .ThenInclude(t => t.Company)
+                .Include(s => s.TourBookings)
                 .ToListAsync(cancellationToken);
 
             if (!schedules.Any())
-            {
-                return ApiResponse<string>.Failure("No tour schedules found in the given date range for the specified Tour", 404);
-            }
+                return ApiResponse<string>.Failure(
+                    "No tour schedules found in the given date range for the specified Tour", 404);
 
             foreach (var schedule in schedules)
             {
-                // Kiểm tra các booking có trạng thái Paid cho schedule hiện tại
-                var paidBookings = await _context.TourBookings
-                    .Where(tb => tb.TourScheduleId == schedule.Id && tb.Status == BookingStatus.Paid)
-                    .ToListAsync(cancellationToken);
+                var departureDate = schedule.OpenDate!.Value.Date;
 
-                foreach (var booking in paidBookings)
+                if (departureDate > today)
                 {
-                    // Lấy Payment tương ứng với booking
-                    var payment = await _context.Payments
-                        .Include(x => x.Booking)
-                        .ThenInclude(x => x.Tickets)
-                        .ThenInclude(x => x.TicketType)
-                        .Include(x => x.Booking)
-                        .ThenInclude(x => x.TourSchedule)
-                        .ThenInclude(x=> x.Tour)
-                        .AsSingleQuery()
-                        .FirstOrDefaultAsync(p => p.BookingId == booking.Id, cancellationToken);
-                    booking.Cancel(request.Remark);
-                    if (payment != null)
+                    // -- CHỈ với những lịch còn tương lai --
+                    // 1) Hủy và hoàn tiền các booking Paid
+                    var paidBookings = schedule.TourBookings
+                        .Where(tb => tb.Status == BookingStatus.Paid)
+                        .ToList();
+
+                    foreach (var booking in paidBookings)
                     {
-                        decimal refundAmount = payment.NetCost;
+                        booking.Cancel(request.Remark);
 
-                        // Publish PaymentRefunded event
-                        await _publisher.Publish(new PaymentRefunded(refundAmount, booking.UserId, booking.Code), cancellationToken);
+                        var payment = await _context.Payments
+                            .FirstOrDefaultAsync(p => p.BookingId == booking.Id, cancellationToken);
 
-                        // Gọi refund trên Payment (cập nhật trạng thái, ...)
-                        payment.Refund();
-                        _context.Payments.Update(payment);
+                        if (payment != null)
+                        {
+                            // Phát event hoàn tiền
+                            await _publisher.Publish(
+                                new PaymentRefunded(payment.NetCost, booking.UserId, booking.Code),
+                                cancellationToken);
+
+                            payment.Refund();
+                        }
                     }
+
+                    // 2) Đánh dấu các vé lịch trình là deleted
+                    foreach (var tkt in schedule.TourScheduleTickets)
+                        tkt.IsDeleted = true;
                 }
 
-                // Sau khi hoàn tiền (nếu cần), đánh dấu các vé lịch trình và schedule là deleted
-                foreach (var ticket in schedule.TourScheduleTickets.ToList())
-                {
-                    ticket.IsDeleted = true;
-                }
+                // -- Với cả lịch tương lai và lịch đúng hôm nay --
+                // 3) Đánh dấu chính lịch là deleted
                 schedule.IsDeleted = true;
             }
 
             await _context.SaveChangesAsync(cancellationToken);
-            return ApiResponse<string>.SuccessResult("Tour schedules and associated tickets deleted successfully", "Deletion successful");
+            return ApiResponse<string>.SuccessResult("Tour schedules processed successfully", "OK");
         }
     }
 }
