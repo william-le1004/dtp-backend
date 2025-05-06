@@ -44,9 +44,6 @@ public class AuthenticationService(
 
         var tokens = await jwtTokenService.GenerateTokens(user);
         await StoreRefreshToken(user.Id, tokens.RefreshToken);
-        
-        if(!string.IsNullOrEmpty(request.FcmToken)) user!.FcmToken = request.FcmToken;
-        await userManager.UpdateAsync(user);
         return tokens;
     }
 

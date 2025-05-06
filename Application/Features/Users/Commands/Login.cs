@@ -34,7 +34,7 @@ public class LoginHandler(IAuthenticationService authenticationService)
 
         try
         {
-            var user = new LoginRequestDto(request.UserName, request.Password, request.FcmToken);
+            var user = new LoginRequestDto(request.UserName, request.Password);
             var tokenResponse = await authenticationService.LoginAsync(user);
 
             return ApiResponse<AccessTokenResponse>.SuccessResult(tokenResponse);
