@@ -69,7 +69,7 @@ public class CreateCompanyCommandHandler(ICompanyRepository companyRepository, I
             await companyRepository.UpsertCompanyAsync(newCompany);
 
             await redisCache.RemoveDataAsync(cacheKey);
-            await fcmService.SendNotificationAsync("New Company Created", $"A new company named {request.Name} has been created.");
+            await fcmService.SendNotificationAsync("Yêu cầu tạo công ty", $"Một công ty mới tên {request.Name} yêu cầu tạo được cấp phép.");
             return ApiResponse<bool>.SuccessResult(true, "Company created successfully");
         }
         catch (Exception ex)

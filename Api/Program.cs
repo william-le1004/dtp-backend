@@ -28,7 +28,7 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
 
-//app.UseMiddleware<ErrorHandlingMiddleware>();
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseHangfireDashboard("/hangfire", new DashboardOptions
 {
     Authorization = [new AllowAllDashboardAuthorizationFilter()]
