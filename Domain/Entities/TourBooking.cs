@@ -129,7 +129,7 @@ public partial class TourBooking : Entity
     
     public void Complete(string? remark = null)
     {
-        if (Status != BookingStatus.Paid||Status!=BookingStatus.Completed)
+        if (Status != BookingStatus.Paid)
         {
             throw new AggregateException($"Booking wasn't paid. Status: {Status}.");
         }
