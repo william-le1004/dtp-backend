@@ -209,7 +209,7 @@ public partial class TourBooking : Entity
     
     public bool CanRatting()
     {
-        return IsPaid() && TourSchedule.IsAfterEndDate(1) && !IsRated();
+        return IsPaid() && TourSchedule.IsAfterEndDate(1) && IsRated();
     }
 
     public DateTime OverBookingTime() => CreatedAt.AddHours(1);
