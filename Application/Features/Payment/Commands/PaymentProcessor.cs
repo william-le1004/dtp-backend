@@ -57,7 +57,7 @@ public class PaymentProcessorHandler(IDtpDbContext context, IUserContextService 
         var items = new List<ItemData>();
         foreach (var item in order.Tickets)
         {
-            items.Add(new ItemData(item.TicketType.TicketKind.ToString(), item.Quantity, (int)item.GrossCost));
+            items.Add(new ItemData(MapTicketKindToVietnamese(item.TicketType.TicketKind), item.Quantity, (int)item.GrossCost));
         }
 
         var paymentData = new PaymentData(
@@ -77,5 +77,20 @@ public class PaymentProcessorHandler(IDtpDbContext context, IUserContextService 
 
         var createPayment = await payOs.createPaymentLink(paymentData);
         return createPayment;
+    }
+
+
+    private string MapTicketKindToVietnamese(TicketKind kind)
+    {
+        return kind switch
+        {
+            TicketKind.Adult => "Người lớn",
+            TicketKind.Child => "Trẻ em",
+            TicketKind.PerGroupOfThree => "Nhóm 3 người",
+            TicketKind.PerGroupOfFive => "Nhóm 5 người",
+            TicketKind.PerGroupOfSeven => "Nhóm 7 người",
+            TicketKind.PerGroupOfTen => "Nhóm 10 người",
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
+        };
     }
 }
