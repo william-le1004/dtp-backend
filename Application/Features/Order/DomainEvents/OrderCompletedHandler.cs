@@ -26,7 +26,7 @@ public class OrderCompletedHandler(IDtpDbContext context, IUserRepository reposi
             
             context.Wallets.AttachRange(receiveWallet, poolFund);
 
-            var amount = (tourSchedule.GrossSettlementCost() * (decimal)user.Company.CommissionRate) / 100m;
+            var amount = tourSchedule.GrossSettlementCost() * (decimal)(100 - user.Company.CommissionRate) / 100m;
             var description =
                 $"Tất toán tour {tourSchedule.Tour.Code} ngày {tourSchedule.OpenDate} Touschedule Id : {tourSchedule.Id}";
             
