@@ -47,7 +47,7 @@ public class GetOrdersHandler(IDtpDbContext context, IUserContextService userSer
                     ? context.ImageUrls.FirstOrDefault(image => image.RefId == x.TourSchedule.Tour.Id)!.Url
                     : null,
                 TourDate = x.TourSchedule.OpenDate ?? DateTime.MinValue,
-                CanRating = x.CanRatting(),
+                CanRating = x.CanRatting() && !context.Ratings.Any(rating =>rating.TourBookingId == x.Id),
                 OrderTickets = x.Tickets.Select(t => new OrderTicketResponse()
                 {
                     Code = t.Code,
