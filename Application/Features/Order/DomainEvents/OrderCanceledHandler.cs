@@ -1,4 +1,5 @@
 ﻿using Application.Contracts.EventBus;
+using Application.Contracts.Firebase;
 using Application.Messaging.Order;
 using Domain.Events;
 using MediatR;
@@ -8,7 +9,7 @@ namespace Application.Features.Order.DomainEvents;
 
 public class OrderCanceledHandler(
     IEventBus eventBus,
-    ILogger<OrderPaidHandler> logger
+    ILogger<OrderPaidHandler> logger, IFcmService fcmService
 ) : INotificationHandler<OrderCanceled>
 {
     public async Task Handle(OrderCanceled notification, CancellationToken cancellationToken)
@@ -30,6 +31,7 @@ public class OrderCanceledHandler(
             }).ToList()
         });
 
+        await fcmService.SendNotificationAsync("Order Canceled", $"Order {notification.OrderCode} has been canceled.");
         logger.LogInformation($"Publish Order Cancel {notification.OrderId}");
     }
 }
