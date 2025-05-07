@@ -9,7 +9,7 @@ public partial class TourBooking : Entity
 {
     public string UserId { get; private set; }
     public string Code { get; init; }
-    
+
     public long RefCode { get; private set; }
     public string Name { get; private set; }
 
@@ -23,7 +23,7 @@ public partial class TourBooking : Entity
     public string? VoucherCode { get; private set; }
 
     public decimal DiscountAmount { get; private set; }
-    
+
     public virtual User User { get; set; } = null!;
 
     public decimal GrossCost
@@ -107,9 +107,13 @@ public partial class TourBooking : Entity
             throw new AggregateException($"Can't cancel this tour booking. Status: {Status}.");
         }
 
+        if (Status == BookingStatus.Paid)
+        {
+            AddOrderCancelDomainEvent();
+        }
+
         Status = BookingStatus.Cancelled;
         Remark = remark;
-        AddOrderCancelDomainEvent();
     }
 
     public void WaitingForPayment()
