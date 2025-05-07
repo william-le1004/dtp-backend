@@ -46,7 +46,5 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 IsActive = true
             }
         );
-
-        builder.HasQueryFilter(u => u.IsActive);
     }
 }
