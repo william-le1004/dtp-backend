@@ -208,7 +208,7 @@ public partial class TourBooking : Entity
     
     public bool CanRatting()
     {
-        return (IsPaid() || IsCompleted()) && TourSchedule.IsAfterEndDate(1);
+        return (IsPaid() && TourSchedule.IsAfterEndDate(1)) || IsCompleted();
     }
 
     public DateTime OverBookingTime() => CreatedAt.AddHours(1);
