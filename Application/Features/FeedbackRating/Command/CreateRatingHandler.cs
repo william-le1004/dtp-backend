@@ -14,6 +14,7 @@ namespace Application.Features.Rating.Commands
     // DTO trả về thông tin Rating
     public record RatingResponse(
         Guid Id,
+        Guid BookingId,
         Guid TourId,
         int Star,
         string Comment       
@@ -22,6 +23,7 @@ namespace Application.Features.Rating.Commands
     // Command tạo Rating; client gửi TourId, UserId, Star, Comment và danh sách Images (có thể null)
     public record CreateRatingCommand(
         Guid TourId,
+        Guid BookingId,
         int Star,
         string Comment,
         List<string>? Images = null
@@ -40,12 +42,10 @@ namespace Application.Features.Rating.Commands
 
         public async Task<ApiResponse<RatingResponse>> Handle(CreateRatingCommand request, CancellationToken cancellationToken)
         {
-            // Lấy UserId từ dịch vụ người dùng hiện tại
             var userId = _userContextService.GetCurrentUserId();
             if (string.IsNullOrEmpty(userId))
                 return ApiResponse<RatingResponse>.Failure("User is not authenticated", 401);
 
-            // Kiểm tra xem user đã rating tour này chưa
             var existingRating = await _context.Ratings
                 .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.UserId == userId && r.TourId == request.TourId, cancellationToken);
@@ -53,27 +53,32 @@ namespace Application.Features.Rating.Commands
             if (existingRating != null)
                 return ApiResponse<RatingResponse>.Failure("You have already rated this tour", 400);
 
-            // Tạo một entity Rating mới với các dữ liệu từ command.
             var rating = new Domain.Entities.Rating
             {
                 Id = Guid.NewGuid(), 
                 TourId = request.TourId,
                 UserId = userId,
+                ToourBookingId = request.BookingId,
                 Star = request.Star,
                 Comment = request.Comment,
             };
-            // Nếu có danh sách ảnh, gán vào Rating
             foreach (var image in request.Images ?? new List<string>())
             {
                 _context.ImageUrls.Add(new ImageUrl(rating.Id,image));
             }
             _context.Ratings.Add(rating);
+            var booking = await _context.TourBookings
+                .AsNoTracking()
+                .FirstOrDefaultAsync(b => b.Id == request.BookingId, cancellationToken);
+            if (booking.Status != Domain.Enum.BookingStatus.Paid)
+                booking.Complete();
             await _context.SaveChangesAsync(cancellationToken);
 
             // Tạo DTO trả về
             var responseDto = new RatingResponse(
                 Id: rating.Id,
                 TourId: rating.TourId,
+                BookingId: rating.ToourBookingId,
                 Star: rating.Star,
                 Comment: rating.Comment
                 );

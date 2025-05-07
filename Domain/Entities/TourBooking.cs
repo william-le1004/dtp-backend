@@ -39,6 +39,8 @@ public partial class TourBooking : Entity
     public string? Remark { get; private set; }
 
     public virtual TourSchedule TourSchedule { get; set; } = null!;
+    public virtual Rating? Rating { get; set; } = null!;
+    
 
     public TourBooking()
     {
@@ -200,10 +202,14 @@ public partial class TourBooking : Entity
         
         AddDomainEvent(orderPaid);
     }
-
+    public bool IsRated()
+    {
+        return Rating != null;
+    }
+    
     public bool CanRatting()
     {
-        return IsPaid() && TourSchedule.IsAfterEndDate(1);
+        return IsPaid() && TourSchedule.IsAfterEndDate(1) && !IsRated();
     }
 
     public DateTime OverBookingTime() => CreatedAt.AddHours(1);
