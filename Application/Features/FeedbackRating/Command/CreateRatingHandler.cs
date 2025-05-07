@@ -58,7 +58,7 @@ namespace Application.Features.Rating.Commands
                 Id = Guid.NewGuid(), 
                 TourId = request.TourId,
                 UserId = userId,
-                ToourBookingId = request.BookingId,
+                TourBookingId = request.BookingId,
                 Star = request.Star,
                 Comment = request.Comment,
             };
@@ -78,7 +78,7 @@ namespace Application.Features.Rating.Commands
             var responseDto = new RatingResponse(
                 Id: rating.Id,
                 TourId: rating.TourId,
-                BookingId: rating.ToourBookingId,
+                BookingId: rating.TourBookingId,
                 Star: rating.Star,
                 Comment: rating.Comment
                 );

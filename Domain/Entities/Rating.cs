@@ -9,7 +9,7 @@ public partial class Rating : AuditEntity
     public int Star { get; set; }
 
     public string Comment { get; set; }
-    public Guid ToourBookingId { get; set; }
+    public Guid TourBookingId { get; set; }
     public virtual Tour Tour { get; set; } = null!;
     public virtual TourBooking TourBooking { get; set; } = null!;
     public virtual User User { get; set; } = null!;
@@ -17,7 +17,7 @@ public partial class Rating : AuditEntity
     {
         Id = Guid.NewGuid();
         TourId = tourId;
-        ToourBookingId = bookingid;
+        TourBookingId = bookingid;
         UserId = userId;
         Star = star;
         Comment = comment;
