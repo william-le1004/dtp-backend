@@ -1,111 +1,103 @@
-﻿using Application.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Application.Common;
 using Application.Contracts.Persistence;
 using Domain.DataModel;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace Application.Features.Tour.Commands
 {
-    
+
 
     public record UpdateTourDestinationCommand(
         Guid TourId,
         List<DestinationToAdd> Destinations
     ) : IRequest<ApiResponse<string>>;
 
-    public class UpdateTourDestinationHandler : IRequestHandler<UpdateTourDestinationCommand, ApiResponse<string>>
+    public class UpdateTourDestinationHandler
+        : IRequestHandler<UpdateTourDestinationCommand, ApiResponse<string>>
     {
         private readonly IDtpDbContext _context;
-        private readonly DbContext _dbContext;
 
         public UpdateTourDestinationHandler(IDtpDbContext context)
         {
             _context = context;
-            _dbContext = context as DbContext ?? throw new ArgumentException();
         }
 
-        public async Task<ApiResponse<string>> Handle(UpdateTourDestinationCommand request, CancellationToken ct)
+        public async Task<ApiResponse<string>> Handle(
+            UpdateTourDestinationCommand request,
+            CancellationToken ct)
         {
-            var tour = await _context.Tours
-                .Include(t => t.TourDestinations).ThenInclude(td => td.DestinationActivities)
-                .FirstOrDefaultAsync(t => t.Id == request.TourId, ct);
-            if (tour == null) return ApiResponse<string>.Failure("Tour not found", 404);
+            // 1) Load toàn bộ Destinations cũ
+            var oldTds = await _context.TourDestinations
+                .Where(td => td.TourId == request.TourId)
+                .Include(td => td.DestinationActivities)
+                .ToListAsync(ct);
 
-            // Xóa cũ...
-            var toRemove = tour.TourDestinations
-                .Where(td => !request.Destinations.Any(nd => nd.DestinationId == td.DestinationId))
-                .ToList();
-            foreach (var oldTd in toRemove)
-            {
-                _context.ImageUrls.RemoveRange(
-                    _context.ImageUrls.Where(i => i.RefId == oldTd.Id));
-                _context.DestinationActivities.RemoveRange(oldTd.DestinationActivities);
-                _context.TourDestinations.Remove(oldTd);
-            }
+            if (oldTds == null)
+                return ApiResponse<string>.Failure("Tour không tồn tại", 404);
 
-            // Cập nhật/Thêm mới
+            // 2) Xoá sạch ImageUrl liên quan
+            var oldIds = oldTds.Select(td => td.Id).ToList();
+            var oldImgs = await _context.ImageUrls
+                .Where(i => oldIds.Contains(i.RefId))
+                .ToListAsync(ct);
+            _context.ImageUrls.RemoveRange(oldImgs);
+
+            // 3) Xoá tất cả DestinationActivity cũ
+            var oldActs = oldTds.SelectMany(td => td.DestinationActivities).ToList();
+            _context.DestinationActivities.RemoveRange(oldActs);
+
+            // 4) Xoá tất cả TourDestination cũ
+            _context.TourDestinations.RemoveRange(oldTds);
+
+            // 5) Commit xoá
+            await _context.SaveChangesAsync(ct);
+
+            // 6) Chèn lại toàn bộ theo danh sách mới
             foreach (var nd in request.Destinations)
             {
-                var existing = tour.TourDestinations
-                                   .FirstOrDefault(td => td.DestinationId == nd.DestinationId);
-                if (existing != null)
+                var td = new TourDestination(
+                    request.TourId,
+                    nd.DestinationId,
+                    nd.StartTime ?? TimeSpan.Zero,
+                    nd.EndTime ?? TimeSpan.Zero,
+                    nd.SortOrder,
+                    nd.SortOrderByDate);
+
+                // 6a) Ảnh
+                if (nd.Img != null)
+                    foreach (var url in nd.Img)
+                        _context.ImageUrls.Add(new ImageUrl(td.Id, url));
+
+                // 6b) Activities
+                if (nd.DestinationActivities != null)
                 {
-                    // ... cập nhật StartTime, EndTime, SortOrder, SortOrderByDate
-                    _dbContext.Entry(existing).Property(nameof(TourDestination.StartTime))
-                              .CurrentValue = nd.StartTime ?? existing.StartTime;
-                    _dbContext.Entry(existing).Property(nameof(TourDestination.EndTime))
-                              .CurrentValue = nd.EndTime ?? existing.EndTime;
-                    _dbContext.Entry(existing).Property(nameof(TourDestination.SortOrder))
-                              .CurrentValue = nd.SortOrder;
-                    _dbContext.Entry(existing).Property(nameof(TourDestination.SortOrderByDate))
-                              .CurrentValue = nd.SortOrderByDate;
-
-                    // Xóa ảnh cũ
-                    _context.ImageUrls.RemoveRange(
-                        _context.ImageUrls.Where(i => i.RefId == existing.Id));
-                    // Thêm ảnh mới
-                    if (nd.Img != null)
+                    foreach (var na in nd.DestinationActivities)
                     {
-                        foreach (var url in nd.Img)
-                            _context.ImageUrls.Add(new ImageUrl(existing.Id, url));
+                        td.DestinationActivities.Add(new DestinationActivity(
+                            td.Id,
+                            na.Name!,
+                            na.StartTime ?? TimeSpan.Zero,
+                            na.EndTime ?? TimeSpan.Zero,
+                            na.SortOrder));
                     }
-
-                    // Merge activities (tương tự)
-                    // ...
                 }
-                else
-                {
-                    // Thêm mới TourDestination
-                    var td = new TourDestination(
-                        tour.Id,
-                        nd.DestinationId,
-                        nd.StartTime ?? TimeSpan.Zero,
-                        nd.EndTime ?? TimeSpan.Zero,
-                        nd.SortOrder,
-                        nd.SortOrderByDate);
-                    tour.TourDestinations.Add(td);
 
-                    // Thêm ảnh
-                    if (nd.Img != null)
-                    {
-                        foreach (var url in nd.Img)
-                            _context.ImageUrls.Add(new ImageUrl(td.Id, url));
-                    }
-                    // Thêm activities...
-                }
+                _context.TourDestinations.Add(td);
             }
 
-            try
-            {
-                await _context.SaveChangesAsync(ct);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                return ApiResponse<string>.Failure("Conflict", 409);
-            }
-            return ApiResponse<string>.SuccessResult("OK", "Updated");
+            // 7) Commit chèn
+            await _context.SaveChangesAsync(ct);
+
+            return ApiResponse<string>.SuccessResult(
+                "Cập nhật TourDestinations thành công",
+                "Update successful");
         }
     }
 }

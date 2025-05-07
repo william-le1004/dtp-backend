@@ -1,6 +1,4 @@
-﻿
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
     public class DestinationActivity
     {
@@ -21,5 +19,11 @@ namespace Domain.Entities
             SortOrder = sortOrder;
         }
 
+        public void UpdateTimesAndSort(TimeSpan? startTime, TimeSpan? endTime, int? sortOrder)
+        {
+            if (startTime.HasValue) StartTime = startTime.Value;
+            if (endTime.HasValue) EndTime = endTime.Value;
+            SortOrder = sortOrder;
+        }
     }
 }

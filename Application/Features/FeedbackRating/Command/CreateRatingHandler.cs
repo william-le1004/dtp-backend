@@ -70,7 +70,10 @@ namespace Application.Features.Rating.Commands
             var booking = await _context.TourBookings
                 .AsNoTracking()
                 .FirstOrDefaultAsync(b => b.Id == request.BookingId, cancellationToken);
-           
+            if (!booking.IsCompleted())
+            {
+                booking.Complete();
+            }
             await _context.SaveChangesAsync(cancellationToken);
 
             // Tạo DTO trả về
