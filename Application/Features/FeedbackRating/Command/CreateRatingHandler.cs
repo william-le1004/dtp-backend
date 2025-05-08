@@ -2,6 +2,7 @@
 using Application.Contracts;
 using Application.Contracts.Persistence;
 using Domain.DataModel;
+using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -72,7 +73,7 @@ namespace Application.Features.Rating.Commands
                 .FirstOrDefaultAsync(b => b.Id == request.BookingId, cancellationToken);
             if (!booking.IsCompleted())
             {
-                booking.Complete();
+                booking.ToCompleted();
             }
             await _context.SaveChangesAsync(cancellationToken);
 
