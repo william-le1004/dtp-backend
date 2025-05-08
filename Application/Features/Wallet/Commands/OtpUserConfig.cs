@@ -6,27 +6,24 @@ using Domain.DataModel;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Wallet.Commands;
 
-public record OtpUserConfig() : IRequest<string?>
-{
-    public string ConfirmationToken { get; set; }
-}
+public record OtpUserConfig() : IRequest<string>;
 
 public class OtpUserConfigHandler(
     UserManager<User> manager,
     IAuthenticatorService service,
     IDtpDbContext context,
+    IUserContextService userService,
     ICloudinaryService cloudinaryService
-) : IRequestHandler<OtpUserConfig, string?>
+) : IRequestHandler<OtpUserConfig, string>
 {
-    public async Task<string?> Handle(OtpUserConfig request, CancellationToken cancellationToken)
+    public async Task<string> Handle(OtpUserConfig request, CancellationToken cancellationToken)
     {
-        var user = await manager.Users
-            .Where(u => u.SecureToken == request.ConfirmationToken)
-            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        var userId = userService.GetCurrentUserId()!;
+
+        var user = manager.FindByIdAsync(userId).GetAwaiter().GetResult();
 
         if (user is null)
         {
@@ -38,8 +35,8 @@ public class OtpUserConfigHandler(
         await manager.UpdateAsync(user);
 
         var qrByte = service.GenerateQrCode(key, user.Email);
-        var imageUrl = await cloudinaryService.UploadImageAsync(new MemoryStream(qrByte!), user.Id);
-        SaveQrUrl(imageUrl, user.Id, cancellationToken);
+        var imageUrl = await cloudinaryService.UploadImageAsync(new MemoryStream(qrByte!), userId);
+        SaveQrUrl(imageUrl, userId, cancellationToken);
         
         return imageUrl;
     }
