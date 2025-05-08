@@ -12,17 +12,24 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
 public class WalletController(IMediator mediator) : ODataController
 {
-    [HttpGet("otp")]
-    public async Task<ActionResult> OtpConfig()
+    [HttpPost("otp/config")]
+    public async Task<ActionResult> OtpConfig(OtpUserConfig request)
     {
-        var imageUrl = await mediator.Send(new OtpUserConfig());
-        return Ok(imageUrl);
+        var imageUrl = await mediator.Send(request);
+        return imageUrl is null ? BadRequest() : Ok(imageUrl);
     }
 
+    [Authorize]
+    [HttpPost("otp")]
+    public async Task<IActionResult> GetOtpConfig(OtpUserRequest request)
+    {
+        var result = await mediator.Send(request);
+        return result ? Ok() : NotFound();
+    }
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<WalletDetailsResponse>> GetWalletDetails()
     {
         var result = await mediator.Send(new GetOwnWallet());
@@ -34,6 +41,7 @@ public class WalletController(IMediator mediator) : ODataController
 
     [EnableQuery]
     [HttpGet("transaction")]
+    [Authorize]
     public async Task<IQueryable<TransactionResponse>> Get()
     {
         return await mediator.Send(new GetTransactionHistory());
@@ -57,12 +65,14 @@ public class WalletController(IMediator mediator) : ODataController
     
     [EnableQuery]
     [HttpGet("own-external-transaction")]
+    [Authorize]
     public async Task<IQueryable<ExternalTransactionResponse>> OwnExternalTransaction()
     {
         return await mediator.Send(new GetOwnExternalTransaction());
     }
 
     [HttpGet("transaction/{id}")]
+    [Authorize]
     public async Task<ActionResult<TransactionDetailResponse>> GetWalletTransactionDetails(Guid id)
     {
         var result = await mediator.Send(new GetTransactionDetails(id));
@@ -81,6 +91,7 @@ public class WalletController(IMediator mediator) : ODataController
 
     [ServiceFilter(typeof(OtpAuthorizeFilter))]
     [HttpPost("withdraw")]
+    [Authorize]
     public async Task<IActionResult> Withdraw(WalletWithdraw request)
     {
         var withdrawRequest = await mediator.Send(request);
