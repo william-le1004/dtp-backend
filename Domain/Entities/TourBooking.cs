@@ -205,7 +205,10 @@ public partial class TourBooking : Entity
         
         AddDomainEvent(orderPaid);
     }
-    
+    public void ToCompleted()
+    {      
+        Status = BookingStatus.Completed;
+    }
     public bool CanRatting()
     {
         return (IsPaid() && TourSchedule.IsAfterEndDate(1)) || IsCompleted();
