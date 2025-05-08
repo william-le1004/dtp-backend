@@ -44,7 +44,7 @@ RecurringJob.AddOrUpdate<IOrderJobService>(
 
 app.UseSwagger();
 app.UseSwaggerUI();
-// app.ApplyMigrations();
+app.ApplyMigrations();
 app.UseCors("all");
 app.UseAuthentication();
 app.UseAuthorization();
