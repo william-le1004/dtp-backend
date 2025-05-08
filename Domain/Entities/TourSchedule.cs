@@ -90,7 +90,7 @@ public class TourSchedule : AuditEntity
     }
     public bool IsCanceled()
     {
-        return( TourBookings.Count == 0 || TourBookings.All(x => x.IsCancelled() )) && IsStarted();
+        return ((TourBookings.Count == 0 || TourBookings.All(x => x.IsCancelled())) && IsStarted()) || IsDeleted;
 
     }
 }
