@@ -31,7 +31,7 @@ public class OrderCanceledHandler(
             }).ToList()
         });
 
-        await fcmService.SendNotificationAsync("Order Canceled", $"Order {notification.OrderCode} has been canceled.");
+        await fcmService.SendNotificationAsync("Tour đã được hủy", $"Đơn hàng {notification.OrderCode} đã bị hủy.");
         logger.LogInformation($"Publish Order Cancel {notification.OrderId}");
     }
 }

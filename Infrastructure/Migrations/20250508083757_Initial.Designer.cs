@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DtpDbContext))]
-    [Migration("20250428165846_Change longtext to varchar")]
-    partial class Changelongtexttovarchar
+    [Migration("20250508083757_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +38,41 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ImageUrls");
+                });
+
+            modelBuilder.Entity("Domain.DataModel.SystemSetting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("SettingCharValue")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SettingCode")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SettingDecimalValue")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SettingDoubleValue")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SettingIntegerValue")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SettingKey")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SystemSetting");
                 });
 
             modelBuilder.Entity("Domain.Entities.Basket", b =>
@@ -216,6 +251,18 @@ namespace Infrastructure.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("BankAccount")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BankAccountNumber")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BankName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -376,6 +423,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Star")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("TourBookingId")
+                        .HasColumnType("char(36)");
+
                     b.Property<Guid>("TourId")
                         .HasColumnType("char(36)");
 
@@ -384,6 +434,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TourBookingId")
+                        .IsUnique();
 
                     b.HasIndex("TourId");
 
@@ -581,15 +634,13 @@ namespace Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("VoucherCode")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TourScheduleId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("VoucherCode");
 
                     b.ToTable("TourBookings");
                 });
@@ -779,6 +830,9 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("FcmToken")
+                        .HasColumnType("longtext");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
@@ -850,8 +904,8 @@ namespace Infrastructure.Migrations
                             Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
                             AccessFailedCount = 0,
                             Address = "123 Admin St",
-                            ConcurrencyStamp = "9acdd1fa-a44d-4079-b1a2-75972f6001a1",
-                            CreatedAt = new DateTime(2025, 4, 28, 16, 58, 44, 867, DateTimeKind.Utc).AddTicks(1714),
+                            ConcurrencyStamp = "ea7e57bf-e7ac-43b2-b42c-ca8819ad9ba3",
+                            CreatedAt = new DateTime(2025, 5, 8, 15, 37, 56, 444, DateTimeKind.Local).AddTicks(1034),
                             CreatedBy = "System",
                             Email = "dtpAdmin@gmail.com",
                             EmailConfirmed = true,
@@ -860,10 +914,10 @@ namespace Infrastructure.Migrations
                             Name = "Admin User",
                             NormalizedEmail = "DTPADMIN@GMAIL.COM",
                             NormalizedUserName = "DTPADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJNFCYA6jnPjSDVabXohq08UIAwClszcWOJjvuuAwhYQ9ohOXF9aGKce6hL02sFNpQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBZSwJv0BgLg/DDtVeYqELBn/sNj8TU/7FuzxwMeA4Tz/L7UkgJV03ihkXIL6B0ufg==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0721a60b-f144-4716-aa08-64c897ad1d22",
+                            SecurityStamp = "4de407e8-d716-4646-b86d-433c1116eb47",
                             TwoFactorEnabled = false,
                             UserName = "dtpAdmin"
                         },
@@ -872,8 +926,8 @@ namespace Infrastructure.Migrations
                             Id = "9e224968-33e4-4652-b7b7-8574d048cdb9",
                             AccessFailedCount = 0,
                             Address = "456 Operator Rd",
-                            ConcurrencyStamp = "07db7f11-6676-4709-86f0-10a4bfa46992",
-                            CreatedAt = new DateTime(2025, 4, 28, 16, 58, 44, 926, DateTimeKind.Utc).AddTicks(162),
+                            ConcurrencyStamp = "7fcb842a-d709-400c-9c41-35689a7116f9",
+                            CreatedAt = new DateTime(2025, 5, 8, 15, 37, 56, 486, DateTimeKind.Local).AddTicks(7499),
                             CreatedBy = "System",
                             Email = "operator@gmail.com",
                             EmailConfirmed = true,
@@ -882,10 +936,10 @@ namespace Infrastructure.Migrations
                             Name = "Operator User",
                             NormalizedEmail = "OPERATOR@GMAIL.COM",
                             NormalizedUserName = "OPERATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGtb199xTuDmmfa7mEKy0pSMWmnF44N+fV3N0uRDQID0J5/4TRaCveNE56t4NDm3+Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAED7DKz288Iys7cjm/bohImJR3UCviZ+5o+JxzBLdFiVl5FyhGFS6kp96KSmGKPTq0w==",
                             PhoneNumber = "0987654321",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "fda16b2a-97c1-4e45-bd22-11a672abeaaa",
+                            SecurityStamp = "d0e3858f-b4fc-41a6-a0d8-20f3b1077aa3",
                             TwoFactorEnabled = false,
                             UserName = "operator"
                         });
@@ -929,7 +983,7 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("293c0015-6b8a-4a61-b5cb-85dae14ccbb8"),
+                            Id = new Guid("8fa6d7f4-2e05-4f9a-8db2-5f815550d690"),
                             Balance = 1000m,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
@@ -937,7 +991,7 @@ namespace Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("6d9da11b-d8c5-418d-a99d-6d4844f11390"),
+                            Id = new Guid("4ef7f04a-96e1-45e4-a1fa-90ba417c8fe4"),
                             Balance = 500m,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
@@ -947,11 +1001,35 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.ValueObject.Voucher", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("Code")
-                        .HasColumnType("varchar(255)");
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
 
                     b.Property<decimal>("MaxDiscountAmount")
                         .HasColumnType("decimal(18,2)");
@@ -959,7 +1037,10 @@ namespace Infrastructure.Migrations
                     b.Property<double>("Percent")
                         .HasColumnType("double");
 
-                    b.HasKey("Code");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Voucher");
                 });
@@ -1193,6 +1274,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Rating", b =>
                 {
+                    b.HasOne("Domain.Entities.TourBooking", "TourBooking")
+                        .WithOne("Rating")
+                        .HasForeignKey("Domain.Entities.Rating", "TourBookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.Tour", "Tour")
                         .WithMany("Ratings")
                         .HasForeignKey("TourId")
@@ -1206,6 +1293,8 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Tour");
+
+                    b.Navigation("TourBooking");
 
                     b.Navigation("User");
                 });
@@ -1286,15 +1375,9 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.ValueObject.Voucher", "Voucher")
-                        .WithMany()
-                        .HasForeignKey("VoucherCode");
-
                     b.Navigation("TourSchedule");
 
                     b.Navigation("User");
-
-                    b.Navigation("Voucher");
                 });
 
             modelBuilder.Entity("Domain.Entities.TourDestination", b =>
@@ -1458,6 +1541,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.TourBooking", b =>
                 {
+                    b.Navigation("Rating");
+
                     b.Navigation("Tickets");
                 });
 

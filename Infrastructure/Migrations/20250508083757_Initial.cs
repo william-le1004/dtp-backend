@@ -109,17 +109,43 @@ namespace Infrastructure.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Voucher",
+                name: "SystemSetting",
                 columns: table => new
                 {
-                    Code = table.Column<string>(type: "varchar(255)", nullable: false),
-                    MaxDiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Percent = table.Column<double>(type: "double", nullable: false),
-                    ExpiryDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    SettingCode = table.Column<string>(type: "longtext", nullable: false),
+                    SettingKey = table.Column<string>(type: "longtext", nullable: false),
+                    SettingCharValue = table.Column<string>(type: "longtext", nullable: false),
+                    SettingIntegerValue = table.Column<string>(type: "longtext", nullable: false),
+                    SettingDoubleValue = table.Column<string>(type: "longtext", nullable: false),
+                    SettingDecimalValue = table.Column<string>(type: "longtext", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Voucher", x => x.Code);
+                    table.PrimaryKey("PK_SystemSetting", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Voucher",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    Code = table.Column<string>(type: "longtext", nullable: false),
+                    MaxDiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Percent = table.Column<double>(type: "double", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "longtext", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "longtext", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Voucher", x => x.Id);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -160,6 +186,7 @@ namespace Infrastructure.Migrations
                     OtpKey = table.Column<string>(type: "longtext", nullable: true),
                     CompanyId = table.Column<Guid>(type: "char(36)", nullable: true),
                     SecureToken = table.Column<string>(type: "longtext", nullable: true),
+                    FcmToken = table.Column<string>(type: "longtext", nullable: true),
                     UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
@@ -336,6 +363,9 @@ namespace Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     UserId = table.Column<string>(type: "varchar(255)", nullable: false),
                     ExternalTransactionCode = table.Column<string>(type: "longtext", nullable: false),
+                    BankAccountNumber = table.Column<string>(type: "longtext", nullable: false),
+                    BankAccount = table.Column<string>(type: "longtext", nullable: false),
+                    BankName = table.Column<string>(type: "longtext", nullable: false),
                     TransactionCode = table.Column<string>(type: "longtext", nullable: false),
                     Description = table.Column<string>(type: "longtext", nullable: true),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -379,39 +409,6 @@ namespace Infrastructure.Migrations
                         name: "FK_Wallets_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Ratings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    TourId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false),
-                    Star = table.Column<int>(type: "int", nullable: false),
-                    Comment = table.Column<string>(type: "longtext", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "longtext", nullable: true),
-                    LastModified = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "longtext", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Ratings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Ratings_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Ratings_Tours_TourId",
-                        column: x => x.TourId,
-                        principalTable: "Tours",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -615,14 +612,14 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    UserId = table.Column<string>(type: "longtext", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false),
                     Code = table.Column<string>(type: "longtext", nullable: false),
                     RefCode = table.Column<long>(type: "bigint", nullable: false),
                     Name = table.Column<string>(type: "longtext", nullable: false),
                     PhoneNumber = table.Column<string>(type: "longtext", nullable: false),
                     Email = table.Column<string>(type: "longtext", nullable: false),
                     TourScheduleId = table.Column<Guid>(type: "char(36)", nullable: false),
-                    VoucherCode = table.Column<string>(type: "varchar(255)", nullable: true),
+                    VoucherCode = table.Column<string>(type: "longtext", nullable: true),
                     DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Remark = table.Column<string>(type: "longtext", nullable: true),
@@ -636,16 +633,17 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_TourBookings", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_TourBookings_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_TourBookings_TourSchedules_TourScheduleId",
                         column: x => x.TourScheduleId,
                         principalTable: "TourSchedules",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TourBookings_Voucher_VoucherCode",
-                        column: x => x.VoucherCode,
-                        principalTable: "Voucher",
-                        principalColumn: "Code");
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -708,6 +706,46 @@ namespace Infrastructure.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Ratings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    TourId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Star = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "longtext", nullable: false),
+                    TourBookingId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "longtext", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ratings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Ratings_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Ratings_TourBookings_TourBookingId",
+                        column: x => x.TourBookingId,
+                        principalTable: "TourBookings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Ratings_Tours_TourId",
+                        column: x => x.TourId,
+                        principalTable: "Tours",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Tickets",
                 columns: table => new
                 {
@@ -749,11 +787,11 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "Address", "CompanyId", "ConcurrencyStamp", "CreatedAt", "CreatedBy", "Email", "EmailConfirmed", "IsActive", "LastModified", "LastModifiedBy", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "OtpKey", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecureToken", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                columns: new[] { "Id", "AccessFailedCount", "Address", "CompanyId", "ConcurrencyStamp", "CreatedAt", "CreatedBy", "Email", "EmailConfirmed", "FcmToken", "IsActive", "LastModified", "LastModifiedBy", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "OtpKey", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecureToken", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "8e445865-a24d-4543-a6c6-9443d048cdb9", 0, "123 Admin St", null, "bee3246f-3466-4af1-9085-fe6384c7abf8", new DateTime(2025, 4, 22, 14, 10, 22, 450, DateTimeKind.Utc).AddTicks(8892), "System", "dtpAdmin@gmail.com", true, true, null, null, false, null, "Admin User", "DTPADMIN@GMAIL.COM", "DTPADMIN", null, "AQAAAAIAAYagAAAAEGtvLrxlIQeZrH1cReK4E4JCZzuQZhr5bC/Em0bOmTq1fi3dLjV2bPRTZnP26r135A==", "1234567890", false, null, "63007789-0888-4368-bef9-1244fdf6db57", false, "dtpAdmin" },
-                    { "9e224968-33e4-4652-b7b7-8574d048cdb9", 0, "456 Operator Rd", null, "dfcbe297-a62d-4e96-a42d-d9abb3a5aa8a", new DateTime(2025, 4, 22, 14, 10, 22, 499, DateTimeKind.Utc).AddTicks(6355), "System", "operator@gmail.com", true, true, null, null, false, null, "Operator User", "OPERATOR@GMAIL.COM", "OPERATOR", null, "AQAAAAIAAYagAAAAEPLWIRcDSIKyAiVcqi5Qdp8Oqnyf3fC/zSHBWx8P+39cgEktNYHp9Hk4Ehdg273gJw==", "0987654321", false, null, "0a50ec29-f5af-452f-ad60-177ef411a6ff", false, "operator" }
+                    { "8e445865-a24d-4543-a6c6-9443d048cdb9", 0, "123 Admin St", null, "ea7e57bf-e7ac-43b2-b42c-ca8819ad9ba3", new DateTime(2025, 5, 8, 15, 37, 56, 444, DateTimeKind.Local).AddTicks(1034), "System", "dtpAdmin@gmail.com", true, null, true, null, null, false, null, "Admin User", "DTPADMIN@GMAIL.COM", "DTPADMIN", null, "AQAAAAIAAYagAAAAEBZSwJv0BgLg/DDtVeYqELBn/sNj8TU/7FuzxwMeA4Tz/L7UkgJV03ihkXIL6B0ufg==", "1234567890", false, null, "4de407e8-d716-4646-b86d-433c1116eb47", false, "dtpAdmin" },
+                    { "9e224968-33e4-4652-b7b7-8574d048cdb9", 0, "456 Operator Rd", null, "7fcb842a-d709-400c-9c41-35689a7116f9", new DateTime(2025, 5, 8, 15, 37, 56, 486, DateTimeKind.Local).AddTicks(7499), "System", "operator@gmail.com", true, null, true, null, null, false, null, "Operator User", "OPERATOR@GMAIL.COM", "OPERATOR", null, "AQAAAAIAAYagAAAAED7DKz288Iys7cjm/bohImJR3UCviZ+5o+JxzBLdFiVl5FyhGFS6kp96KSmGKPTq0w==", "0987654321", false, null, "d0e3858f-b4fc-41a6-a0d8-20f3b1077aa3", false, "operator" }
                 });
 
             migrationBuilder.InsertData(
@@ -770,8 +808,8 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "Balance", "CreatedAt", "CreatedBy", "IsDeleted", "LastModified", "LastModifiedBy", "UserId" },
                 values: new object[,]
                 {
-                    { new Guid("8f0cebfb-ea05-4eb0-9b8a-a3b80cb4a7cd"), 500m, new DateTime(2025, 4, 22, 21, 10, 22, 507, DateTimeKind.Local).AddTicks(9130), null, false, null, null, "9e224968-33e4-4652-b7b7-8574d048cdb9" },
-                    { new Guid("a1f0501a-f18b-4318-96de-833a01630168"), 1000m, new DateTime(2025, 4, 22, 21, 10, 22, 507, DateTimeKind.Local).AddTicks(9079), null, false, null, null, "8e445865-a24d-4543-a6c6-9443d048cdb9" }
+                    { new Guid("4ef7f04a-96e1-45e4-a1fa-90ba417c8fe4"), 500m, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, false, null, null, "9e224968-33e4-4652-b7b7-8574d048cdb9" },
+                    { new Guid("8fa6d7f4-2e05-4f9a-8db2-5f815550d690"), 1000m, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, false, null, null, "8e445865-a24d-4543-a6c6-9443d048cdb9" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -848,6 +886,12 @@ namespace Infrastructure.Migrations
                 column: "BookingId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Ratings_TourBookingId",
+                table: "Ratings",
+                column: "TourBookingId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Ratings_TourId",
                 table: "Ratings",
                 column: "TourId");
@@ -883,9 +927,9 @@ namespace Infrastructure.Migrations
                 column: "TourScheduleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TourBookings_VoucherCode",
+                name: "IX_TourBookings_UserId",
                 table: "TourBookings",
-                column: "VoucherCode");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TourDestinations_DestinationId",
@@ -966,6 +1010,9 @@ namespace Infrastructure.Migrations
                 name: "Ratings");
 
             migrationBuilder.DropTable(
+                name: "SystemSetting");
+
+            migrationBuilder.DropTable(
                 name: "Tickets");
 
             migrationBuilder.DropTable(
@@ -976,6 +1023,9 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Transactions");
+
+            migrationBuilder.DropTable(
+                name: "Voucher");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -1000,9 +1050,6 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "TourSchedules");
-
-            migrationBuilder.DropTable(
-                name: "Voucher");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

@@ -31,7 +31,7 @@ public class OrderPaidHandler(
             }).ToList()
         });
 
-        await fcmService.SendNotificationAsync("Order Paid", $"Order {notification.OrderCode} has been paid successfully.");
+        await fcmService.SendNotificationAsync("Tour đã được đặt thành công", $"Đơn {notification.OrderCode} đã thanh toán thành công.");
         logger.LogInformation($"Publish Order paid {notification.OrderId}");
     }
 }
