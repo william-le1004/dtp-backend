@@ -11,6 +11,10 @@ public partial class ExternalTransaction : AuditEntity
 
     public string ExternalTransactionCode { get; private set; }
     
+    public string BankAccountNumber { get; private set; }
+    public string BankAccount { get; private set; }
+    public string BankName { get; private set; }
+    
     public string TransactionCode { get; private set; }
 
     public string? Description { get; private set; }
@@ -27,7 +31,8 @@ public partial class ExternalTransaction : AuditEntity
     
     public ExternalTransaction(
         string transactionCode,
-        decimal amount, ExternalTransactionType type, string userId, string? description = null
+        decimal amount, ExternalTransactionType type, string userId,
+        string bankAccount, string bankAccountNumber, string bankName, string? description = null
     )
     {
         ExternalTransactionCode = (int.Parse(DateTimeOffset.Now.ToString("ssfff"))
@@ -39,6 +44,9 @@ public partial class ExternalTransaction : AuditEntity
         Type = type;
         TransactionCode = transactionCode;
         Status = ExternalTransactionStatus.Pending;
+        BankAccount = bankAccount;
+        BankAccountNumber = bankAccountNumber;
+        BankName = bankName;
     }
     
     

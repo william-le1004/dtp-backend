@@ -33,6 +33,9 @@ public class GetOwnExternalTransactionHandler(IDtpDbContext context, IUserContex
                     Status = x.Status,
                     Type = x.Type,
                     CreatedAt = x.CreatedAt,
+                    BankAccountNumber = x.BankAccountNumber,
+                    BankName = x.BankName,
+                    BankAccount = x.BankAccount
                 });
         return Task.FromResult(externalTransactions);
     }
