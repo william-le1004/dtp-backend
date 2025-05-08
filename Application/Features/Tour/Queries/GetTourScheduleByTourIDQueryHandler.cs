@@ -34,13 +34,12 @@ namespace Application.Features.Tour.Queries
         {
             var today = DateTime.Today;
 
-            // 1) Lấy tất cả TourSchedule có OpenDate >= today và OpenDate != null
+            // 1) Lấy tất cả TourSchedule có OpenDate != null
             var tourSchedules = await _context.TourSchedules
                 .AsNoTracking()
                 .Where(ts =>
                     ts.TourId == request.TourId
-                    && ts.OpenDate.HasValue
-                    && ts.OpenDate.Value.Date >= today)
+                    && ts.OpenDate.HasValue)
                 .ToListAsync(cancellationToken);
 
             if (!tourSchedules.Any())
@@ -48,8 +47,8 @@ namespace Application.Features.Tour.Queries
 
             var now = DateTime.Now;
 
-            // 2) Map về DTO Schedule
-            var result = tourSchedules
+            // 2) Map thành danh sách Schedule, chưa dedupe
+            var all = tourSchedules
                 .Select(ts =>
                 {
                     var open = DateOnly.FromDateTime(ts.OpenDate!.Value);
@@ -64,10 +63,28 @@ namespace Application.Features.Tour.Queries
 
                     return new Schedule(open, status);
                 })
+                .ToList();
+
+            // 3) Dedupe theo OpenDate, ưu tiên upcoming > complete > cancel
+            var priority = new Dictionary<string, int>
+            {
+                ["upcoming"] = 0,
+                ["complete"] = 1,
+                ["cancel"] = 2
+            };
+
+            var result = all
+                .GroupBy(s => s.OpenDate)
+                .Select(g =>
+                    g
+                    .OrderBy(s => priority.GetValueOrDefault(s.Status, 99))
+                    .First()
+                )
                 .OrderBy(s => s.OpenDate)
                 .ToList();
 
-            return ApiResponse<List<Schedule>>.SuccessResult(result, "Lịch trình Tour được tải thành công");
+            return ApiResponse<List<Schedule>>
+                .SuccessResult(result, "Lịch trình Tour được tải thành công");
         }
 
     }
