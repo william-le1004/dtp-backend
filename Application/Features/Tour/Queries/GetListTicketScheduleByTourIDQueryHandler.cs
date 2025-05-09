@@ -44,10 +44,13 @@ namespace Application.Features.Tour.Queries
             // 1) Tính tổng số vé đã đặt (Paid) cho mỗi cặp (TourScheduleId, TicketTypeId)
             var bookingSums = await _context.TourBookings
                 .Where(b =>
-                    b.Status == BookingStatus.Paid &&
-                    b.TourSchedule.TourId == request.TourId &&
-                    b.TourSchedule.OpenDate.HasValue &&
-                    b.TourSchedule.OpenDate.Value.Date >= today)
+    (b.Status == BookingStatus.Paid
+     || b.Status == BookingStatus.AwaitingPayment)
+    && b.TourSchedule.TourId == request.TourId
+    && b.TourSchedule.OpenDate.HasValue
+    && b.TourSchedule.OpenDate.Value.Date >= today
+)
+
                 .SelectMany(b => b.Tickets, (b, t) => new
                 {
                     b.TourScheduleId,
