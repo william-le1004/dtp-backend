@@ -38,6 +38,7 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
         var transaction = new Transaction(Balance, amount, TransactionType.Withdraw, Id);
         _transactions.Add(transaction);
         Balance -= amount;
+        transaction.TransactionCompleted();
         
         return transaction;
     }
@@ -52,7 +53,7 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
         var transaction = new Transaction(Balance, amount, TransactionType.Transfer, Id, description);
         _transactions.Add(transaction);
         transaction.Ref(receiveWallet.Receive(amount, description, transaction.TransactionCode));
-        
+        transaction.TransactionCompleted();
         Balance -= amount;
     }
 
@@ -61,8 +62,8 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
         var transaction = new Transaction(Balance, amount, transactionType, Id, description);
         transaction.Ref(refTransactionCode);
         _transactions.Add(transaction);
-        
         Balance += amount;
+        transaction.TransactionCompleted();
         return transaction.TransactionCode;
     }
     
@@ -71,7 +72,7 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
         var transaction = new Transaction(Balance, amount, TransactionType.ThirdPartyPayment, Id, description);
         _transactions.Add(transaction);
         transaction.Ref(poolFund.Receive(amount, description, transaction.TransactionCode));
-        
+        transaction.TransactionCompleted();
         return transaction.TransactionCode;
     }
     
@@ -85,7 +86,7 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
         var transaction = new Transaction(Balance, amount, TransactionType.Payment, Id, description);
         _transactions.Add(transaction);
         transaction.Ref(poolFund.Receive(amount, description, transaction.TransactionCode));
-        
+        transaction.TransactionCompleted();
         Balance -= amount;
     }
     
@@ -99,7 +100,7 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
         var transaction = new Transaction(Balance, amount, TransactionType.Transfer, Id, description);
         _transactions.Add(transaction);
         transaction.Ref(receiveWallet.Receive(amount, description, transaction.TransactionCode, TransactionType.Refund));
-        
+        transaction.TransactionCompleted();
         Balance -= amount;
     }
 }
