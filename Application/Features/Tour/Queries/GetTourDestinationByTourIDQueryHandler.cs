@@ -13,8 +13,8 @@ namespace Application.Features.Tour.Queries
 {
     public record DestinationActivity(
         string Name,
-        TimeSpan StartTime,
-        TimeSpan EndTime,
+        TimeSpan? StartTime,
+        TimeSpan? EndTime,
         int? SortOrder
     );
     public record TourDestinationDto(

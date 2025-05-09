@@ -131,7 +131,7 @@ public record TourDestinationResponse
 public record TourActivity
 {
     public string Name { get; set; } = null!;
-    public TimeSpan StartTime { get; set; }
-    public TimeSpan EndTime { get; set; }
+    public TimeSpan? StartTime { get; set; }
+    public TimeSpan? EndTime { get; set; }
     public int SortOrder { get; set; }
 }
