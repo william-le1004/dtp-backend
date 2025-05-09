@@ -39,7 +39,7 @@ namespace Application.Features.Tour.Queries
             GetListTicketScheduleByTourIDQuery request,
             CancellationToken cancellationToken)
         {
-            var today = DateTime.Today;
+            var today = DateTime.Today.AddDays(1);
 
             // 1) Tính tổng số vé đã đặt (Paid) cho mỗi cặp (TourScheduleId, TicketTypeId)
             var bookingSums = await _context.TourBookings
