@@ -92,7 +92,9 @@ public static class DependencyInjection
         transactionEntity.EntityType.Collection.Function("OwnExternalTransaction")
             .ReturnsFromEntitySet<ExternalTransactionResponse>("ExternalTransaction");
         
-        modelBuilder.EntitySet<OrderByTourResponse>("Order");
+        var order = modelBuilder.EntitySet<OrderByTourResponse>("Order");
+        order.EntityType.Property(x =>  x.TourDate).AsDate();
+        order.EntityType.Property(x =>  x.OrderDate).AsDate();
         
         modelBuilder.EntitySet<Destination>("Destination");
         modelBuilder.EntitySet<Category>("Category");
