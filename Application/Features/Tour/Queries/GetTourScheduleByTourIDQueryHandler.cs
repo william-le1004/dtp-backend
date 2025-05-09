@@ -32,7 +32,7 @@ namespace Application.Features.Tour.Queries
      GetTourScheduleByTourIDQuery request,
      CancellationToken cancellationToken)
         {
-            var today = DateTime.Today;
+            var today = DateTime.Today.AddDays(1);
 
             // 1) Lấy tất cả TourSchedule có OpenDate != null
             var tourSchedules = await _context.TourSchedules
