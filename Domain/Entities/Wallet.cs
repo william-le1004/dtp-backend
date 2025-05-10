@@ -19,8 +19,18 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
         
         _transactions.Add(transaction);
         Balance += amount;
+        transaction.TransactionCompleted();
         
         return transaction;
+    }
+    
+    public void RefundRequest(decimal amount, string description)
+    {
+        var transaction = new Transaction(Balance, amount, TransactionType.RefundWithdrawRequest, Id, description);
+        
+        _transactions.Add(transaction);
+        Balance += amount;
+        transaction.TransactionCompleted();
     }
 
     public Transaction Withdraw(decimal amount)

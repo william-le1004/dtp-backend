@@ -34,7 +34,7 @@ public class WalletWithdrawHandler(
             var wallet = user.Wallet;
             var transaction = wallet.Withdraw(request.Amount);
             var externalTransaction = user.RequestWithdraw(transaction.TransactionCode,
-                transaction.Amount, $"Withdraw {request.Amount}", 
+                transaction.Amount, $"Rut tien {request.Amount}", 
                 request.BankName, request.BankAccountNumber,request.BankAccount);
             context.Wallets.Update(wallet);
             context.ExternalTransaction.Add(externalTransaction);
