@@ -151,9 +151,9 @@ public partial class TourBooking : Entity
         AddOrderPaidDomainEvent();
     }
 
-    public bool IsFreeCancellationPeriod()
+    public bool IsFreeCancellationPeriod(int day)
     {
-        var freeCancellationPeriod = CreatedAt.AddDays(1);
+        var freeCancellationPeriod = CreatedAt.AddDays(day);
         return DateTime.Now < freeCancellationPeriod;
     }
 
