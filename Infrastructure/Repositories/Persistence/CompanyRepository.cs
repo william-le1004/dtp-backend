@@ -1,15 +1,19 @@
+using Application.Contracts.EventBus;
 using Application.Contracts.Persistence;
 using Application.Extensions;
+using Application.Features.Wallet.Events;
 using Domain.Constants;
 using Domain.Entities;
 using Domain.Extensions;
 using Infrastructure.Contexts;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.Persistence;
 
-public class CompanyRepository(DtpDbContext dbContext, UserManager<User> userManager) : ICompanyRepository
+public class CompanyRepository(DtpDbContext dbContext, UserManager<User> userManager,
+    IPublisher publisher) : ICompanyRepository
 {
     public async Task<Company> GrantCompanyAsync(Guid id)
     {
@@ -74,14 +78,14 @@ public class CompanyRepository(DtpDbContext dbContext, UserManager<User> userMan
         {
             return await CreateCompanyAsync(company);
         }
-    
+
         return await UpdateCompanyAsync(company);
     }
 
-    public async Task<bool> ExistsByNameAsync(string name) => 
+    public async Task<bool> ExistsByNameAsync(string name) =>
         !await dbContext.Companies.AnyAsync(c => c.Name == name);
-    
-    public async Task<bool> ExistsByEmailAsync(string gmail) => 
+
+    public async Task<bool> ExistsByEmailAsync(string gmail) =>
         !await dbContext.Companies.AnyAsync(c => c.Email == gmail);
 
     public async Task<string> GetNameByIdAsync(Guid id) =>
@@ -99,6 +103,49 @@ public class CompanyRepository(DtpDbContext dbContext, UserManager<User> userMan
     {
         var existingCompany = await GetCompanyAsync(company.Id, false)
                               ?? throw new KeyNotFoundException($"Company with ID {company.Id} not found.");
+
+        if (company.IsDeleted)
+        {
+            var tours = await dbContext.Tours.Where(t => t.CompanyId == company.Id).ToListAsync();
+            foreach (var tour in tours)
+            {
+                tour.IsDeleted = true;
+            }
+
+            var tourId = tours.Select(t => t.Id).ToList();
+
+            var tourSchedules =
+                await dbContext.TourSchedules.Include(t => t.Tour)
+                    .Include(x => x.TourBookings)
+                    .ThenInclude(x => x.Tickets)
+                    .ThenInclude(x => x.TicketType)
+                    .AsSingleQuery()
+                    .Where(t => tourId.Contains(t.TourId))
+                    .ToListAsync();
+
+            foreach (var tourSchedule in tourSchedules)
+            {
+                tourSchedule.IsDeleted = true;
+            }
+
+            var tourScheduleId = tourSchedules.Select(t => t.Id).ToList();
+            var tourBookings = await dbContext.TourBookings.Where(t => tourScheduleId.Contains(t.TourScheduleId))
+                .ToListAsync();
+            foreach (var tourBooking in tourBookings)
+            {
+                tourBooking.Cancel();
+                var payment = await dbContext.Payments
+                    .FirstOrDefaultAsync(p => p.BookingId == tourBooking.Id);
+
+                if (payment != null)
+                {
+                    await publisher.Publish(
+                        new PaymentRefunded(payment.NetCost, tourBooking.UserId, tourBooking.Code));
+
+                    payment.Refund();
+                }
+            }
+        }
 
         dbContext.Entry(existingCompany).CurrentValues.SetValues(company);
         return await SaveChangesAsync();

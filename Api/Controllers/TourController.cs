@@ -125,10 +125,10 @@ public class TourController(ILogger<TourController> logger, IMediator mediator)
         var response = await mediator.Send(command);
         return HandleServiceResult(response);
     }
-    [HttpGet("feedback/{id}")]
-    public async Task<IActionResult> GetFeedbackByTourID(Guid id)
+    [HttpGet("feedback")]
+    public async Task<IActionResult> GetFeedbackByTourID()
     {
-        var response = await mediator.Send(new GetListFeedbackByTourQuery(id));
+        var response = await mediator.Send(new GetListFeedbackQuery());
         return HandleServiceResult(response);
     }
     [HttpPost("rating")]

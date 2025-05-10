@@ -15,7 +15,7 @@ public class TourScheduleTicket : SoftDeleteEntity
     public TourSchedule TourSchedule { get; private set; } = null!;
 
     public bool IsAvailable() => AvailableTicket > 0;
-    public bool HasAvailableTicket(int quantity) => AvailableTicket > quantity;
+    public bool HasAvailableTicket(int quantity) => AvailableTicket >= quantity;
 
     public TourScheduleTicket(decimal netCost, int capacity, 
         Guid ticketTypeId, Guid tourScheduleId, bool isDeleted = false)

@@ -37,6 +37,41 @@ namespace Infrastructure.Migrations
                     b.ToTable("ImageUrls");
                 });
 
+            modelBuilder.Entity("Domain.DataModel.SystemSetting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("SettingCharValue")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SettingCode")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SettingDecimalValue")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SettingDoubleValue")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SettingIntegerValue")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SettingKey")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SystemSetting");
+                });
+
             modelBuilder.Entity("Domain.Entities.Basket", b =>
                 {
                     b.Property<Guid>("Id")
@@ -83,6 +118,58 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("07da38e8-23f6-47bd-8068-0d5d979c9410"),
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(6401),
+                            CreatedBy = "admin",
+                            IsDeleted = false,
+                            LastModified = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(6401),
+                            LastModifiedBy = "admin",
+                            Name = "Tour 1 ngày"
+                        },
+                        new
+                        {
+                            Id = new Guid("f9ac5bc5-7b0d-4252-b7c6-40b8da0d9ca4"),
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(6401),
+                            CreatedBy = "admin",
+                            IsDeleted = false,
+                            LastModified = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(6401),
+                            LastModifiedBy = "admin",
+                            Name = "Tour 3 ngày"
+                        },
+                        new
+                        {
+                            Id = new Guid("bb6f624a-1c1e-4bc7-9ab1-b840c9adbf70"),
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(6401),
+                            CreatedBy = "admin",
+                            IsDeleted = false,
+                            LastModified = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(6401),
+                            LastModifiedBy = "admin",
+                            Name = "Tour 7 ngày"
+                        },
+                        new
+                        {
+                            Id = new Guid("a43bdf43-8b5c-4e5a-a5f2-b4ca8ae9367e"),
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(6401),
+                            CreatedBy = "admin",
+                            IsDeleted = false,
+                            LastModified = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(6401),
+                            LastModifiedBy = "admin",
+                            Name = "Tour trong ngày"
+                        },
+                        new
+                        {
+                            Id = new Guid("dbb44662-9e09-41fe-8e67-eefade9004d4"),
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(6401),
+                            CreatedBy = "admin",
+                            IsDeleted = false,
+                            LastModified = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(6401),
+                            LastModifiedBy = "admin",
+                            Name = "Tour nửa ngày"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Company", b =>
@@ -135,6 +222,56 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("db155d3b-db8f-4c20-bdc9-afaccf4df307"),
+                            Address = "Hà Nội",
+                            CommissionRate = 12.0,
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(7404),
+                            CreatedBy = "System",
+                            Email = "xyz@example.com",
+                            IsDeleted = false,
+                            LastModified = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(7404),
+                            LastModifiedBy = "System",
+                            Licensed = false,
+                            Name = "Công ty Du lịch XYZ",
+                            Phone = "0988999111",
+                            TaxCode = "123456789"
+                        },
+                        new
+                        {
+                            Id = new Guid("05c05958-13b0-4f94-be71-cf5ae1c56540"),
+                            Address = "TP. Hồ Chí Minh",
+                            CommissionRate = 15.0,
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(7404),
+                            CreatedBy = "System",
+                            Email = "sgtravel@example.com",
+                            IsDeleted = false,
+                            LastModified = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(7404),
+                            LastModifiedBy = "System",
+                            Licensed = false,
+                            Name = "Du lịch Sài Gòn Travel",
+                            Phone = "0909222333",
+                            TaxCode = "987654321"
+                        },
+                        new
+                        {
+                            Id = new Guid("5a476a66-36c4-4c5d-af85-2177d1638e49"),
+                            Address = "Đà Nẵng",
+                            CommissionRate = 10.0,
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(7404),
+                            CreatedBy = "System",
+                            Email = "info@khamphavn.vn",
+                            IsDeleted = false,
+                            LastModified = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(7404),
+                            LastModifiedBy = "System",
+                            Licensed = false,
+                            Name = "Khám phá Việt Nam",
+                            Phone = "0912345678",
+                            TaxCode = "1122334455"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Destination", b =>
@@ -173,6 +310,68 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Destinations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("ae2652fe-39eb-4b7f-818d-4f7a4ecdfe2e"),
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(8138),
+                            CreatedBy = "admin",
+                            IsDeleted = false,
+                            LastModified = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(8138),
+                            LastModifiedBy = "admin",
+                            Latitude = "13.3456",
+                            Longitude = "109.1456",
+                            Name = "Kỳ Co"
+                        },
+                        new
+                        {
+                            Id = new Guid("652760bc-6567-4175-9260-961654cfff88"),
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(8138),
+                            CreatedBy = "admin",
+                            IsDeleted = false,
+                            LastModified = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(8138),
+                            LastModifiedBy = "admin",
+                            Latitude = "13.3457",
+                            Longitude = "109.1457",
+                            Name = "Eo Gió"
+                        },
+                        new
+                        {
+                            Id = new Guid("5518f659-a253-4a78-afc0-becdf72f227a"),
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(8138),
+                            CreatedBy = "admin",
+                            IsDeleted = false,
+                            LastModified = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(8138),
+                            LastModifiedBy = "admin",
+                            Latitude = "13.3490",
+                            Longitude = "109.1888",
+                            Name = "Tháp Đôi"
+                        },
+                        new
+                        {
+                            Id = new Guid("3f71194b-0653-433f-b571-211ff8d1c3eb"),
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(8138),
+                            CreatedBy = "admin",
+                            IsDeleted = false,
+                            LastModified = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(8138),
+                            LastModifiedBy = "admin",
+                            Latitude = "13.3580",
+                            Longitude = "109.2065",
+                            Name = "Bãi Xép"
+                        },
+                        new
+                        {
+                            Id = new Guid("77d58d4c-e75d-4fac-8711-532761586db1"),
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(8138),
+                            CreatedBy = "admin",
+                            IsDeleted = false,
+                            LastModified = new DateTime(2025, 5, 8, 21, 27, 52, 299, DateTimeKind.Local).AddTicks(8138),
+                            LastModifiedBy = "admin",
+                            Latitude = "13.4644",
+                            Longitude = "109.1999",
+                            Name = "Cù Lao Xanh"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.DestinationActivity", b =>
@@ -212,6 +411,18 @@ namespace Infrastructure.Migrations
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("BankAccount")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BankAccountNumber")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BankName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -373,6 +584,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Star")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("TourBookingId")
+                        .HasColumnType("char(36)");
+
                     b.Property<Guid>("TourId")
                         .HasColumnType("char(36)");
 
@@ -381,6 +595,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TourBookingId")
+                        .IsUnique();
 
                     b.HasIndex("TourId");
 
@@ -575,16 +792,16 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("VoucherCode")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TourScheduleId");
 
-                    b.HasIndex("VoucherCode");
+                    b.HasIndex("UserId");
 
                     b.ToTable("TourBookings");
                 });
@@ -774,6 +991,9 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("FcmToken")
+                        .HasColumnType("longtext");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
@@ -845,8 +1065,8 @@ namespace Infrastructure.Migrations
                             Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
                             AccessFailedCount = 0,
                             Address = "123 Admin St",
-                            ConcurrencyStamp = "bee3246f-3466-4af1-9085-fe6384c7abf8",
-                            CreatedAt = new DateTime(2025, 4, 22, 14, 10, 22, 450, DateTimeKind.Utc).AddTicks(8892),
+                            ConcurrencyStamp = "1fa01e39-6dbf-4eba-88aa-0a176b2fbda4",
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 348, DateTimeKind.Local).AddTicks(5835),
                             CreatedBy = "System",
                             Email = "dtpAdmin@gmail.com",
                             EmailConfirmed = true,
@@ -855,10 +1075,10 @@ namespace Infrastructure.Migrations
                             Name = "Admin User",
                             NormalizedEmail = "DTPADMIN@GMAIL.COM",
                             NormalizedUserName = "DTPADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGtvLrxlIQeZrH1cReK4E4JCZzuQZhr5bC/Em0bOmTq1fi3dLjV2bPRTZnP26r135A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJe9w5HTSuux0JOZ8r9DbdgQKUFwe32qi+scw+517kJiBfYbSaaBvHytIRgo/ctKZw==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "63007789-0888-4368-bef9-1244fdf6db57",
+                            SecurityStamp = "c313a20b-d692-412b-a76e-42cab9428ca0",
                             TwoFactorEnabled = false,
                             UserName = "dtpAdmin"
                         },
@@ -867,8 +1087,8 @@ namespace Infrastructure.Migrations
                             Id = "9e224968-33e4-4652-b7b7-8574d048cdb9",
                             AccessFailedCount = 0,
                             Address = "456 Operator Rd",
-                            ConcurrencyStamp = "dfcbe297-a62d-4e96-a42d-d9abb3a5aa8a",
-                            CreatedAt = new DateTime(2025, 4, 22, 14, 10, 22, 499, DateTimeKind.Utc).AddTicks(6355),
+                            ConcurrencyStamp = "a0015870-a6d5-4997-bdf4-2ff3001f93b1",
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 406, DateTimeKind.Local).AddTicks(6511),
                             CreatedBy = "System",
                             Email = "operator@gmail.com",
                             EmailConfirmed = true,
@@ -877,10 +1097,10 @@ namespace Infrastructure.Migrations
                             Name = "Operator User",
                             NormalizedEmail = "OPERATOR@GMAIL.COM",
                             NormalizedUserName = "OPERATOR",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPLWIRcDSIKyAiVcqi5Qdp8Oqnyf3fC/zSHBWx8P+39cgEktNYHp9Hk4Ehdg273gJw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHQZa0aHGyX23HRbmecFwDYZ2XZe3tKKir7wWD2uBjY4F0S3MF1QJQoVxmdPF7D6oA==",
                             PhoneNumber = "0987654321",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0a50ec29-f5af-452f-ad60-177ef411a6ff",
+                            SecurityStamp = "41b69344-1c17-4a77-bcfc-b70dd76d8cc8",
                             TwoFactorEnabled = false,
                             UserName = "operator"
                         });
@@ -924,17 +1144,17 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a1f0501a-f18b-4318-96de-833a01630168"),
+                            Id = new Guid("14358248-735f-4505-b913-cf3aad11c468"),
                             Balance = 1000m,
-                            CreatedAt = new DateTime(2025, 4, 22, 21, 10, 22, 507, DateTimeKind.Local).AddTicks(9079),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             UserId = "8e445865-a24d-4543-a6c6-9443d048cdb9"
                         },
                         new
                         {
-                            Id = new Guid("8f0cebfb-ea05-4eb0-9b8a-a3b80cb4a7cd"),
+                            Id = new Guid("b5fd5b31-ff02-4258-bcd8-a953fa6d8670"),
                             Balance = 500m,
-                            CreatedAt = new DateTime(2025, 4, 22, 21, 10, 22, 507, DateTimeKind.Local).AddTicks(9130),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             UserId = "9e224968-33e4-4652-b7b7-8574d048cdb9"
                         });
@@ -942,11 +1162,35 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.ValueObject.Voucher", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("Code")
-                        .HasColumnType("varchar(255)");
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
 
                     b.Property<decimal>("MaxDiscountAmount")
                         .HasColumnType("decimal(18,2)");
@@ -954,9 +1198,53 @@ namespace Infrastructure.Migrations
                     b.Property<double>("Percent")
                         .HasColumnType("double");
 
-                    b.HasKey("Code");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Voucher");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("16cb777b-9e88-4416-946e-c49ef6753047"),
+                            Code = "8OMPKJGX2P",
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 407, DateTimeKind.Local).AddTicks(4398),
+                            CreatedBy = "System",
+                            Description = "Giảm 10% tối đa 100K",
+                            ExpiryDate = new DateTime(2025, 12, 31, 23, 59, 59, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            MaxDiscountAmount = 100000m,
+                            Percent = 0.10000000000000001,
+                            Quantity = 100
+                        },
+                        new
+                        {
+                            Id = new Guid("e3cbd5b5-22e8-4e83-a79d-88b91b18d9e2"),
+                            Code = "8OMPKJGX2F",
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 407, DateTimeKind.Local).AddTicks(4416),
+                            CreatedBy = "System",
+                            Description = "Giảm 20% tối đa 150K",
+                            ExpiryDate = new DateTime(2025, 12, 31, 23, 59, 59, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            MaxDiscountAmount = 150000m,
+                            Percent = 0.20000000000000001,
+                            Quantity = 50
+                        },
+                        new
+                        {
+                            Id = new Guid("553a8605-e1b9-4f0d-857f-942e08e279f3"),
+                            Code = "8OMPKJGXE3",
+                            CreatedAt = new DateTime(2025, 5, 8, 21, 27, 52, 407, DateTimeKind.Local).AddTicks(4424),
+                            CreatedBy = "System",
+                            Description = "Giảm 50% tối đa 200K",
+                            ExpiryDate = new DateTime(2025, 6, 30, 23, 59, 59, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            MaxDiscountAmount = 200000m,
+                            Percent = 0.5,
+                            Quantity = 20
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -1188,6 +1476,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Rating", b =>
                 {
+                    b.HasOne("Domain.Entities.TourBooking", "TourBooking")
+                        .WithOne("Rating")
+                        .HasForeignKey("Domain.Entities.Rating", "TourBookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.Tour", "Tour")
                         .WithMany("Ratings")
                         .HasForeignKey("TourId")
@@ -1201,6 +1495,8 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Tour");
+
+                    b.Navigation("TourBooking");
 
                     b.Navigation("User");
                 });
@@ -1275,13 +1571,15 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.ValueObject.Voucher", "Voucher")
+                    b.HasOne("Domain.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("VoucherCode");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("TourSchedule");
 
-                    b.Navigation("Voucher");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Entities.TourDestination", b =>
@@ -1445,6 +1743,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.TourBooking", b =>
                 {
+                    b.Navigation("Rating");
+
                     b.Navigation("Tickets");
                 });
 

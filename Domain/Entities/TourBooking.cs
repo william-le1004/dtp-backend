@@ -9,7 +9,7 @@ public partial class TourBooking : Entity
 {
     public string UserId { get; private set; }
     public string Code { get; init; }
-    
+
     public long RefCode { get; private set; }
     public string Name { get; private set; }
 
@@ -24,7 +24,7 @@ public partial class TourBooking : Entity
 
     public decimal DiscountAmount { get; private set; }
 
-    public Voucher? Voucher { get; private set; }
+    public virtual User User { get; set; } = null!;
 
     public decimal GrossCost
     {
@@ -40,6 +40,7 @@ public partial class TourBooking : Entity
 
     public virtual TourSchedule TourSchedule { get; set; } = null!;
 
+    public virtual Rating? Rating { get; set; } = null!;
     public TourBooking()
     {
     }
@@ -107,9 +108,13 @@ public partial class TourBooking : Entity
             throw new AggregateException($"Can't cancel this tour booking. Status: {Status}.");
         }
 
+        if (Status == BookingStatus.Paid)
+        {
+            AddOrderCancelDomainEvent();
+        }
+
         Status = BookingStatus.Cancelled;
         Remark = remark;
-        AddOrderCancelDomainEvent();
     }
 
     public void WaitingForPayment()
@@ -131,7 +136,7 @@ public partial class TourBooking : Entity
 
         Status = BookingStatus.Completed;
         Remark = remark;
-        AddDomainEvent(new OrderCompleted(TourScheduleId));
+        // AddDomainEvent(new OrderCompleted(TourScheduleId));
     }
 
     public void Purchase(string? remark = null)
@@ -146,9 +151,9 @@ public partial class TourBooking : Entity
         AddOrderPaidDomainEvent();
     }
 
-    public bool IsFreeCancellationPeriod()
+    public bool IsFreeCancellationPeriod(int day)
     {
-        var freeCancellationPeriod = CreatedAt.AddDays(1);
+        var freeCancellationPeriod = CreatedAt.AddDays(day);
         return DateTime.Now < freeCancellationPeriod;
     }
 
@@ -200,10 +205,13 @@ public partial class TourBooking : Entity
         
         AddDomainEvent(orderPaid);
     }
-
+    public void ToCompleted()
+    {      
+        Status = BookingStatus.Completed;
+    }
     public bool CanRatting()
     {
-        return IsPaid() && TourSchedule.IsAfterEndDate(1);
+        return (IsPaid() && TourSchedule.IsAfterEndDate(1)) || IsCompleted();
     }
 
     public DateTime OverBookingTime() => CreatedAt.AddHours(1);

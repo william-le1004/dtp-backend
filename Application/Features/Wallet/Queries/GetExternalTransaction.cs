@@ -25,6 +25,10 @@ public record ExternalTransactionResponse
     public ExternalTransactionStatus Status { get; set; }
     
     public DateTime CreatedAt { get; set; }
+    
+    public string BankAccountNumber { get; set; }
+    public string BankName { get; set; }
+    public string BankAccount { get; set; }
 }
 
 public record GetExternalTransaction() : IRequest<IQueryable<ExternalTransactionResponse>>;
@@ -53,6 +57,9 @@ public class GetExternalTransactionHandler(IDtpDbContext context)
                     Status = x.Status,
                     Type = x.Type,
                     CreatedAt = x.CreatedAt,
+                    BankAccountNumber = x.BankAccountNumber,
+                    BankName = x.BankName,
+                    BankAccount = x.BankAccount,
                 });
         return Task.FromResult(externalTransactions);
     }

@@ -30,5 +30,14 @@ public partial class TourDestination
         EndTime = endTime;
         SortOrder = sortOrder;
         SortOrderByDate = sortOrderByDate;
+
+    }
+
+    public void UpdateTimesAndSort(TimeSpan? startTime, TimeSpan? endTime, int? sortOrder, int? sortOrderByDate)
+    {
+        if (startTime.HasValue) StartTime = startTime.Value;
+        if (endTime.HasValue) EndTime = endTime.Value;
+        SortOrder = sortOrder;
+        SortOrderByDate = sortOrderByDate;
     }
 }

@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Application.Features.Users.Commands;
 
-public record LoginCommand(string UserName, string Password)
+public record LoginCommand(string UserName, string Password, string FcmToken = "")
     : IRequest<ApiResponse<AccessTokenResponse>>;
 
 public class LoginValidator : AbstractValidator<LoginCommand>

@@ -73,7 +73,7 @@ public class AuthenticationService(
         var accessToken = userContext.GetAccessToken();
         var tokenJti = jwtTokenService.GetJtiFromToken(accessToken);
         var tokenExpiry = jwtTokenService.GetTokenExpiry(accessToken);
-        var expiryTime = tokenExpiry - DateTime.UtcNow;
+        var expiryTime = tokenExpiry - DateTime.Now;
 
         if (expiryTime > TimeSpan.Zero)
         {

@@ -44,13 +44,15 @@ public sealed class User : IdentityUser
     private readonly List<ExternalTransaction> _transactions = new();
     public List<ExternalTransaction> ExternalTransactions => _transactions;
     public string? SecureToken { get; set; }
+    public string? FcmToken { get; set; }
 
 
     public ExternalTransaction RequestWithdraw(string transactionCode,
-        decimal amount, string description)
+        decimal amount, string description, string bank, string bankAccountNumber, string bankAccount)
     {
         var externalTransaction = new ExternalTransaction(
-            transactionCode, amount, ExternalTransactionType.Withdraw, Id, description);
+            transactionCode, amount, ExternalTransactionType.Withdraw, Id,
+            bankAccount,bankAccountNumber, bank ,description);
         _transactions.Add(externalTransaction);
         return externalTransaction;
     }

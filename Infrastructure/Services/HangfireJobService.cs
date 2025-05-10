@@ -11,7 +11,7 @@ public class HangfireJobService(DtpDbContext dtpDbContext, ILogger<HangfireJobSe
 {
     public async Task HardDeleteExpiredEntities()
     {
-        var oneMonthAgo = DateTime.UtcNow.AddMonths(-1);
+        var oneMonthAgo = DateTime.Now.AddMonths(-1);
         var entityTypes = GetAuditEntityTypes();
 
         foreach (var entityType in entityTypes)

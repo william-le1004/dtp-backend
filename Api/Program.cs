@@ -2,6 +2,7 @@ using Api;
 using Api.Filters;
 using Api.Middlewares;
 using Application;
+using Application.Contracts.Caching;
 using Application.Contracts.Job;
 using Hangfire;
 using Infrastructure;
@@ -27,6 +28,12 @@ builder.Services.AddInfrastructureService(configuration)
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var settingService = scope.ServiceProvider.GetRequiredService<ISystemSettingService>();
+    await settingService.LoadAllSettingsToCacheAsync();
+}
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseHangfireDashboard("/hangfire", new DashboardOptions

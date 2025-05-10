@@ -1,6 +1,7 @@
 using System.Net;
 using Application.Common;
 using Application.Contracts.Caching;
+using Application.Contracts.Firebase;
 using Application.Contracts.Persistence;
 using FluentValidation;
 using MediatR;
@@ -46,7 +47,7 @@ public class CreateCompanyValidator : AbstractValidator<CreateCompanyCommand>
     }
 }
 
-public class CreateCompanyCommandHandler(ICompanyRepository companyRepository, IRedisCacheService redisCache)
+public class CreateCompanyCommandHandler(ICompanyRepository companyRepository, IRedisCacheService redisCache, IFcmService fcmService)
     : IRequestHandler<CreateCompanyCommand, ApiResponse<bool>>
 {
     public async Task<ApiResponse<bool>> Handle(CreateCompanyCommand request, CancellationToken cancellationToken)
@@ -68,6 +69,7 @@ public class CreateCompanyCommandHandler(ICompanyRepository companyRepository, I
             await companyRepository.UpsertCompanyAsync(newCompany);
 
             await redisCache.RemoveDataAsync(cacheKey);
+            await fcmService.SendNotificationAsync("Yêu cầu tạo công ty", $"Một công ty mới tên {request.Name} yêu cầu tạo được cấp phép.");
             return ApiResponse<bool>.SuccessResult(true, "Company created successfully");
         }
         catch (Exception ex)

@@ -6,6 +6,7 @@ using Application.Features.Company.Queries;
 using Application.Features.Order.Queries;
 using Application.Features.Tour.Queries;
 using Application.Features.Users.Queries;
+using Application.Features.Voucher.Queries;
 using Application.Features.Wallet.Queries;
 using Domain.Entities;
 using Microsoft.AspNetCore.OData;
@@ -71,6 +72,11 @@ public static class DependencyInjection
     {
         var modelBuilder = new ODataConventionModelBuilder();
         
+        var voucher = modelBuilder.EntitySet<VoucherResponse>("Voucher");
+        voucher.EntityType.HasKey(x => x.Id).Property(x => x.ExpiryDate).AsDate();
+        
+        voucher.EntityType.Collection.Function("Own").ReturnsFromEntitySet<VoucherResponse>("Voucher");
+        
         modelBuilder.EntitySet<TourTemplateResponse>("Tour");
         modelBuilder.EntityType<TourScheduleResponse>()
             .Property(x => x.OpenDate).AsDate();
@@ -86,7 +92,9 @@ public static class DependencyInjection
         transactionEntity.EntityType.Collection.Function("OwnExternalTransaction")
             .ReturnsFromEntitySet<ExternalTransactionResponse>("ExternalTransaction");
         
-        modelBuilder.EntitySet<OrderByTourResponse>("Order");
+        var order = modelBuilder.EntitySet<OrderByTourResponse>("Order");
+        order.EntityType.Property(x =>  x.TourDate).AsDate();
+        order.EntityType.Property(x =>  x.OrderDate).AsDate();
         
         modelBuilder.EntitySet<Destination>("Destination");
         modelBuilder.EntitySet<Category>("Category");

@@ -9,6 +9,7 @@ public record UserDetailDto(
     string? PhoneNumber,
     string? Address,
     string? CompanyName,
+    Guid? CompanyId,
     string RoleName,
     bool IsActive
 );

@@ -29,18 +29,12 @@ public class UserRepository(
             .Include(x => x.Wallet)
             .AsNoTracking();
 
-        if (!userContextService.IsAdminRole())
-        {
-            var managerCompanyIds = await dtpDbContext.Users
-                .Where(u => userManager.IsInRoleAsync(u, ApplicationRole.MANAGER).Result)
-                .Select(u => u.CompanyId)
-                .Distinct()
-                .ToListAsync();
-
-            query = query.Where(x => managerCompanyIds.Contains(x.CompanyId));
-        }
+        if (userContextService.IsAdminRole()) return await query.ToListAsync();
         
-        return await query.ToListAsync();
+        var currentCompanyId = userContextService.GetCompanyId();
+        var users = await query.ToListAsync();
+        return users.Where(user => user.CompanyId == currentCompanyId &&
+                                   userManager.IsInRoleAsync(user, ApplicationRole.MANAGER).Result);
     }
 
     public async Task<User?> GetUserDetailAsync(string userId, bool noTracking) =>
@@ -114,7 +108,7 @@ public class UserRepository(
             throw new InvalidOperationException($"User creation failed: {errors}");
         }
 
-        if (!string.IsNullOrEmpty(role))
+        if (string.IsNullOrEmpty(role))
         {
             var currentRoles = await userManager.GetRolesAsync(user);
             if (currentRoles.Contains(role))

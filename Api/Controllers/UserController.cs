@@ -54,7 +54,6 @@ public class UserController(IMediator mediator, IUserContextService userContextS
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Policy = ApplicationConst.ManagementPermission)]
     public async Task<IActionResult> Inactive([FromRoute] string id)
     {
         var response = await mediator.Send(new DeleteUserCommand(id));
@@ -65,6 +64,13 @@ public class UserController(IMediator mediator, IUserContextService userContextS
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileCommand profileCommand)
     {
         var response = await mediator.Send(profileCommand);
+        return HandleServiceResult(response);
+    }
+    
+    [HttpPut("password")]
+    public async Task<IActionResult> ChangPassword([FromBody] ChangePasswordCommand changePasswordCommand)
+    {
+        var response = await mediator.Send(changePasswordCommand);
         return HandleServiceResult(response);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Contracts.EventBus;
+using Application.Contracts.Firebase;
 using Application.Messaging.Order;
 using Domain.Events;
 using MediatR;
@@ -8,7 +9,7 @@ namespace Application.Features.Order.DomainEvents;
 
 public class OrderPaidHandler(
     IEventBus eventBus,
-    ILogger<OrderPaidHandler> logger
+    ILogger<OrderPaidHandler> logger, IFcmService fcmService
 ) : INotificationHandler<OrderPaid>
 {
     public async Task Handle(OrderPaid notification, CancellationToken cancellationToken)
@@ -29,7 +30,8 @@ public class OrderPaidHandler(
                 TicketKind = x.TicketKind
             }).ToList()
         });
-           
+
+        await fcmService.SendNotificationAsync("Tour đã được đặt thành công", $"Đơn {notification.OrderCode} đã thanh toán thành công.");
         logger.LogInformation($"Publish Order paid {notification.OrderId}");
     }
 }

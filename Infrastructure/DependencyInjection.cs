@@ -4,10 +4,13 @@ using Application.Contracts.Authentication;
 using Application.Contracts.Caching;
 using Application.Contracts.Cloudinary;
 using Application.Contracts.EventBus;
+using Application.Contracts.Firebase;
 using Application.Contracts.Job;
 using Application.Contracts.Persistence;
 using Domain.Constants;
 using Domain.Entities;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Hangfire;
 using Hangfire.Redis.StackExchange;
 using Infrastructure.Common.Settings;
@@ -79,9 +82,11 @@ public static class DependencyInjection
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IAuthenticatorService, AuthenticatorService>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
+        services.AddScoped<ISystemSettingService, SystemSettingService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITourScheduleRepository, TourScheduleRepository>();
         services.AddScoped<ICompanyRepository, CompanyRepository>();
+        services.AddScoped<IVoucherRepository, VoucherRepository>();
         services.AddScoped<JwtTokenService>();
         services.AddScoped<IDtpDbContext, DtpDbContext>();
         services.AddHttpContextAccessor();
@@ -92,7 +97,7 @@ public static class DependencyInjection
         services.AddScoped<IHangfireJobService, HangfireJobService>();
         services.AddScoped<IOrderJobService, OrderJobService>();
         services.AddScoped<IHangfireStorageService, HangfireStorageService>();
-       
+        services.AddScoped<IFcmService, FcmService>();
 
         services.AddAuthentication(item =>
         {

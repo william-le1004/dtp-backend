@@ -84,4 +84,13 @@ public class TourSchedule : AuditEntity
     {
        return TourBookings.Where(x=> x.IsCompleted()).Sum(x => x.NetCost());
     }
+    public bool IsCompleted()
+    {
+        return TourBookings.All(x => x.IsCompleted()) && IsStarted();
+    }
+    public bool IsCanceled()
+    {
+        return  IsDeleted;
+
+    }
 }

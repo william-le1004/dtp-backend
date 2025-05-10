@@ -21,6 +21,8 @@ public record TourTemplateResponse : AuditResponse
     public int TotalRating { get; set; }
 
     public decimal OnlyFromCost { get; set; }
+    
+    public double CommissionRate { get; set; } = 0.1;
 
     public LocationFirstDestination? FirstDestination { get; set; }
 
@@ -69,6 +71,7 @@ public class GetToursHandler(IDtpDbContext context) : IRequestHandler<GetTours, 
                 OnlyFromCost = tour.Tickets.Min(x => x.DefaultNetCost),
                 IsDeleted = tour.IsDeleted,
                 CreatedAt = tour.CreatedAt,
+                CommissionRate = tour.Company.CommissionRate,
                 TourScheduleResponses =
                     tour.TourSchedules.Select(schedule => new TourScheduleResponse
                     {
