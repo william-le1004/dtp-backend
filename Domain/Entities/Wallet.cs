@@ -4,7 +4,7 @@ namespace Domain.Entities;
 
 public class Wallet(string userId, decimal balance = 0) : AuditEntity
 {
-    private static decimal MinimumWithdrawAmount => 100000;
+    private static decimal MinimumWithdrawAmount => 5000;
     public string UserId { get; private set; } = userId;
     public decimal Balance { get; private set; } = balance;
 
