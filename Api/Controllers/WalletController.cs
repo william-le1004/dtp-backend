@@ -57,9 +57,10 @@ public class WalletController(IMediator mediator) : ODataController
     
     [HttpPost("external-transaction/{id}/reject")]
     [Authorize(Roles = ApplicationRole.ADMIN)]
-    public async Task<IActionResult> RejectExternalTransaction(Guid id)
+    public async Task<IActionResult> RejectExternalTransaction(Guid id, RejectExternalTransaction request)
     {
-        await mediator.Send(new AcceptExternalTransaction(id));
+        request.Id = id;
+        await mediator.Send(request);
         return NoContent();
     }
     

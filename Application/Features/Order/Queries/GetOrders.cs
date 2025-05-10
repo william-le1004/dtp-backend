@@ -1,5 +1,6 @@
 ﻿using Application.Contracts;
 using Application.Contracts.Persistence;
+using Application.Extensions;
 using Application.Features.Order.Dto;
 using Domain.Enum;
 using MediatR;
@@ -29,7 +30,7 @@ public class GetOrdersHandler(IDtpDbContext context, IUserContextService userSer
     public async Task<IEnumerable<OrderResponses>> Handle(GetOrders request, CancellationToken cancellationToken)
     {
         var userId = userService.GetCurrentUserId()!;
-        var orders = await context.TourBookings
+        var orders = await context.TourBookings.IsDeleted(false)
             .Include(x => x.TourSchedule)
             .ThenInclude(x => x.Tour)
             .Include(x => x.Tickets)
