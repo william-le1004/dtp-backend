@@ -54,7 +54,7 @@ namespace Application.Features.Tour.Commands
                     // -- CHỈ với những lịch còn tương lai --
                     // 1) Hủy và hoàn tiền các booking Paid
                     var paidBookings = schedule.TourBookings
-                        .Where(tb => tb.Status == BookingStatus.Paid)
+                        .Where(tb => tb.Status == BookingStatus.Paid&&tb.Status==BookingStatus.AwaitingPayment)
                         .ToList();
 
                     foreach (var booking in paidBookings)
