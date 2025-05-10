@@ -93,7 +93,7 @@ namespace Application.Features.Tour.Commands
             string tourCode = await GenerateTourCode(companyId, cancellationToken);
 
             // Tạo Tour mới và gán Code
-            var tour = new Domain.Entities.Tour(request.Title, companyId, request.Categoryid, request.Description, tourCode, request.About, request.Pickinfor, request.Include);
+            var tour = new Domain.Entities.Tour(request.Title, companyId, request.Categoryid, request.Description, tourCode, request.About, request.Include, request.Pickinfor);
             foreach ( var img in request.Img)
             {
                 _context.ImageUrls.Add(new ImageUrl(tour.Id,img));
