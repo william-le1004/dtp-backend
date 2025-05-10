@@ -11,15 +11,15 @@ public class SystemController(DtpDbContext context) : ControllerBase
 {
     // GET: api/System
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<SystemSettingDto>>> GetSystemSetting()
+    public ActionResult<IEnumerable<SystemSettingDto>> GetSystemSetting()
     {
-        var result = await context.SystemSetting.Select(x => new SystemSettingDto()
+        var result =  context.SystemSetting.AsEnumerable().Select(x => new SystemSettingDto()
         {
             Id = x.Id,
             SettingValue = x.SettingValue,
             SettingCode = MapSettingCodeToVn(x.SettingCode),
             SettingKey = MapSettingKeyToVn(x.SettingKey)
-        }).ToListAsync();
+        }).ToList();
         return result;
     }
 
