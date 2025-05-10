@@ -2,31 +2,25 @@
 using Application.Contracts;
 using Application.Contracts.Persistence;
 using Domain.DataModel;
-using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Application.Features.Rating.Commands
 {
-    // DTO trả về thông tin Rating
     public record RatingResponse(
         Guid Id,
         Guid BookingId,
         Guid TourId,
         int Star,
-        string Comment       
+        string Comment
     );
-
-    // Command tạo Rating; client gửi TourId, UserId, Star, Comment và danh sách Images (có thể null)
+    
     public record CreateRatingCommand(
         Guid TourId,
         Guid BookingId,
         int Star,
         string Comment,
+        Guid? TourScheduleId,
         List<string>? Images = null
     ) : IRequest<ApiResponse<RatingResponse>>;
 
@@ -47,11 +41,9 @@ namespace Application.Features.Rating.Commands
             if (string.IsNullOrEmpty(userId))
                 return ApiResponse<RatingResponse>.Failure("User is not authenticated", 401);
 
-            var existingRating = await _context.Ratings
-                .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.UserId == userId && r.TourId == request.TourId, cancellationToken);
+            var existingRating =  _context.Ratings.Any(rating => rating.TourBookingId == request.BookingId);
 
-            if (existingRating != null)
+            if (existingRating)
                 return ApiResponse<RatingResponse>.Failure("You have already rated this tour", 400);
 
             var rating = new Domain.Entities.Rating
