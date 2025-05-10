@@ -74,7 +74,6 @@ namespace Application.Features.Tour.Commands
                 booking.Cancel(request.Remark);
             }
 
-            // 3. Đánh dấu tour đóng
             tour.IsDeleted = true;
             _context.Tours.Update(tour);
 
