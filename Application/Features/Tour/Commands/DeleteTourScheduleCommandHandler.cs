@@ -51,37 +51,36 @@ namespace Application.Features.Tour.Commands
 
                 if (departureDate > today)
                 {
-                    // -- CHỈ với những lịch còn tương lai --
-                    // 1) Hủy và hoàn tiền các booking Paid
+                    
                     var paidBookings = schedule.TourBookings
-                        .Where(tb => tb.Status == BookingStatus.Paid&&tb.Status==BookingStatus.AwaitingPayment)
+                        .Where(tb => tb.Status == BookingStatus.Paid||tb.Status==BookingStatus.AwaitingPayment)
                         .ToList();
 
                     foreach (var booking in paidBookings)
                     {
-                        booking.Cancel(request.Remark);
+                        if (booking.Status == BookingStatus.Paid) { booking.Cancel(request.Remark);
 
                         var payment = await _context.Payments
                             .FirstOrDefaultAsync(p => p.BookingId == booking.Id, cancellationToken);
 
                         if (payment != null)
                         {
-                            // Phát event hoàn tiền
                             await _publisher.Publish(
                                 new PaymentRefunded(payment.NetCost, booking.UserId, booking.Code),
                                 cancellationToken);
 
                             payment.Refund();
-                        }
+                        } }
+                        booking.Cancel(request.Remark);
+
+
                     }
 
-                    // 2) Đánh dấu các vé lịch trình là deleted
                     foreach (var tkt in schedule.TourScheduleTickets)
                         tkt.IsDeleted = true;
                 }
 
-                // -- Với cả lịch tương lai và lịch đúng hôm nay --
-                // 3) Đánh dấu chính lịch là deleted
+         
                 schedule.IsDeleted = true;
             }
 
