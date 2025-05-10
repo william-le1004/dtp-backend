@@ -82,6 +82,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IAuthenticatorService, AuthenticatorService>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
+        services.AddScoped<ISystemSettingService, SystemSettingService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITourScheduleRepository, TourScheduleRepository>();
         services.AddScoped<ICompanyRepository, CompanyRepository>();

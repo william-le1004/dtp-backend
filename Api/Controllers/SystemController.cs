@@ -1,3 +1,4 @@
+using Application.Contracts.Caching;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.DataModel;
@@ -7,13 +8,13 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class SystemController(DtpDbContext context) : ControllerBase
+public class SystemController(DtpDbContext context, ISystemSettingService service) : ControllerBase
 {
     // GET: api/System
     [HttpGet]
-    public ActionResult<IEnumerable<SystemSettingDto>> GetSystemSetting()
+    public ActionResult<IEnumerable<SystemSettingResponse>> GetSystemSetting()
     {
-        var result =  context.SystemSetting.AsEnumerable().Select(x => new SystemSettingDto()
+        var result =  context.SystemSetting.AsEnumerable().Select(x => new SystemSettingResponse()
         {
             Id = x.Id,
             SettingValue = x.SettingValue,
@@ -26,17 +27,18 @@ public class SystemController(DtpDbContext context) : ControllerBase
     // PUT: api/System/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut]
-    public async Task<IActionResult> PutSystemSetting(List<SystemSettingDto> dtos)
+    public async Task<IActionResult> PutSystemSetting(SystemSettingRequest requests)
     {
-        var settingIds= dtos.Select(x => x.Id).ToList();
-        var oldSetting = context.SystemSetting.Where(x => settingIds.Contains(x.Id)).ToList();
-        
-        foreach (var setting in oldSetting)
+        var oldSetting = await context.SystemSetting.FirstOrDefaultAsync(x => x.Id == requests.Id);
+        if (oldSetting is not null)
         {
-            setting.SettingValue = dtos.FirstOrDefault(x => x.Id == setting.Id)?.SettingValue ?? setting.SettingValue;
+            oldSetting.SettingValue = requests.SettingValue;
+            context.SystemSetting.Update(oldSetting);
+            await context.SaveChangesAsync();
+            await service.UpdateSettingAsync(oldSetting);
+            return NoContent();
         }
-        await context.SaveChangesAsync();
-        return NoContent();
+        return BadRequest();
     }
 
     private string MapSettingCodeToVn(SettingCode settingCode)
@@ -60,10 +62,16 @@ public class SystemController(DtpDbContext context) : ControllerBase
     }
 }
 
-public record SystemSettingDto
+public record SystemSettingResponse
 {
     public Guid Id { get; set; }
     public string SettingCode { get; set; }
     public string SettingKey { get; set; }
+    public long SettingValue { get; set; }
+}
+
+public record SystemSettingRequest
+{
+    public Guid Id { get; set; }
     public long SettingValue { get; set; }
 }
