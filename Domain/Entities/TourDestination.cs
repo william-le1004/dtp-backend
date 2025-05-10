@@ -7,9 +7,9 @@ public partial class TourDestination
 
     public Guid DestinationId { get; private set; }
 
-    public TimeSpan? StartTime { get; private set; }
+    public TimeSpan StartTime { get; private set; }
 
-    public TimeSpan? EndTime { get; private set; }
+    public TimeSpan EndTime { get; private set; }
 
     public int? SortOrder { get; private set; }
 
@@ -20,7 +20,7 @@ public partial class TourDestination
 
     public virtual Tour Tour { get; private set; } = null!;
 
-    public TourDestination(Guid tourId, Guid destinationId, TimeSpan? startTime, TimeSpan? endTime, int? sortOrder = null,
+    public TourDestination(Guid tourId, Guid destinationId, TimeSpan startTime, TimeSpan endTime, int? sortOrder = null,
         int? sortOrderByDate = null)
     {
         Id = Guid.NewGuid();

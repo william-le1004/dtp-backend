@@ -107,7 +107,7 @@ namespace Application.Features.Tour.Commands
                     var tourDestination = new TourDestination(
                         tour.Id,
                         dest.DestinationId,
-                        dest.StartTime,
+                        dest.StartTime ?? TimeSpan.Zero,
                         dest.EndTime ?? TimeSpan.Zero,
                         dest.SortOrder,
                         dest.SortOrderByDate

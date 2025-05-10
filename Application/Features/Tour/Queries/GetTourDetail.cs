@@ -114,8 +114,8 @@ public record TourDestinationResponse
 
     public List<string> ImageUrls { get; set; } = new();
 
-    public TimeSpan? StartTime { get; set; }
-    public TimeSpan? EndTime { get; set; }
+    public TimeSpan StartTime { get; set; }
+    public TimeSpan EndTime { get; set; }
 
     public int? SortOrder { get; set; }
     

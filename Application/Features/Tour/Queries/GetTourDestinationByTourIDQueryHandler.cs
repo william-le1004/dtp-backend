@@ -22,8 +22,8 @@ namespace Application.Features.Tour.Queries
         Guid DestinationId,
         List<DestinationActivity>? DestinationActivities,
         string DestinationName,
-        TimeSpan? StartTime,
-        TimeSpan? EndTime,
+        TimeSpan StartTime,
+        TimeSpan EndTime,
         int? SortOrder,
         int? SortOrderByDate,
         List<string> img 
