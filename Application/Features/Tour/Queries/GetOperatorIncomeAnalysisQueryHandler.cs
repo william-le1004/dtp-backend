@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Application.Contracts;
 using Application.Contracts.Persistence;
+using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -74,7 +75,7 @@ namespace Application.Features.Tour.Queries
                                 tb.TourSchedule.Tour != null && 
                                 tb.TourSchedule.Tour.CompanyId == companyId.Value &&
                                 tb.CreatedAt >= firstDayOfMonth &&
-                                tb.CreatedAt <= lastDayOfMonth)
+                                tb.CreatedAt <= lastDayOfMonth && (tb.Status == BookingStatus.Paid || tb.Status == BookingStatus.Completed))
                     .AsNoTracking()
                     .ToListAsync(cancellationToken);
 
@@ -95,7 +96,7 @@ namespace Application.Features.Tour.Queries
                     .Include(tb => tb.Tickets)
                     .Where(tb => tb.TourSchedule != null && 
                                 tb.TourSchedule.Tour != null && 
-                                tb.TourSchedule.Tour.CompanyId == companyId.Value)
+                                tb.TourSchedule.Tour.CompanyId == companyId.Value && (tb.Status == BookingStatus.Paid || tb.Status == BookingStatus.Completed))
                     .AsNoTracking()
                     .ToListAsync(cancellationToken);
 
