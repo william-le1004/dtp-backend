@@ -47,7 +47,7 @@ namespace Application.Features.Tour.Queries
                     .Include(tb => tb.Tickets)
                     .Include(tb => tb.TourSchedule)
                         .ThenInclude(ts => ts.Tour)
-                    .Where(tb => tb.CreatedAt >= firstDayOfMonth && tb.CreatedAt <= lastDayOfMonth)
+                    .Where(tb => tb.CreatedAt >= firstDayOfMonth && tb.CreatedAt <= lastDayOfMonth&&(tb.Status==BookingStatus.Paid|| tb.Status == BookingStatus.Completed))
                     .AsNoTracking()
                     .ToListAsync(cancellationToken);
 
