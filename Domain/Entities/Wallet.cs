@@ -4,7 +4,7 @@ namespace Domain.Entities;
 
 public class Wallet(string userId, decimal balance = 0) : AuditEntity
 {
-    private static decimal MinimumWithdrawAmount => 100000;
+    private static decimal MinimumWithdrawAmount => 5000;
     public string UserId { get; private set; } = userId;
     public decimal Balance { get; private set; } = balance;
 
@@ -19,8 +19,18 @@ public class Wallet(string userId, decimal balance = 0) : AuditEntity
         
         _transactions.Add(transaction);
         Balance += amount;
+        transaction.TransactionCompleted();
         
         return transaction;
+    }
+    
+    public void RefundRequest(decimal amount, string description)
+    {
+        var transaction = new Transaction(Balance, amount, TransactionType.RefundWithdrawRequest, Id, description);
+        
+        _transactions.Add(transaction);
+        Balance += amount;
+        transaction.TransactionCompleted();
     }
 
     public Transaction Withdraw(decimal amount)

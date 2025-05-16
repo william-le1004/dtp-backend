@@ -11,7 +11,7 @@ namespace Application.Features.Wallet.Commands;
 public record WalletWithdraw : IRequest<Option<ExternalTransaction>>
 {
     [Required]
-    [Range(100000, double.MaxValue, ErrorMessage = "The amount must be at least 10,000.")]
+    [Range(5000, double.MaxValue, ErrorMessage = "The amount must be at least 5,000.")]
     public decimal Amount { get; set; }
     public required string BankAccountNumber { get; set; }
     public required string BankName { get; set; }
@@ -34,7 +34,7 @@ public class WalletWithdrawHandler(
             var wallet = user.Wallet;
             var transaction = wallet.Withdraw(request.Amount);
             var externalTransaction = user.RequestWithdraw(transaction.TransactionCode,
-                transaction.Amount, $"Withdraw {request.Amount}", 
+                transaction.Amount, $"Rut tien {request.Amount}", 
                 request.BankName, request.BankAccountNumber,request.BankAccount);
             context.Wallets.Update(wallet);
             context.ExternalTransaction.Add(externalTransaction);

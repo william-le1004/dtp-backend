@@ -37,7 +37,12 @@ namespace Application.Features.Tour.Commands
                 return ApiResponse<string>.Failure("Tour not found", 404);
 
             if (tour.IsDeleted)
-                return ApiResponse<string>.SuccessResult("Tour is already closed", "No update needed");
+            {
+                tour.IsDeleted = false;
+                _context.Tours.Update(tour);
+                await _context.SaveChangesAsync(cancellationToken);
+                return ApiResponse<string>.SuccessResult("Tour is opened ");
+            }
 
             // 2. Tìm tất cả các booking đã Paid
             var paidBookings = await _context.TourBookings
@@ -46,32 +51,29 @@ namespace Application.Features.Tour.Commands
                 .Include(x => x.TourSchedule)
                 .ThenInclude(x=> x.Tour)
                 .AsSingleQuery()
-                .Where(tb => tb.TourSchedule.TourId == tour.Id && tb.Status == BookingStatus.Paid)
+                .Where(tb => tb.TourSchedule.TourId == tour.Id && (tb.Status == BookingStatus.Paid ||tb.Status==BookingStatus.AwaitingPayment))
                 .ToListAsync(cancellationToken);
 
             foreach (var booking in paidBookings)
             {
-                // Hủy booking với remark
-                booking.Cancel(request.Remark);
+                if (booking.Status == BookingStatus.Cancelled) {  booking.Cancel(request.Remark);
 
-                // Lấy payment tương ứng
                 var payment = await _context.Payments
                     .FirstOrDefaultAsync(p => p.BookingId == booking.Id, cancellationToken);
 
                 if (payment != null)
                 {
-                    // Phát event hoàn tiền
                     await _publisher.Publish(
                         new PaymentRefunded(payment.NetCost, booking.UserId, booking.Code),
                         cancellationToken
                     );
-                    // Cập nhật trạng thái refund
                     payment.Refund();
                     _context.Payments.Update(payment);
-                }
+                }}
+
+                booking.Cancel(request.Remark);
             }
 
-            // 3. Đánh dấu tour đóng
             tour.IsDeleted = true;
             _context.Tours.Update(tour);
 

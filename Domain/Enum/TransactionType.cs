@@ -8,5 +8,6 @@ public enum TransactionType
     ThirdPartyPayment,
     Payment,
     Receive,
-    Refund
+    Refund,
+    RefundWithdrawRequest,
 }

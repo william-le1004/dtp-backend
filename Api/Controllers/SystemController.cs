@@ -1,8 +1,10 @@
 using Application.Contracts.Caching;
+using Domain.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.DataModel;
 using Infrastructure.Contexts;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers;
 
@@ -27,6 +29,7 @@ public class SystemController(DtpDbContext context, ISystemSettingService servic
     // PUT: api/System/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut]
+    [Authorize(Roles = ApplicationRole.ADMIN)]
     public async Task<IActionResult> PutSystemSetting(SystemSettingRequest requests)
     {
         var oldSetting = await context.SystemSetting.FirstOrDefaultAsync(x => x.Id == requests.Id);
