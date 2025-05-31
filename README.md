@@ -4,6 +4,153 @@
 
 This project is a RESTful API built with ASP.NET Core, following Clean Architecture principles. It provides authentication, role-based access control, and user profile management, leveraging Redis for refresh token storage and RabbitMQ for message queuing.
 
+## System Architecture
+
+### High-Level Architecture
+
+```mermaid
+graph TB
+    Client[Client Applications] --> API[ASP.NET Core API]
+    API --> Auth[Authentication Service]
+    API --> Business[Business Logic Layer]
+    API --> Data[Data Access Layer]
+
+    Auth --> Redis[(Redis Cache)]
+    Business --> RabbitMQ[(RabbitMQ)]
+    Data --> MySQL[(MySQL Database)]
+
+    subgraph External Services
+        Firebase[Firebase Services]
+    end
+
+    API --> Firebase
+```
+
+### Clean Architecture Layers
+
+```mermaid
+graph TB
+    subgraph Presentation Layer
+        API[API Controllers]
+        Middleware[Custom Middleware]
+        Filters[Action Filters]
+    end
+
+    subgraph Application Layer
+        CQRS[CQRS Pattern]
+        MediatR[MediatR Handlers]
+        Services[Application Services]
+    end
+
+    subgraph Domain Layer
+        Entities[Domain Entities]
+        Interfaces[Domain Interfaces]
+        Enums[Domain Enums]
+    end
+
+    subgraph Infrastructure Layer
+        Persistence[Database Context]
+        Identity[Identity Services]
+        External[External Services]
+    end
+
+    API --> CQRS
+    CQRS --> MediatR
+    MediatR --> Services
+    Services --> Entities
+    Services --> Interfaces
+    Persistence --> Entities
+    Identity --> Entities
+    External --> Services
+```
+
+### Technology Stack
+
+#### Backend Framework
+
+- **ASP.NET Core 8**: Modern, cross-platform framework for building web APIs
+  - Built-in dependency injection
+  - Middleware pipeline
+  - Configuration system
+  - Logging infrastructure
+
+#### Database & Caching
+
+- **MySQL 8.0**: Primary relational database
+  - ACID compliance
+  - High performance
+  - Scalable architecture
+- **Redis**: In-memory data store
+  - Session management
+  - Refresh token storage
+  - Distributed caching
+
+#### Message Queue
+
+- **RabbitMQ**: Message broker
+  - Asynchronous communication
+  - Reliable message delivery
+  - Message persistence
+  - Dead letter queues
+
+#### Authentication & Security
+
+- **JWT Authentication**: Stateless authentication
+  - Access token generation
+  - Token validation
+  - Role-based authorization
+- **Firebase Admin SDK**: Additional authentication services
+  - Social login integration
+  - User management
+  - Security rules
+
+#### API Documentation
+
+- **Swagger/OpenAPI**: API documentation
+  - Interactive API explorer
+  - Request/response schemas
+  - Authentication flows
+
+#### Development Tools
+
+- **Docker**: Containerization
+  - Service isolation
+  - Easy deployment
+  - Consistent environments
+- **Entity Framework Core**: ORM
+  - Code-first migrations
+  - LINQ queries
+  - Change tracking
+
+### System Flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API
+    participant Auth
+    participant Business
+    participant Data
+    participant Cache
+    participant Queue
+
+    Client->>API: HTTP Request
+    API->>Auth: Validate Token
+    Auth->>Cache: Check Refresh Token
+
+    alt Valid Token
+        API->>Business: Process Request
+        Business->>Queue: Publish Event
+        Business->>Data: Query/Update Data
+        Data-->>Business: Return Result
+        Business-->>API: Return Response
+        API-->>Client: HTTP Response
+    else Invalid Token
+        Auth-->>API: Unauthorized
+        API-->>Client: 401 Response
+    end
+```
+
 ## Features
 
 - **Authentication & Authorization**: Implements JWT-based authentication with refresh token support.
